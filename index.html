@@ -48,7 +48,38 @@
         </div>
     </section>
 
-    <section class="shop-page" aria-hidden="true"></section>
+    <section class="shop-page" aria-hidden="true">
+        <div class="shop-grid">
+            <div class="shop-item">
+                <img src="" alt="Gin Shirt" class="shop-item__image" data-src="shop/shirt1.png">
+                <div class="shop-item__meta">
+                    <span class="shop-item__name">Gin Shirt</span>
+                    <span class="shop-item__price">149,000&#8361;</span>
+                </div>
+            </div>
+            <div class="shop-item">
+                <img src="" alt="Gin Shirt" class="shop-item__image" data-src="shop/shirt2.png">
+                <div class="shop-item__meta">
+                    <span class="shop-item__name">Gin Shirt</span>
+                    <span class="shop-item__price">149,000&#8361;</span>
+                </div>
+            </div>
+            <div class="shop-item">
+                <img src="" alt="Gin Shirt" class="shop-item__image" data-src="shop/shirt3.png">
+                <div class="shop-item__meta">
+                    <span class="shop-item__name">Gin Shirt</span>
+                    <span class="shop-item__price">149,000&#8361;</span>
+                </div>
+            </div>
+            <div class="shop-item">
+                <img src="" alt="Gin Shirt" class="shop-item__image" data-src="shop/shirt4.png">
+                <div class="shop-item__meta">
+                    <span class="shop-item__name">Gin Shirt</span>
+                    <span class="shop-item__price">149,000&#8361;</span>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <div class="transition-overlay" aria-hidden="true"></div>
     <div class="transition-overlay transition-overlay--about" aria-hidden="true"></div>
@@ -217,6 +248,17 @@
                 if (src) aboutImage.src = src;
             }
 
+            var shopImagesLoaded = false;
+            function loadShopImages() {
+                if (shopImagesLoaded) return;
+                shopImagesLoaded = true;
+                var imgs = document.querySelectorAll('.shop-item__image');
+                for (var i = 0; i < imgs.length; i++) {
+                    var src = imgs[i].getAttribute('data-src');
+                    if (src) imgs[i].src = src;
+                }
+            }
+
             var currentPage = 'home';
             var transitioning = false;
 
@@ -238,6 +280,7 @@
 
                 if (target === 'look') loadLookImages();
                 if (target === 'about') loadAboutImage();
+                if (target === 'shop') loadShopImages();
 
                 var newClass = target === 'look' ? 'is-look-active'
                                : target === 'about' ? 'is-about-active'

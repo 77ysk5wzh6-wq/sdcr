@@ -198,6 +198,52 @@ body.is-loaded {
     pointer-events: auto;
 }
 
+.shop-grid {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px;
+    width: calc(100% - 240px);
+    max-width: 1200px;
+    padding: 0 60px 0 200px;
+    box-sizing: border-box;
+}
+
+.shop-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.shop-item__image {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.shop-item__meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    background: rgb(224, 255, 237);
+    padding: 4px 10px;
+    margin-top: 4px;
+    font-family: 'Cormorant Garamond', 'Apple SD Gothic Neo', serif;
+    font-weight: 400;
+    font-size: 16px;
+    color: #000000;
+}
+
+.shop-item__name {
+    text-align: left;
+}
+
+.shop-item__price {
+    text-align: right;
+}
+
 @keyframes categoriesFadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -422,6 +468,22 @@ body.is-loaded {
         padding: 120px 16px 60px;
     }
 
+    .shop-grid {
+        position: static;
+        transform: none;
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+        width: 100%;
+        max-width: none;
+        padding: 60px 16px 60px;
+    }
+
+    .shop-item__meta {
+        font-size: 18px;
+        padding: 6px 12px;
+    }
+
     .logo {
         padding: 28px 0 0;
     }
@@ -435,7 +497,7 @@ body.is-loaded {
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
-        margin: 80px auto 0;
+        margin: 40px auto 0;
         padding: 0 12px;
         max-width: 520px;
     }
