@@ -225,7 +225,6 @@ html, body {
 .is-look-active .look-page {
     opacity: 1;
     pointer-events: auto;
-    transition-delay: 1.7s;
 }
 
 .marquee {
@@ -243,7 +242,6 @@ html, body {
 
 .is-look-active .marquee {
     opacity: 1;
-    transition-delay: 1.7s;
 }
 
 .about-page {
@@ -259,7 +257,6 @@ html, body {
 .is-about-active .about-page {
     opacity: 1;
     pointer-events: auto;
-    transition-delay: 1.7s;
 }
 
 .about-page__inner {

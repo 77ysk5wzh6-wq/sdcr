@@ -232,8 +232,6 @@
                 var newClass = target === 'look' ? 'is-look-active' : 'is-about-active';
                 var oldClass = oldPage === 'look' ? 'is-look-active' : oldPage === 'about' ? 'is-about-active' : null;
 
-                document.body.classList.add(newClass);
-
                 var rect = btn.getBoundingClientRect();
                 ovl.style.top = rect.top + 'px';
                 ovl.style.left = rect.left + 'px';
@@ -255,6 +253,7 @@
 
                 setTimeout(function () {
                     if (oldClass) document.body.classList.remove(oldClass);
+                    document.body.classList.add(newClass);
                     if (!document.body.classList.contains('is-page-active')) {
                         document.body.classList.add('is-page-active');
                     }
