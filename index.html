@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js" defer></script>
 </head>
 <body>
     <header class="logo">
@@ -148,6 +149,109 @@
     <div class="transition-overlay transition-overlay--about" aria-hidden="true"></div>
     <div class="transition-overlay transition-overlay--shop" aria-hidden="true"></div>
 
+    <section class="checkout-page" aria-hidden="true">
+        <div class="checkout-layout">
+            <div class="checkout-header">
+                <a href="#" class="checkout-back">← back to bag</a>
+                <h1 class="checkout-title">Checkout</h1>
+            </div>
+
+            <section class="checkout-section">
+                <h2>Order summary</h2>
+                <ul class="checkout-items"></ul>
+            </section>
+
+            <section class="checkout-section">
+                <h2>Price</h2>
+                <div class="checkout-price-row"><span>Subtotal</span><span class="checkout-subtotal">KRW 0</span></div>
+                <div class="checkout-price-row"><span>Discount</span><span class="checkout-discount">- KRW 0</span></div>
+                <div class="checkout-price-row"><span>Shipping</span><span class="checkout-shipping">KRW 0</span></div>
+                <div class="checkout-price-row checkout-price-total"><span>Total</span><span class="checkout-total">KRW 0</span></div>
+            </section>
+
+            <section class="checkout-section">
+                <h2>Shipping</h2>
+                <div class="checkout-field">
+                    <label for="ck-name">Name</label>
+                    <input id="ck-name" type="text" autocomplete="name">
+                </div>
+                <div class="checkout-field">
+                    <label>Address</label>
+                    <div class="checkout-address-row">
+                        <input id="ck-zip" type="text" placeholder="zipcode" readonly>
+                        <button type="button" class="checkout-address-btn">find address</button>
+                    </div>
+                    <input id="ck-addr1" type="text" placeholder="address" readonly>
+                    <input id="ck-addr2" type="text" placeholder="detail address (apt, suite, etc.)">
+                </div>
+                <div class="checkout-field">
+                    <label for="ck-phone">Phone</label>
+                    <input id="ck-phone" type="tel" autocomplete="tel" placeholder="010-0000-0000">
+                </div>
+                <div class="checkout-field">
+                    <label for="ck-email">Email</label>
+                    <input id="ck-email" type="email" autocomplete="email">
+                </div>
+                <div class="checkout-field">
+                    <label for="ck-message">Delivery message</label>
+                    <textarea id="ck-message" rows="2" placeholder="leave at door, etc."></textarea>
+                </div>
+            </section>
+
+            <section class="checkout-section">
+                <h2>Order lookup password</h2>
+                <p class="checkout-hint">For non-member order tracking</p>
+                <div class="checkout-field">
+                    <label for="ck-pwd">Password</label>
+                    <input id="ck-pwd" type="password" autocomplete="new-password">
+                </div>
+                <div class="checkout-field">
+                    <label for="ck-pwd2">Confirm password</label>
+                    <input id="ck-pwd2" type="password" autocomplete="new-password">
+                </div>
+            </section>
+
+            <section class="checkout-section">
+                <h2>Payment method</h2>
+                <label class="checkout-radio">
+                    <input type="radio" name="payment" value="naverpay" checked>
+                    <span>네이버페이 / Naver Pay</span>
+                </label>
+                <label class="checkout-radio">
+                    <input type="radio" name="payment" value="mobile">
+                    <span>휴대폰 / Mobile</span>
+                </label>
+                <label class="checkout-radio">
+                    <input type="radio" name="payment" value="bank">
+                    <span>계좌이체 / Bank transfer</span>
+                </label>
+            </section>
+
+            <section class="checkout-section">
+                <h2>Terms</h2>
+                <label class="checkout-check checkout-check--all">
+                    <input type="checkbox" class="ck-agree-all">
+                    <span>Agree to all</span>
+                </label>
+                <label class="checkout-check">
+                    <input type="checkbox" class="ck-agree" data-required="true">
+                    <span>Site terms of use (required)</span>
+                </label>
+                <label class="checkout-check">
+                    <input type="checkbox" class="ck-agree" data-required="true">
+                    <span>Privacy policy for non-member purchase (required)</span>
+                </label>
+                <label class="checkout-check">
+                    <input type="checkbox" class="ck-agree">
+                    <span>Marketing communications (optional)</span>
+                </label>
+            </section>
+
+            <button type="button" class="checkout-submit">proceed to check</button>
+            <div class="checkout-message" hidden></div>
+        </div>
+    </section>
+
     <script>
         (function () {
             requestAnimationFrame(function () {
@@ -246,8 +350,123 @@
                 if (closeTrigger) {
                     var drawer2 = document.querySelector('.cart-drawer');
                     if (drawer2) drawer2.classList.remove('is-open');
+                    return;
+                }
+                var backTrigger = e.target.closest('.checkout-back');
+                if (backTrigger) {
+                    e.preventDefault();
+                    document.body.classList.remove('is-checkout-active');
+                    var drawer3 = document.querySelector('.cart-drawer');
+                    if (drawer3) drawer3.classList.add('is-open');
                 }
             });
+
+            var checkoutItemsEl = document.querySelector('.checkout-items');
+            var checkoutSubtotalEl = document.querySelector('.checkout-subtotal');
+            var checkoutShippingEl = document.querySelector('.checkout-shipping');
+            var checkoutTotalEl = document.querySelector('.checkout-total');
+            var checkoutDrawerBtn = document.querySelector('.cart-drawer__checkout');
+            var checkoutAddressBtn = document.querySelector('.checkout-address-btn');
+            var checkoutSubmitBtn = document.querySelector('.checkout-submit');
+            var checkoutMessage = document.querySelector('.checkout-message');
+            var checkoutAgreeAll = document.querySelector('.ck-agree-all');
+            var checkoutAgrees = document.querySelectorAll('.ck-agree');
+            var SHIPPING_FEE = 3000;
+
+            function renderCheckout() {
+                if (!checkoutItemsEl) return;
+                checkoutItemsEl.innerHTML = '';
+                var subtotal = 0;
+                cartData.forEach(function (item) {
+                    var li = document.createElement('li');
+                    li.className = 'checkout-item';
+                    var info = document.createElement('span');
+                    info.textContent = item.name + ' × 1, size ' + item.size;
+                    var price = document.createElement('span');
+                    price.textContent = 'KRW ' + item.price.toLocaleString();
+                    li.appendChild(info);
+                    li.appendChild(price);
+                    checkoutItemsEl.appendChild(li);
+                    subtotal += item.price;
+                });
+                var shipping = subtotal > 0 ? SHIPPING_FEE : 0;
+                var total = subtotal + shipping;
+                if (checkoutSubtotalEl) checkoutSubtotalEl.textContent = 'KRW ' + subtotal.toLocaleString();
+                if (checkoutShippingEl) checkoutShippingEl.textContent = 'KRW ' + shipping.toLocaleString();
+                if (checkoutTotalEl) checkoutTotalEl.textContent = 'KRW ' + total.toLocaleString();
+            }
+
+            if (checkoutDrawerBtn) {
+                checkoutDrawerBtn.addEventListener('click', function () {
+                    if (cartData.length === 0) return;
+                    if (cartDrawer) cartDrawer.classList.remove('is-open');
+                    document.body.classList.add('is-checkout-active');
+                    renderCheckout();
+                    var page = document.querySelector('.checkout-page');
+                    if (page) page.scrollTop = 0;
+                });
+            }
+
+            if (checkoutAddressBtn) {
+                checkoutAddressBtn.addEventListener('click', function () {
+                    if (typeof daum === 'undefined' || !daum.Postcode) {
+                        alert('주소 검색 서비스를 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
+                        return;
+                    }
+                    new daum.Postcode({
+                        oncomplete: function (data) {
+                            var zip = document.getElementById('ck-zip');
+                            var addr1 = document.getElementById('ck-addr1');
+                            var addr2 = document.getElementById('ck-addr2');
+                            if (zip) zip.value = data.zonecode;
+                            if (addr1) addr1.value = data.address;
+                            if (addr2) addr2.focus();
+                        }
+                    }).open();
+                });
+            }
+
+            if (checkoutAgreeAll) {
+                checkoutAgreeAll.addEventListener('change', function () {
+                    var checked = checkoutAgreeAll.checked;
+                    checkoutAgrees.forEach(function (c) { c.checked = checked; });
+                });
+            }
+
+            checkoutAgrees.forEach(function (c) {
+                c.addEventListener('change', function () {
+                    var allChecked = Array.prototype.every.call(checkoutAgrees, function (x) { return x.checked; });
+                    if (checkoutAgreeAll) checkoutAgreeAll.checked = allChecked;
+                });
+            });
+
+            if (checkoutSubmitBtn) {
+                checkoutSubmitBtn.addEventListener('click', function () {
+                    var name = (document.getElementById('ck-name') || {}).value || '';
+                    var zip = (document.getElementById('ck-zip') || {}).value || '';
+                    var addr1 = (document.getElementById('ck-addr1') || {}).value || '';
+                    var phone = (document.getElementById('ck-phone') || {}).value || '';
+                    var email = (document.getElementById('ck-email') || {}).value || '';
+                    var pwd = (document.getElementById('ck-pwd') || {}).value || '';
+                    var pwd2 = (document.getElementById('ck-pwd2') || {}).value || '';
+                    var requiredAgrees = Array.prototype.filter.call(checkoutAgrees, function (c) { return c.dataset.required === 'true'; });
+                    var allRequiredChecked = requiredAgrees.every(function (c) { return c.checked; });
+
+                    if (!name.trim()) { alert('Please enter your name'); return; }
+                    if (!zip.trim() || !addr1.trim()) { alert('Please find your address'); return; }
+                    if (!phone.trim()) { alert('Please enter your phone'); return; }
+                    if (!email.trim() || email.indexOf('@') === -1) { alert('Please enter a valid email'); return; }
+                    if (!pwd) { alert('Please set a password'); return; }
+                    if (pwd !== pwd2) { alert('Passwords do not match'); return; }
+                    if (!allRequiredChecked) { alert('Please agree to the required terms'); return; }
+
+                    if (checkoutMessage) {
+                        checkoutMessage.hidden = false;
+                        checkoutMessage.textContent = 'proceeding to payment... (demo)';
+                    }
+                    checkoutSubmitBtn.disabled = true;
+                });
+            }
 
             renderCart();
 
@@ -579,6 +798,7 @@
                 setTimeout(function () {
                     if (oldClass) document.body.classList.remove(oldClass);
                     document.body.classList.remove('is-detail-active');
+                    document.body.classList.remove('is-checkout-active');
                     document.body.classList.add(newClass);
                     if (!document.body.classList.contains('is-page-active')) {
                         document.body.classList.add('is-page-active');
