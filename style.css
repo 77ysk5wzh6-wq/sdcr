@@ -179,8 +179,16 @@ body.is-loaded {
 
 .is-look-active .category--look,
 .is-about-active .category--about,
-.is-shop-active .category--shop {
+.is-shop-active .category--shop,
+.is-detail-active .category--shop {
     pointer-events: none;
+}
+
+.is-look-active .category--look,
+.is-about-active .category--about,
+.is-shop-active .category--shop,
+.is-detail-active .category--shop {
+    background: none;
 }
 
 .categories {
