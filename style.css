@@ -647,6 +647,15 @@ body.is-loaded {
         padding: 6px 12px;
     }
 
+    .shop-item__image {
+        transition: none;
+    }
+
+    .shop-item__image:hover {
+        transform: none;
+        z-index: auto;
+    }
+
     .detail-page {
         position: static;
         opacity: 1;
