@@ -546,6 +546,7 @@ body.is-loaded {
         width: 70vw;
         max-width: none;
         margin: 0 auto;
+        border-width: 3px;
     }
 
     .headline {
