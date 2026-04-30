@@ -237,7 +237,7 @@ body.is-loaded {
 
 @media (hover: hover) {
     .shop-item__image:hover {
-        transform: scale(1.2);
+        transform: scale(1.1);
         z-index: 2;
     }
 }
