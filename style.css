@@ -33,6 +33,7 @@ body.is-loaded {
     height: 34px;
     width: auto;
     display: inline-block;
+    transform: translateX(8%);
 }
 
 .categories {
