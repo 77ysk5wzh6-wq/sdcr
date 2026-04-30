@@ -270,6 +270,13 @@ body.is-loaded {
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+}
+
+.detail-page::-webkit-scrollbar {
+    display: none;
 }
 
 .is-detail-active .detail-page {
@@ -278,11 +285,8 @@ body.is-loaded {
 }
 
 .detail-layout {
-    position: absolute;
-    top: 110px;
-    left: 220px;
-    right: 60px;
-    bottom: 50px;
+    position: relative;
+    margin: 110px 60px 50px 220px;
     display: grid;
     grid-template-columns: 0.85fr 0.9fr 1.25fr;
     gap: 24px;
@@ -392,15 +396,9 @@ body.is-loaded {
 }
 
 .detail-images {
-    overflow-y: auto;
-    scrollbar-width: none;
     display: flex;
     flex-direction: column;
     gap: 16px;
-}
-
-.detail-images::-webkit-scrollbar {
-    display: none;
 }
 
 .detail-images__img {
