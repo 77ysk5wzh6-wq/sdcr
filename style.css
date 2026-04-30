@@ -158,6 +158,12 @@ body.is-loaded {
 .logo {
     position: relative;
     z-index: 100;
+    pointer-events: none;
+}
+
+.logo__link {
+    pointer-events: auto;
+    display: inline-block;
 }
 
 .is-look-active .hero,
