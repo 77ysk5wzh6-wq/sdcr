@@ -233,18 +233,21 @@
                 });
             }
 
-            if (cartButton) {
-                cartButton.addEventListener('click', function (e) {
+            document.addEventListener('click', function (e) {
+                if (!e.target || !e.target.closest) return;
+                var openTrigger = e.target.closest('.cart-button');
+                if (openTrigger) {
                     e.preventDefault();
-                    if (cartDrawer) cartDrawer.classList.add('is-open');
-                });
-            }
-
-            if (cartCloseBtn) {
-                cartCloseBtn.addEventListener('click', function () {
-                    if (cartDrawer) cartDrawer.classList.remove('is-open');
-                });
-            }
+                    var drawer = document.querySelector('.cart-drawer');
+                    if (drawer) drawer.classList.add('is-open');
+                    return;
+                }
+                var closeTrigger = e.target.closest('.cart-drawer__close');
+                if (closeTrigger) {
+                    var drawer2 = document.querySelector('.cart-drawer');
+                    if (drawer2) drawer2.classList.remove('is-open');
+                }
+            });
 
             renderCart();
 
