@@ -897,8 +897,8 @@ body.is-loaded {
         margin-left: 260px;
         width: auto;
         max-width: 580px;
-        padding-left: 0;
-        padding-right: 0;
+        padding-left: 36px;
+        padding-right: 36px;
     }
 
     .checkout-message {
