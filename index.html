@@ -364,6 +364,13 @@
                     document.body.classList.remove('is-checkout-active');
                     var drawer3 = document.querySelector('.cart-drawer');
                     if (drawer3) drawer3.classList.add('is-open');
+                    return;
+                }
+                var drawerEl = document.querySelector('.cart-drawer');
+                if (drawerEl && drawerEl.classList.contains('is-open')) {
+                    if (!e.target.closest('.cart-drawer') && !e.target.closest('.cart-button')) {
+                        drawerEl.classList.remove('is-open');
+                    }
                 }
             });
 
