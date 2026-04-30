@@ -553,7 +553,7 @@ body.is-loaded {
     max-width: 720px;
     margin: 100px auto 80px;
     padding: 0 24px;
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     color: #000000;
 }
 
@@ -569,16 +569,14 @@ body.is-loaded {
     top: 50%;
     transform: translateY(-50%);
     font-family: inherit;
-    font-style: italic;
-    font-size: 15px;
+    font-size: 14px;
     color: #000000;
     text-decoration: none;
 }
 
 .checkout-title {
-    font-size: 36px;
-    font-style: italic;
-    font-weight: 400;
+    font-size: 28px;
+    font-weight: 600;
     margin: 0;
 }
 
@@ -587,8 +585,8 @@ body.is-loaded {
 }
 
 .checkout-section h2 {
-    font-size: 17px;
-    font-weight: 400;
+    font-size: 16px;
+    font-weight: 600;
     margin: 0 0 14px;
     border-bottom: 1px solid #000000;
     padding-bottom: 8px;
@@ -604,23 +602,22 @@ body.is-loaded {
     display: flex;
     justify-content: space-between;
     padding: 8px 0;
-    font-size: 15px;
-    font-style: italic;
+    font-size: 14px;
 }
 
 .checkout-price-row {
     display: flex;
     justify-content: space-between;
     padding: 6px 0;
-    font-size: 15px;
-    font-style: italic;
+    font-size: 14px;
 }
 
 .checkout-price-total {
     border-top: 1px solid #000000;
     margin-top: 8px;
     padding-top: 12px;
-    font-size: 17px;
+    font-size: 16px;
+    font-weight: 600;
 }
 
 .checkout-field {
@@ -630,7 +627,6 @@ body.is-loaded {
 .checkout-field label {
     display: block;
     font-size: 13px;
-    font-style: italic;
     margin-bottom: 4px;
     color: #555555;
 }
@@ -643,7 +639,7 @@ body.is-loaded {
     border-bottom: 1px solid #000000;
     background: transparent;
     font-family: inherit;
-    font-size: 15px;
+    font-size: 14px;
     color: #000000;
     box-sizing: border-box;
     outline: none;
@@ -679,7 +675,6 @@ body.is-loaded {
     background: transparent;
     font-family: inherit;
     font-size: 13px;
-    font-style: italic;
     cursor: pointer;
     white-space: nowrap;
 }
@@ -690,23 +685,22 @@ body.is-loaded {
     align-items: center;
     gap: 10px;
     padding: 8px 0;
-    font-size: 15px;
+    font-size: 14px;
     cursor: pointer;
-    font-style: italic;
 }
 
 .checkout-check--all {
     border-bottom: 1px solid #cccccc;
     padding-bottom: 12px;
     margin-bottom: 6px;
-    font-size: 16px;
+    font-size: 15px;
+    font-weight: 600;
 }
 
 .checkout-hint {
     font-size: 13px;
     color: #888888;
     margin: 0 0 12px;
-    font-style: italic;
 }
 
 .checkout-submit {
@@ -717,8 +711,8 @@ body.is-loaded {
     background: #000000;
     color: #ffffff;
     font-family: inherit;
-    font-size: 17px;
-    font-style: italic;
+    font-size: 15px;
+    font-weight: 600;
     cursor: pointer;
     margin-top: 28px;
 }
@@ -734,7 +728,6 @@ body.is-loaded {
     padding: 14px;
     background: rgb(224, 255, 237);
     font-size: 14px;
-    font-style: italic;
     text-align: center;
 }
 
