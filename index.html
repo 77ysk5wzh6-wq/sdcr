@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>sdcr</title>
+    <link rel="icon" type="image/jpeg" href="assets/favicon.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400&display=swap" rel="stylesheet">
@@ -212,6 +213,44 @@
             var currentPage = 'home';
             var transitioning = false;
 
+            var audioCtx = null;
+            function playViolinTone() {
+                try {
+                    if (!audioCtx) {
+                        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    }
+                    if (audioCtx.state === 'suspended') audioCtx.resume();
+                    var osc = audioCtx.createOscillator();
+                    var gain = audioCtx.createGain();
+                    var filter = audioCtx.createBiquadFilter();
+                    var lfo = audioCtx.createOscillator();
+                    var lfoGain = audioCtx.createGain();
+                    lfo.type = 'sine';
+                    lfo.frequency.value = 5.5;
+                    lfoGain.gain.value = 3.5;
+                    lfo.connect(lfoGain);
+                    lfoGain.connect(osc.frequency);
+                    osc.type = 'sawtooth';
+                    osc.frequency.value = 392;
+                    filter.type = 'lowpass';
+                    filter.frequency.value = 2400;
+                    filter.Q.value = 1.4;
+                    osc.connect(filter);
+                    filter.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    var now = audioCtx.currentTime;
+                    var duration = 0.8;
+                    gain.gain.setValueAtTime(0, now);
+                    gain.gain.linearRampToValueAtTime(0.1, now + 0.1);
+                    gain.gain.setValueAtTime(0.1, now + duration - 0.18);
+                    gain.gain.linearRampToValueAtTime(0, now + duration);
+                    osc.start(now);
+                    lfo.start(now);
+                    osc.stop(now + duration);
+                    lfo.stop(now + duration);
+                } catch (err) {}
+            }
+
             function navigateTo(target) {
                 if (transitioning) return;
                 if (currentPage === target) return;
@@ -241,6 +280,7 @@
                 ovl.offsetHeight;
                 ovl.classList.add('is-active');
 
+                playViolinTone();
                 requestAnimationFrame(function () {
                     ovl.style.left = '0px';
                     ovl.style.width = '100vw';
