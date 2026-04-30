@@ -327,6 +327,7 @@ body.is-loaded {
 
 .detail-info__model {
     margin-bottom: 80px;
+    font-size: 14px;
 }
 
 .detail-info__model-row {
