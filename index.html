@@ -238,6 +238,7 @@
                         attack: 0.02,
                         release: 1.4,
                         baseUrl: 'https://nbrosowsky.github.io/tonejs-instruments/samples/contrabass/',
+                        volume: -8,
                         onload: function () {
                             bassReady = true;
                             console.log('bass samples loaded');
@@ -256,7 +257,7 @@
                 if (!bass) return;
                 var trigger = function () {
                     try {
-                        bass.triggerAttackRelease('C1', 0.5);
+                        bass.triggerAttackRelease('E1', 0.5);
                     } catch (err) {
                         console.warn('bass trigger error', err);
                     }
