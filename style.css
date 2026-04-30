@@ -551,7 +551,7 @@ body.is-loaded {
 
 .checkout-layout {
     max-width: 580px;
-    margin: 100px auto 80px;
+    margin: 140px auto 80px;
     padding: 0 24px;
     font-family: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     color: #000000;
@@ -607,9 +607,9 @@ body.is-loaded {
 }
 
 .checkout-item__image {
-    width: 50px;
+    width: 64px;
     height: auto;
-    flex: 0 0 50px;
+    flex: 0 0 64px;
 }
 
 .checkout-item__info {
