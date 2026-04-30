@@ -728,6 +728,61 @@ body.is-loaded {
     cursor: pointer;
 }
 
+.checkout-radio input[type="radio"],
+.checkout-check input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 14px;
+    height: 14px;
+    margin: 0;
+    border: 1px solid #000000;
+    background: #ffffff;
+    cursor: pointer;
+    flex: 0 0 auto;
+    position: relative;
+    transition: background 0.15s ease;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.checkout-radio input[type="radio"] {
+    border-radius: 50%;
+}
+
+.checkout-radio input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 6px;
+    height: 6px;
+    background: #000000;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.checkout-check input[type="checkbox"]:checked {
+    background: #000000;
+}
+
+.checkout-check input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 3px;
+    width: 4px;
+    height: 8px;
+    border: solid #ffffff;
+    border-width: 0 1.5px 1.5px 0;
+    transform: rotate(45deg);
+}
+
+.checkout-radio input[type="radio"]:focus,
+.checkout-check input[type="checkbox"]:focus {
+    outline: none;
+}
+
 .checkout-check--all {
     border-bottom: 1px solid #cccccc;
     padding-bottom: 12px;
