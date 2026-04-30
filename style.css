@@ -222,6 +222,17 @@ body.is-loaded {
     width: 100%;
     height: auto;
     display: block;
+    transition: transform 0.4s ease;
+    transform-origin: center center;
+    position: relative;
+    z-index: 1;
+}
+
+@media (hover: hover) {
+    .shop-item__image:hover {
+        transform: scale(1.2);
+        z-index: 2;
+    }
 }
 
 .shop-item__meta {
