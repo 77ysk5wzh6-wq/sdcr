@@ -332,11 +332,11 @@ body.is-loaded {
 
 .detail-info__model-row {
     display: flex;
-    gap: 40px;
+    gap: 20px;
 }
 
 .detail-info__model-row > span:first-child {
-    min-width: 240px;
+    min-width: 200px;
 }
 
 .detail-info__size {
