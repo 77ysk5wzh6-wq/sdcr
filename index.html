@@ -53,6 +53,9 @@
 
     <script>
         (function () {
+            requestAnimationFrame(function () {
+                document.body.classList.add('is-loaded');
+            });
             var shop = document.querySelector('.category--shop');
             if (!shop) return;
             var STRIPE_COUNT = 22;

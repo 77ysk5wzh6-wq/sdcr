@@ -14,6 +14,15 @@ html, body {
     overflow: hidden;
 }
 
+body {
+    opacity: 0;
+}
+
+body.is-loaded {
+    opacity: 1;
+    transition: opacity 0.5s ease;
+}
+
 .logo {
     width: 100%;
     padding: 25px 0 0;
