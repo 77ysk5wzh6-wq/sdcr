@@ -128,7 +128,7 @@ body.is-loaded {
     max-width: 36vw;
     height: auto;
     display: block;
-    border: 10px solid #000000;
+    border: 5px solid #000000;
 }
 
 .headline {
