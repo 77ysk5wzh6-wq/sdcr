@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>sdcr</title>
-    <link rel="icon" type="image/png" href="assets/favicon.png">
+    <link rel="icon" type="image/jpeg" href="assets/favicon.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
@@ -29,7 +29,10 @@
 
     <section class="headline">
         <p class="headline__line"><span class="headline__word">spr</span> <span class="headline__word">spr</span> <span class="headline__word">spr</span></p>
-        <p class="headline__line"><span class="headline__word">spring</span> <span class="headline__word">sprout</span> <span class="headline__word">spruce</span></p>
+        <p class="headline__line"><span class="headline__word">
+            spruce</span> <span class="headline__word">
+            sprout</span> <span class="headline__word">
+            spring</span></p>
     </section>
 
     <section class="look-page" aria-hidden="true">
@@ -308,7 +311,7 @@
                 setTimeout(function () {
                     ovl.style.top = '0px';
                     ovl.style.height = '100vh';
-                }, 900);
+                }, 630);
 
                 setTimeout(function () {
                     if (oldClass) document.body.classList.remove(oldClass);
@@ -332,11 +335,11 @@
                     if (isShop) {
                         ovl.classList.add('is-sweeping');
                     }
-                }, 1700);
+                }, 1190);
 
                 setTimeout(function () {
                     ovl.style.opacity = '0';
-                }, isShop ? 2700 : 1900);
+                }, isShop ? 1890 : 1330);
 
                 setTimeout(function () {
                     currentPage = target;
@@ -347,7 +350,7 @@
                     if (target === 'look') {
                         startMarquee();
                     }
-                }, isShop ? 3200 : 2300);
+                }, isShop ? 2240 : 1610);
             }
 
             look.addEventListener('click', function (e) {

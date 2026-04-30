@@ -134,7 +134,7 @@ body.is-loaded {
 
 .headline {
     position: absolute;
-    bottom: 50px;
+    bottom: 75px;
     left: 0;
     width: 100%;
     padding: 0 40px;
@@ -168,7 +168,7 @@ body.is-loaded {
 .is-shop-active .headline {
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.25s ease;
+    transition: opacity 0.175s ease;
 }
 
 .is-look-active .category--look,
@@ -183,7 +183,7 @@ body.is-loaded {
 
 .is-page-active .categories {
     opacity: 0;
-    animation: categoriesFadeIn 1.5s ease 0.5s forwards;
+    animation: categoriesFadeIn 1.05s ease 0.35s forwards;
 }
 
 .shop-page {
@@ -293,7 +293,7 @@ body.is-loaded {
     height: 0;
     background: linear-gradient(to bottom, transparent 0%, #ffffff 50%, #ffffff 100%);
     pointer-events: none;
-    transition: height 1s ease;
+    transition: height 0.7s ease;
 }
 
 .transition-overlay--shop.is-sweeping::before {
@@ -302,9 +302,9 @@ body.is-loaded {
 
 .transition-overlay.is-active {
     opacity: 1;
-    transition: left 0.8s ease-in-out, width 0.8s ease-in-out,
-                top 0.8s ease-in-out, height 0.8s ease-in-out,
-                opacity 0.3s ease;
+    transition: left 0.56s ease-in-out, width 0.56s ease-in-out,
+                top 0.56s ease-in-out, height 0.56s ease-in-out,
+                opacity 0.21s ease;
 }
 
 .look-page {
@@ -314,7 +314,7 @@ body.is-loaded {
     background: rgb(232, 26, 41);
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.25s ease;
+    transition: opacity 0.175s ease;
     overflow-y: auto;
     overflow-x: hidden;
     scrollbar-width: none;
@@ -344,7 +344,7 @@ body.is-loaded {
     z-index: 41;
     pointer-events: none;
     opacity: 0;
-    transition: opacity 0.25s ease;
+    transition: opacity 0.175s ease;
 }
 
 .is-look-active .marquee {
@@ -358,7 +358,7 @@ body.is-loaded {
     background: rgb(224, 255, 237);
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.25s ease;
+    transition: opacity 0.175s ease;
 }
 
 .is-about-active .about-page {
