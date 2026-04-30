@@ -179,16 +179,8 @@ body.is-loaded {
 
 .is-look-active .category--look,
 .is-about-active .category--about,
-.is-shop-active .category--shop,
-.is-detail-active .category--shop {
+.is-shop-active .category--shop {
     pointer-events: none;
-}
-
-.is-look-active .category--look,
-.is-about-active .category--about,
-.is-shop-active .category--shop,
-.is-detail-active .category--shop {
-    background: none;
 }
 
 .categories {
@@ -254,7 +246,7 @@ body.is-loaded {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    background: rgb(224, 255, 237);
+    background: transparent;
     padding: 4px 10px;
     margin-top: 4px;
     font-family: 'Cormorant Garamond', 'Garamond', 'Georgia', serif;
@@ -321,7 +313,7 @@ body.is-loaded {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    background: rgb(224, 255, 237);
+    background: transparent;
     padding: 4px 10px;
     margin-top: 4px;
     font-family: 'Cormorant Garamond', 'Garamond', 'Georgia', serif;
