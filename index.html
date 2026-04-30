@@ -84,6 +84,47 @@
         </div>
     </section>
 
+    <section class="detail-page" aria-hidden="true">
+        <div class="detail-layout">
+            <div class="detail-main">
+                <img src="" alt="Gin Shirt" class="detail-main__image" data-src="shop/shirt1.png">
+                <div class="detail-main__meta">
+                    <span class="detail-main__name">Gin Shirt(ravender)</span>
+                    <span class="detail-main__price">149,000&#8361;</span>
+                </div>
+            </div>
+            <div class="detail-info">
+                <p class="detail-info__desc">
+                    100% linen<br>
+                    Made in Korea<br>
+                    White pearl button<br>
+                    Cuffs with single button close<br>
+                    Normal fit
+                </p>
+                <div class="detail-info__model">
+                    <div class="detail-info__model-row">
+                        <span>model(male) - 183 cm 70kg</span>
+                        <span>wearing 2 size</span>
+                    </div>
+                    <div class="detail-info__model-row">
+                        <span>model(female) - 173 cm 49kg</span>
+                        <span>wearing 1 size</span>
+                    </div>
+                </div>
+                <div class="detail-info__size">
+                    <span class="detail-info__label">size</span>
+                    <div class="detail-info__buttons">
+                        <button type="button" class="detail-size-btn">1</button>
+                        <button type="button" class="detail-size-btn">2</button>
+                    </div>
+                </div>
+                <a href="#" class="detail-info__guide">size guide</a>
+                <button type="button" class="detail-info__cart">add to cart</button>
+            </div>
+            <div class="detail-images" aria-hidden="true"></div>
+        </div>
+    </section>
+
     <div class="transition-overlay" aria-hidden="true"></div>
     <div class="transition-overlay transition-overlay--about" aria-hidden="true"></div>
     <div class="transition-overlay transition-overlay--shop" aria-hidden="true"></div>
@@ -262,6 +303,37 @@
                 }
             }
 
+            var detailImagesLoaded = false;
+            var detailImageList = [
+                'look/look1_detail/look1_detail1.png',
+                'look/look1_detail/look1_detail2.png',
+                'look/look1_detail/look1_detail3.png'
+            ];
+            var detailMainImg = document.querySelector('.detail-main__image');
+            var detailImagesContainer = document.querySelector('.detail-images');
+            function loadDetailContent(shopIndex) {
+                if (!detailImagesLoaded && detailImagesContainer) {
+                    detailImagesLoaded = true;
+                    for (var d = 0; d < detailImageList.length; d++) {
+                        var dimg = document.createElement('img');
+                        dimg.className = 'detail-images__img';
+                        dimg.alt = '';
+                        dimg.src = encodeURI(detailImageList[d]);
+                        detailImagesContainer.appendChild(dimg);
+                    }
+                }
+                if (detailMainImg) {
+                    detailMainImg.src = 'shop/shirt' + (shopIndex + 1) + '.png';
+                }
+                if (detailImagesContainer) detailImagesContainer.scrollTop = 0;
+            }
+
+            function openDetail(shopIndex) {
+                if (!document.body.classList.contains('is-shop-active')) return;
+                loadDetailContent(shopIndex);
+                document.body.classList.add('is-detail-active');
+            }
+
             var currentPage = 'home';
             var transitioning = false;
 
@@ -315,6 +387,7 @@
 
                 setTimeout(function () {
                     if (oldClass) document.body.classList.remove(oldClass);
+                    document.body.classList.remove('is-detail-active');
                     document.body.classList.add(newClass);
                     if (!document.body.classList.contains('is-page-active')) {
                         document.body.classList.add('is-page-active');
@@ -368,9 +441,20 @@
             if (shop) {
                 shop.addEventListener('click', function (e) {
                     e.preventDefault();
+                    if (document.body.classList.contains('is-detail-active')) {
+                        document.body.classList.remove('is-detail-active');
+                        return;
+                    }
                     navigateTo('shop');
                 });
             }
+
+            var shopItemEls = document.querySelectorAll('.shop-item');
+            shopItemEls.forEach(function (item, idx) {
+                item.addEventListener('click', function () {
+                    openDetail(idx);
+                });
+            });
         })();
     </script>
 </body>

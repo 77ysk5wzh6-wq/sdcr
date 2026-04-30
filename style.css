@@ -258,6 +258,147 @@ body.is-loaded {
     text-align: right;
 }
 
+.shop-item {
+    cursor: pointer;
+}
+
+.detail-page {
+    position: fixed;
+    inset: 0;
+    z-index: 41;
+    background: #ffffff;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.is-detail-active .detail-page {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.detail-layout {
+    position: absolute;
+    top: 110px;
+    left: 220px;
+    right: 60px;
+    bottom: 50px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 50px;
+}
+
+.detail-main {
+    display: flex;
+    flex-direction: column;
+    align-self: start;
+}
+
+.detail-main__image {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.detail-main__meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    background: rgb(224, 255, 237);
+    padding: 4px 10px;
+    margin-top: 4px;
+    font-family: 'Cormorant Garamond', 'Garamond', 'Georgia', serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 16px;
+    color: #000000;
+}
+
+.detail-info {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    line-height: 1.5;
+    color: #000000;
+}
+
+.detail-info__desc {
+    margin-bottom: 100px;
+}
+
+.detail-info__model {
+    margin-bottom: 80px;
+}
+
+.detail-info__model-row {
+    display: flex;
+    gap: 40px;
+}
+
+.detail-info__model-row > span:first-child {
+    min-width: 240px;
+}
+
+.detail-info__size {
+    margin-bottom: 24px;
+}
+
+.detail-info__label {
+    display: block;
+    margin-bottom: 12px;
+}
+
+.detail-info__buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.detail-size-btn {
+    width: 40px;
+    height: 40px;
+    border: 1px solid #000000;
+    background: transparent;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    color: #000000;
+    cursor: pointer;
+    padding: 0;
+}
+
+.detail-info__guide {
+    display: inline-block;
+    margin-bottom: 24px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    color: #000000;
+    text-decoration: underline;
+}
+
+.detail-info__cart {
+    padding: 6px 14px;
+    border: 1px solid #000000;
+    background: transparent;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    color: #000000;
+    cursor: pointer;
+}
+
+.detail-images {
+    overflow-y: auto;
+    max-height: 100%;
+    scrollbar-width: none;
+}
+
+.detail-images::-webkit-scrollbar {
+    display: none;
+}
+
+.detail-images__img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
 @keyframes categoriesFadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -496,6 +637,38 @@ body.is-loaded {
     .shop-item__meta {
         font-size: 18px;
         padding: 6px 12px;
+    }
+
+    .detail-page {
+        position: static;
+        opacity: 1;
+        pointer-events: auto;
+        background: transparent;
+        display: none;
+    }
+
+    body.is-detail-active .detail-page {
+        display: block;
+    }
+
+    body.is-detail-active .shop-page {
+        display: none;
+    }
+
+    .detail-layout {
+        position: static;
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+        padding: 40px 16px 60px;
+    }
+
+    .detail-images {
+        overflow: visible;
+        max-height: none;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
     }
 
     .logo {
