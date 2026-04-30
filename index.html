@@ -328,19 +328,36 @@
                 if (detailImagesContainer) detailImagesContainer.scrollTop = 0;
             }
 
-            function openDetail(shopIndex) {
+            function openDetail(shopIndex, fromPopstate) {
                 if (!document.body.classList.contains('is-shop-active')) return;
                 loadDetailContent(shopIndex);
                 document.body.classList.add('is-detail-active');
+                if (!fromPopstate) {
+                    try {
+                        history.pushState({ page: 'shop', detail: shopIndex }, '', '#shop/' + shopIndex);
+                    } catch (err) {}
+                }
             }
 
             var currentPage = 'home';
             var transitioning = false;
 
-            function navigateTo(target) {
+            try {
+                if (!history.state) {
+                    history.replaceState({ page: 'home' }, '', location.pathname);
+                }
+            } catch (err) {}
+
+            function navigateTo(target, fromPopstate) {
                 if (transitioning) return;
                 if (currentPage === target) return;
                 if (target !== 'look' && target !== 'about' && target !== 'shop') return;
+
+                if (!fromPopstate) {
+                    try {
+                        history.pushState({ page: target }, '', '#' + target);
+                    } catch (err) {}
+                }
 
                 transitioning = true;
                 var oldPage = currentPage;
@@ -442,12 +459,35 @@
                 shop.addEventListener('click', function (e) {
                     e.preventDefault();
                     if (document.body.classList.contains('is-detail-active')) {
-                        document.body.classList.remove('is-detail-active');
+                        history.back();
                         return;
                     }
                     navigateTo('shop');
                 });
             }
+
+            window.addEventListener('popstate', function (e) {
+                var state = e.state || { page: 'home' };
+                var page = state.page;
+                if (page === 'home') {
+                    location.reload();
+                    return;
+                }
+                var hasDetail = typeof state.detail === 'number';
+                var currentHasDetail = document.body.classList.contains('is-detail-active');
+                if (page === currentPage) {
+                    if (hasDetail && !currentHasDetail) {
+                        openDetail(state.detail, true);
+                    } else if (!hasDetail && currentHasDetail) {
+                        document.body.classList.remove('is-detail-active');
+                    }
+                } else {
+                    if (currentHasDetail) {
+                        document.body.classList.remove('is-detail-active');
+                    }
+                    navigateTo(page, true);
+                }
+            });
 
             var shopItemEls = document.querySelectorAll('.shop-item');
             shopItemEls.forEach(function (item, idx) {
