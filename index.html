@@ -48,8 +48,11 @@
         </div>
     </section>
 
+    <section class="shop-page" aria-hidden="true"></section>
+
     <div class="transition-overlay" aria-hidden="true"></div>
     <div class="transition-overlay transition-overlay--about" aria-hidden="true"></div>
+    <div class="transition-overlay transition-overlay--shop" aria-hidden="true"></div>
 
     <script>
         (function () {
@@ -205,6 +208,7 @@
             var aboutOverlay = document.querySelector('.transition-overlay--about');
             var aboutImage = document.querySelector('.about-page__image');
             var aboutImageLoaded = false;
+            var shopOverlay = document.querySelector('.transition-overlay--shop');
 
             function loadAboutImage() {
                 if (aboutImageLoaded || !aboutImage) return;
@@ -219,12 +223,14 @@
             function navigateTo(target) {
                 if (transitioning) return;
                 if (currentPage === target) return;
-                if (target !== 'look' && target !== 'about') return;
+                if (target !== 'look' && target !== 'about' && target !== 'shop') return;
 
                 transitioning = true;
                 var oldPage = currentPage;
-                var btn = target === 'look' ? look : about;
-                var ovl = target === 'look' ? overlay : aboutOverlay;
+                var btn, ovl;
+                if (target === 'look') { btn = look; ovl = overlay; }
+                else if (target === 'about') { btn = about; ovl = aboutOverlay; }
+                else { btn = shop; ovl = shopOverlay; }
                 if (!btn || !ovl) {
                     transitioning = false;
                     return;
@@ -233,8 +239,14 @@
                 if (target === 'look') loadLookImages();
                 if (target === 'about') loadAboutImage();
 
-                var newClass = target === 'look' ? 'is-look-active' : 'is-about-active';
-                var oldClass = oldPage === 'look' ? 'is-look-active' : oldPage === 'about' ? 'is-about-active' : null;
+                var newClass = target === 'look' ? 'is-look-active'
+                               : target === 'about' ? 'is-about-active'
+                               : 'is-shop-active';
+                var oldClass = oldPage === 'look' ? 'is-look-active'
+                               : oldPage === 'about' ? 'is-about-active'
+                               : oldPage === 'shop' ? 'is-shop-active'
+                               : null;
+                var isShop = target === 'shop';
 
                 var rect = btn.getBoundingClientRect();
                 ovl.style.top = rect.top + 'px';
@@ -274,21 +286,25 @@
                         measureTrack();
                         applyTranslate();
                     }
+                    if (isShop) {
+                        ovl.classList.add('is-sweeping');
+                    }
                 }, 1700);
 
                 setTimeout(function () {
                     ovl.style.opacity = '0';
-                }, 1900);
+                }, isShop ? 2700 : 1900);
 
                 setTimeout(function () {
                     currentPage = target;
                     transitioning = false;
                     ovl.classList.remove('is-active');
+                    ovl.classList.remove('is-sweeping');
                     ovl.style.cssText = '';
                     if (target === 'look') {
                         startMarquee();
                     }
-                }, 2300);
+                }, isShop ? 3200 : 2300);
             }
 
             look.addEventListener('click', function (e) {
@@ -300,6 +316,13 @@
                 about.addEventListener('click', function (e) {
                     e.preventDefault();
                     navigateTo('about');
+                });
+            }
+
+            if (shop) {
+                shop.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    navigateTo('shop');
                 });
             }
         })();
