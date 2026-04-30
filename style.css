@@ -322,11 +322,13 @@ body.is-loaded {
 }
 
 .detail-info__desc {
-    margin-bottom: 100px;
+    margin-bottom: 36px;
+    font-size: 15px;
+    line-height: 1.5;
 }
 
 .detail-info__model {
-    margin-bottom: 80px;
+    margin-bottom: 32px;
     font-size: 14px;
 }
 
@@ -340,12 +342,12 @@ body.is-loaded {
 }
 
 .detail-info__size {
-    margin-bottom: 24px;
+    margin-bottom: 18px;
 }
 
 .detail-info__label {
     display: block;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
 }
 
 .detail-info__buttons {
@@ -367,9 +369,9 @@ body.is-loaded {
 
 .detail-info__guide {
     display: block;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
     font-family: 'Cormorant Garamond', serif;
-    font-size: 18px;
+    font-size: 16px;
     color: #000000;
     text-decoration: underline;
     width: fit-content;
