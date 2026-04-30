@@ -237,14 +237,12 @@
                 <label class="checkout-check">
                     <input type="checkbox" class="ck-agree" data-required="true">
                     <span>쇼핑몰 이용약관 동의 (필수)</span>
+                    <button type="button" class="checkout-check__view" data-term="terms">내용보기</button>
                 </label>
                 <label class="checkout-check">
                     <input type="checkbox" class="ck-agree" data-required="true">
                     <span>비회원 개인정보 수집·이용 동의 (필수)</span>
-                </label>
-                <label class="checkout-check">
-                    <input type="checkbox" class="ck-agree">
-                    <span>마케팅 정보 수신 동의 (선택)</span>
+                    <button type="button" class="checkout-check__view" data-term="privacy">내용보기</button>
                 </label>
             </section>
 
@@ -252,6 +250,14 @@
             <div class="checkout-message" hidden></div>
         </div>
     </section>
+
+    <div class="terms-modal" aria-hidden="true">
+        <div class="terms-modal__panel">
+            <h3 class="terms-modal__title"></h3>
+            <div class="terms-modal__body"></div>
+            <button type="button" class="terms-modal__close">닫기</button>
+        </div>
+    </div>
 
     <script>
         (function () {
@@ -381,12 +387,35 @@
                 cartData.forEach(function (item) {
                     var li = document.createElement('li');
                     li.className = 'checkout-item';
-                    var info = document.createElement('span');
-                    info.textContent = item.name + ' × 1, ' + item.size + '사이즈';
-                    var price = document.createElement('span');
-                    price.textContent = item.price.toLocaleString() + '원';
-                    li.appendChild(info);
-                    li.appendChild(price);
+
+                    var img = document.createElement('img');
+                    img.className = 'checkout-item__image';
+                    img.src = item.image;
+                    img.alt = '';
+                    li.appendChild(img);
+
+                    var infoBox = document.createElement('div');
+                    infoBox.className = 'checkout-item__info';
+                    var nameEl = document.createElement('span');
+                    nameEl.className = 'checkout-item__name';
+                    nameEl.textContent = item.name;
+                    var sizeEl = document.createElement('span');
+                    sizeEl.className = 'checkout-item__size';
+                    sizeEl.textContent = item.size + '사이즈';
+                    infoBox.appendChild(nameEl);
+                    infoBox.appendChild(sizeEl);
+                    li.appendChild(infoBox);
+
+                    var qtyEl = document.createElement('span');
+                    qtyEl.className = 'checkout-item__qty';
+                    qtyEl.textContent = '× 1';
+                    li.appendChild(qtyEl);
+
+                    var priceEl = document.createElement('span');
+                    priceEl.className = 'checkout-item__price';
+                    priceEl.textContent = item.price.toLocaleString() + '원';
+                    li.appendChild(priceEl);
+
                     checkoutItemsEl.appendChild(li);
                     subtotal += item.price;
                 });
@@ -396,6 +425,50 @@
                 if (checkoutShippingEl) checkoutShippingEl.textContent = shipping.toLocaleString() + '원';
                 if (checkoutTotalEl) checkoutTotalEl.textContent = total.toLocaleString() + '원';
             }
+
+            var TERMS_CONTENT = {
+                terms: {
+                    title: '쇼핑몰 이용약관',
+                    body: '제1조 (목적)\n본 약관은 sidecar(이하 "회사")가 운영하는 온라인 쇼핑몰에서 제공하는 상품 및 서비스를 이용함에 있어 회사와 이용자의 권리·의무 및 책임사항을 규정함을 목적으로 합니다.\n\n제2조 (정의)\n1. "쇼핑몰"이란 회사가 상품을 이용자에게 제공하기 위하여 컴퓨터 등 정보통신설비를 이용하여 상품을 거래할 수 있도록 설정한 가상의 영업장을 말합니다.\n2. "이용자"란 쇼핑몰에 접속하여 본 약관에 따라 회사가 제공하는 서비스를 받는 회원 및 비회원을 말합니다.\n\n제3조 (약관의 효력 및 변경)\n1. 본 약관은 쇼핑몰을 통하여 그 내용을 게시함으로써 효력을 발생합니다.\n2. 회사는 합리적인 사유가 발생할 경우 본 약관을 변경할 수 있으며, 변경된 약관은 적용일자 7일 이전부터 게시합니다.\n\n제4조 (서비스의 제공)\n회사는 다음과 같은 업무를 수행합니다.\n- 상품에 대한 정보 제공 및 구매계약 체결\n- 구매계약이 체결된 상품의 배송\n- 기타 회사가 정하는 업무\n\n제5조 (구매신청 및 개인정보 제공)\n이용자는 쇼핑몰에서 다음 또는 이와 유사한 방법에 의하여 구매를 신청하며, 회사는 이용자가 구매신청을 함에 있어서 다음의 각 내용을 알기 쉽게 제공하여야 합니다.\n\n제6조 (계약의 성립)\n회사는 제5조와 같은 구매신청에 대하여 다음 각 호에 해당하면 승낙하지 않을 수 있습니다.\n- 신청 내용에 허위, 기재누락, 오기가 있는 경우\n- 기타 구매신청에 승낙하는 것이 회사 기술상 현저히 지장이 있다고 판단하는 경우\n\n제7조 (지급방법)\n쇼핑몰에서 구매한 상품에 대한 대금지급방법은 다음 각 호의 방법 중 가용한 방법으로 할 수 있습니다.\n- 신용카드 결제, 무통장 입금, 휴대폰 결제, 네이버페이, 기타 전자적 지급방법\n\n제8조 (배송)\n회사는 이용자와 구매계약이 체결된 상품을 약정된 배송기간 내에 발송할 수 있도록 합니다.'
+                },
+                privacy: {
+                    title: '비회원 개인정보 수집·이용 동의',
+                    body: '1. 수집하는 개인정보 항목\n- 필수 항목: 이름, 휴대폰 번호, 이메일, 배송 주소, 주문 조회 비밀번호\n- 결제 정보: 카드사명, 카드번호 등 (결제 시점에 결제대행사를 통해 수집)\n\n2. 개인정보의 수집 및 이용 목적\n- 비회원 구매 및 배송 서비스 제공\n- 본인 확인, 결제 처리, 상품 배송, 고객 문의 응대\n- 비회원 주문 조회 서비스 제공\n\n3. 개인정보의 보유 및 이용 기간\n- 거래 관련 정보: 5년 (전자상거래 등에서의 소비자 보호에 관한 법률)\n- 본인 확인에 관한 정보: 6개월 (정보통신망 이용촉진 및 정보보호 등에 관한 법률)\n- 비회원 주문 조회용 비밀번호: 1년\n\n4. 동의 거부 권리 안내\n귀하는 위 개인정보 수집·이용에 대한 동의를 거부할 권리가 있습니다. 단, 동의 거부 시 비회원 구매 서비스 이용에 제한이 있을 수 있습니다.\n\n5. 개인정보 처리 위탁\n원활한 서비스 제공을 위해 다음과 같이 개인정보 처리를 위탁하고 있습니다.\n- 배송 업무: 배송 대행 업체\n- 결제 처리: 결제대행사 (PG사)\n\n6. 개인정보의 파기\n수집·이용 목적이 달성되거나 보유 기간이 경과한 경우, 해당 정보는 지체 없이 파기됩니다. 전자적 파일 형태는 복원 불가능한 방법으로 영구 삭제하며, 종이 문서는 분쇄 또는 소각합니다.'
+                }
+            };
+
+            var termsModal = document.querySelector('.terms-modal');
+            var termsModalTitle = document.querySelector('.terms-modal__title');
+            var termsModalBody = document.querySelector('.terms-modal__body');
+
+            function openTermsModal(content) {
+                if (!termsModal || !termsModalTitle || !termsModalBody) return;
+                termsModalTitle.textContent = content.title;
+                termsModalBody.textContent = content.body;
+                termsModal.classList.add('is-open');
+            }
+
+            function closeTermsModal() {
+                if (termsModal) termsModal.classList.remove('is-open');
+            }
+
+            document.addEventListener('click', function (e) {
+                if (!e.target || !e.target.closest) return;
+                var view = e.target.closest('.checkout-check__view');
+                if (view) {
+                    e.preventDefault();
+                    var key = view.getAttribute('data-term');
+                    if (TERMS_CONTENT[key]) openTermsModal(TERMS_CONTENT[key]);
+                    return;
+                }
+                if (e.target.classList && e.target.classList.contains('terms-modal')) {
+                    closeTermsModal();
+                    return;
+                }
+                if (e.target.closest('.terms-modal__close')) {
+                    closeTermsModal();
+                }
+            });
 
             if (checkoutDrawerBtn) {
                 checkoutDrawerBtn.addEventListener('click', function () {
