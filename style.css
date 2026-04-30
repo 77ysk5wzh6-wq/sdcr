@@ -284,8 +284,8 @@ body.is-loaded {
     right: 60px;
     bottom: 50px;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 50px;
+    grid-template-columns: 0.85fr 0.9fr 1.25fr;
+    gap: 24px;
 }
 
 .detail-main {
@@ -365,15 +365,17 @@ body.is-loaded {
 }
 
 .detail-info__guide {
-    display: inline-block;
+    display: block;
     margin-bottom: 24px;
     font-family: 'Cormorant Garamond', serif;
     font-size: 18px;
     color: #000000;
     text-decoration: underline;
+    width: fit-content;
 }
 
 .detail-info__cart {
+    display: block;
     padding: 6px 14px;
     border: 1px solid #000000;
     background: transparent;
@@ -381,12 +383,16 @@ body.is-loaded {
     font-size: 18px;
     color: #000000;
     cursor: pointer;
+    width: fit-content;
 }
 
 .detail-images {
     overflow-y: auto;
     max-height: 100%;
     scrollbar-width: none;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 .detail-images::-webkit-scrollbar {
