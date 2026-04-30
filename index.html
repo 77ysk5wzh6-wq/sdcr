@@ -152,102 +152,102 @@
     <section class="checkout-page" aria-hidden="true">
         <div class="checkout-layout">
             <div class="checkout-header">
-                <a href="#" class="checkout-back">← back to bag</a>
-                <h1 class="checkout-title">Checkout</h1>
+                <a href="#" class="checkout-back">← 장바구니로 돌아가기</a>
+                <h1 class="checkout-title">결제하기</h1>
             </div>
 
             <section class="checkout-section">
-                <h2>Order summary</h2>
+                <h2>주문 상품</h2>
                 <ul class="checkout-items"></ul>
             </section>
 
             <section class="checkout-section">
-                <h2>Price</h2>
-                <div class="checkout-price-row"><span>Subtotal</span><span class="checkout-subtotal">KRW 0</span></div>
-                <div class="checkout-price-row"><span>Discount</span><span class="checkout-discount">- KRW 0</span></div>
-                <div class="checkout-price-row"><span>Shipping</span><span class="checkout-shipping">KRW 0</span></div>
-                <div class="checkout-price-row checkout-price-total"><span>Total</span><span class="checkout-total">KRW 0</span></div>
+                <h2>결제 금액</h2>
+                <div class="checkout-price-row"><span>상품 합계</span><span class="checkout-subtotal">0원</span></div>
+                <div class="checkout-price-row"><span>할인 금액</span><span class="checkout-discount">- 0원</span></div>
+                <div class="checkout-price-row"><span>배송비</span><span class="checkout-shipping">0원</span></div>
+                <div class="checkout-price-row checkout-price-total"><span>총 결제 금액</span><span class="checkout-total">0원</span></div>
             </section>
 
             <section class="checkout-section">
-                <h2>Shipping</h2>
+                <h2>배송 정보</h2>
                 <div class="checkout-field">
-                    <label for="ck-name">Name</label>
+                    <label for="ck-name">이름</label>
                     <input id="ck-name" type="text" autocomplete="name">
                 </div>
                 <div class="checkout-field">
-                    <label>Address</label>
+                    <label>주소</label>
                     <div class="checkout-address-row">
-                        <input id="ck-zip" type="text" placeholder="zipcode" readonly>
-                        <button type="button" class="checkout-address-btn">find address</button>
+                        <input id="ck-zip" type="text" placeholder="우편번호" readonly>
+                        <button type="button" class="checkout-address-btn">주소 검색</button>
                     </div>
-                    <input id="ck-addr1" type="text" placeholder="address" readonly>
-                    <input id="ck-addr2" type="text" placeholder="detail address (apt, suite, etc.)">
+                    <input id="ck-addr1" type="text" placeholder="기본 주소" readonly>
+                    <input id="ck-addr2" type="text" placeholder="상세 주소 (동, 호수 등)">
                 </div>
                 <div class="checkout-field">
-                    <label for="ck-phone">Phone</label>
+                    <label for="ck-phone">휴대폰</label>
                     <input id="ck-phone" type="tel" autocomplete="tel" placeholder="010-0000-0000">
                 </div>
                 <div class="checkout-field">
-                    <label for="ck-email">Email</label>
+                    <label for="ck-email">이메일</label>
                     <input id="ck-email" type="email" autocomplete="email">
                 </div>
                 <div class="checkout-field">
-                    <label for="ck-message">Delivery message</label>
-                    <textarea id="ck-message" rows="2" placeholder="leave at door, etc."></textarea>
+                    <label for="ck-message">배송 메시지</label>
+                    <textarea id="ck-message" rows="2" placeholder="예: 문 앞에 두세요"></textarea>
                 </div>
             </section>
 
             <section class="checkout-section">
-                <h2>Order lookup password</h2>
-                <p class="checkout-hint">For non-member order tracking</p>
+                <h2>비회원 주문 조회 비밀번호</h2>
+                <p class="checkout-hint">비회원 주문 조회 시 사용됩니다</p>
                 <div class="checkout-field">
-                    <label for="ck-pwd">Password</label>
+                    <label for="ck-pwd">비밀번호</label>
                     <input id="ck-pwd" type="password" autocomplete="new-password">
                 </div>
                 <div class="checkout-field">
-                    <label for="ck-pwd2">Confirm password</label>
+                    <label for="ck-pwd2">비밀번호 확인</label>
                     <input id="ck-pwd2" type="password" autocomplete="new-password">
                 </div>
             </section>
 
             <section class="checkout-section">
-                <h2>Payment method</h2>
+                <h2>결제 방법</h2>
                 <label class="checkout-radio">
                     <input type="radio" name="payment" value="naverpay" checked>
-                    <span>네이버페이 / Naver Pay</span>
+                    <span>네이버페이</span>
                 </label>
                 <label class="checkout-radio">
                     <input type="radio" name="payment" value="mobile">
-                    <span>휴대폰 / Mobile</span>
+                    <span>휴대폰</span>
                 </label>
                 <label class="checkout-radio">
                     <input type="radio" name="payment" value="bank">
-                    <span>계좌이체 / Bank transfer</span>
+                    <span>계좌이체</span>
                 </label>
             </section>
 
             <section class="checkout-section">
-                <h2>Terms</h2>
+                <h2>약관 동의</h2>
                 <label class="checkout-check checkout-check--all">
                     <input type="checkbox" class="ck-agree-all">
-                    <span>Agree to all</span>
+                    <span>전체 동의</span>
                 </label>
                 <label class="checkout-check">
                     <input type="checkbox" class="ck-agree" data-required="true">
-                    <span>Site terms of use (required)</span>
+                    <span>쇼핑몰 이용약관 동의 (필수)</span>
                 </label>
                 <label class="checkout-check">
                     <input type="checkbox" class="ck-agree" data-required="true">
-                    <span>Privacy policy for non-member purchase (required)</span>
+                    <span>비회원 개인정보 수집·이용 동의 (필수)</span>
                 </label>
                 <label class="checkout-check">
                     <input type="checkbox" class="ck-agree">
-                    <span>Marketing communications (optional)</span>
+                    <span>마케팅 정보 수신 동의 (선택)</span>
                 </label>
             </section>
 
-            <button type="button" class="checkout-submit">proceed to check</button>
+            <button type="button" class="checkout-submit">결제 진행</button>
             <div class="checkout-message" hidden></div>
         </div>
     </section>
@@ -381,9 +381,9 @@
                     var li = document.createElement('li');
                     li.className = 'checkout-item';
                     var info = document.createElement('span');
-                    info.textContent = item.name + ' × 1, size ' + item.size;
+                    info.textContent = item.name + ' × 1, ' + item.size + '사이즈';
                     var price = document.createElement('span');
-                    price.textContent = 'KRW ' + item.price.toLocaleString();
+                    price.textContent = item.price.toLocaleString() + '원';
                     li.appendChild(info);
                     li.appendChild(price);
                     checkoutItemsEl.appendChild(li);
@@ -391,9 +391,9 @@
                 });
                 var shipping = subtotal > 0 ? SHIPPING_FEE : 0;
                 var total = subtotal + shipping;
-                if (checkoutSubtotalEl) checkoutSubtotalEl.textContent = 'KRW ' + subtotal.toLocaleString();
-                if (checkoutShippingEl) checkoutShippingEl.textContent = 'KRW ' + shipping.toLocaleString();
-                if (checkoutTotalEl) checkoutTotalEl.textContent = 'KRW ' + total.toLocaleString();
+                if (checkoutSubtotalEl) checkoutSubtotalEl.textContent = subtotal.toLocaleString() + '원';
+                if (checkoutShippingEl) checkoutShippingEl.textContent = shipping.toLocaleString() + '원';
+                if (checkoutTotalEl) checkoutTotalEl.textContent = total.toLocaleString() + '원';
             }
 
             if (checkoutDrawerBtn) {
@@ -452,17 +452,17 @@
                     var requiredAgrees = Array.prototype.filter.call(checkoutAgrees, function (c) { return c.dataset.required === 'true'; });
                     var allRequiredChecked = requiredAgrees.every(function (c) { return c.checked; });
 
-                    if (!name.trim()) { alert('Please enter your name'); return; }
-                    if (!zip.trim() || !addr1.trim()) { alert('Please find your address'); return; }
-                    if (!phone.trim()) { alert('Please enter your phone'); return; }
-                    if (!email.trim() || email.indexOf('@') === -1) { alert('Please enter a valid email'); return; }
-                    if (!pwd) { alert('Please set a password'); return; }
-                    if (pwd !== pwd2) { alert('Passwords do not match'); return; }
-                    if (!allRequiredChecked) { alert('Please agree to the required terms'); return; }
+                    if (!name.trim()) { alert('이름을 입력해주세요'); return; }
+                    if (!zip.trim() || !addr1.trim()) { alert('주소를 검색해주세요'); return; }
+                    if (!phone.trim()) { alert('휴대폰 번호를 입력해주세요'); return; }
+                    if (!email.trim() || email.indexOf('@') === -1) { alert('올바른 이메일을 입력해주세요'); return; }
+                    if (!pwd) { alert('비밀번호를 설정해주세요'); return; }
+                    if (pwd !== pwd2) { alert('비밀번호가 일치하지 않습니다'); return; }
+                    if (!allRequiredChecked) { alert('필수 약관에 동의해주세요'); return; }
 
                     if (checkoutMessage) {
                         checkoutMessage.hidden = false;
-                        checkoutMessage.textContent = 'proceeding to payment... (demo)';
+                        checkoutMessage.textContent = '결제 진행 중입니다... (데모)';
                     }
                     checkoutSubmitBtn.disabled = true;
                 });
