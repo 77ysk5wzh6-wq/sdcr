@@ -17,11 +17,11 @@
         </a>
     </header>
 
-    <a href="#" class="cart-button">bag 0</a>
+    <a href="#" class="cart-button">Bag (0)</a>
 
     <aside class="cart-drawer" aria-hidden="true">
         <div class="cart-drawer__header">
-            <span class="cart-drawer__title">bag</span>
+            <span class="cart-drawer__title">Bag</span>
             <button type="button" class="cart-drawer__close" aria-label="close">×</button>
         </div>
         <ul class="cart-drawer__list"></ul>
@@ -137,7 +137,7 @@
                         </div>
                     </div>
                     <a href="#" class="detail-info__guide">size guide</a>
-                    <button type="button" class="detail-info__cart">add to bag</button>
+                    <button type="button" class="detail-info__cart">add to Bag</button>
                 </div>
             </div>
             <div class="detail-images" aria-hidden="true"></div>
@@ -172,14 +172,14 @@
 
             function renderCart() {
                 if (cartButton) {
-                    cartButton.textContent = 'bag ' + cartData.length;
+                    cartButton.textContent = 'Bag (' + cartData.length + ')';
                 }
                 if (!cartList) return;
                 cartList.innerHTML = '';
                 if (cartData.length === 0) {
                     var empty = document.createElement('li');
                     empty.className = 'cart-empty';
-                    empty.textContent = 'bag is empty';
+                    empty.textContent = 'Bag is empty';
                     cartList.appendChild(empty);
                 } else {
                     cartData.forEach(function (item, idx) {
