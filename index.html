@@ -17,6 +17,23 @@
         </a>
     </header>
 
+    <a href="#" class="cart-button">cart</a>
+
+    <aside class="cart-drawer" aria-hidden="true">
+        <div class="cart-drawer__header">
+            <span class="cart-drawer__title">cart</span>
+            <button type="button" class="cart-drawer__close" aria-label="close">×</button>
+        </div>
+        <ul class="cart-drawer__list"></ul>
+        <div class="cart-drawer__footer">
+            <div class="cart-drawer__total">
+                <span>total</span>
+                <span class="cart-drawer__total-price">KRW 0</span>
+            </div>
+            <button type="button" class="cart-drawer__checkout">checkout</button>
+        </div>
+    </aside>
+
     <nav class="categories">
         <a href="#" class="category category--shop"><span class="category__text">shop</span></a>
         <a href="#" class="category category--look"><span class="category__text">look</span></a>
@@ -314,6 +331,138 @@
             var detailMainImg = document.querySelector('.detail-main__image');
             var detailImagesContainer = document.querySelector('.detail-images');
             var detailInfoEl = document.querySelector('.detail-info');
+            var currentShirtIndex = 0;
+            var selectedSize = null;
+            var sizeButtons = document.querySelectorAll('.detail-size-btn');
+            var addToCartBtn = document.querySelector('.detail-info__cart');
+
+            sizeButtons.forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    sizeButtons.forEach(function (b) { b.classList.remove('is-selected'); });
+                    btn.classList.add('is-selected');
+                    selectedSize = btn.textContent.trim();
+                });
+                btn.addEventListener('animationend', function () {
+                    btn.classList.remove('is-blinking');
+                });
+            });
+
+            var cartData = [];
+            try {
+                var stored = localStorage.getItem('sidecar-cart');
+                if (stored) cartData = JSON.parse(stored) || [];
+            } catch (err) { cartData = []; }
+
+            var cartButton = document.querySelector('.cart-button');
+            var cartDrawer = document.querySelector('.cart-drawer');
+            var cartList = document.querySelector('.cart-drawer__list');
+            var cartTotalEl = document.querySelector('.cart-drawer__total-price');
+            var cartCloseBtn = document.querySelector('.cart-drawer__close');
+
+            function saveCartData() {
+                try { localStorage.setItem('sidecar-cart', JSON.stringify(cartData)); } catch (err) {}
+            }
+
+            function renderCart() {
+                if (cartButton) {
+                    cartButton.textContent = cartData.length ? 'cart (' + cartData.length + ')' : 'cart';
+                }
+                if (!cartList) return;
+                cartList.innerHTML = '';
+                if (cartData.length === 0) {
+                    var empty = document.createElement('li');
+                    empty.className = 'cart-empty';
+                    empty.textContent = 'cart is empty';
+                    cartList.appendChild(empty);
+                } else {
+                    cartData.forEach(function (item, idx) {
+                        var li = document.createElement('li');
+                        li.className = 'cart-item';
+
+                        var img = document.createElement('img');
+                        img.className = 'cart-item__image';
+                        img.src = item.image;
+                        img.alt = '';
+                        li.appendChild(img);
+
+                        var meta = document.createElement('div');
+                        meta.className = 'cart-item__meta';
+                        var nameEl = document.createElement('span');
+                        nameEl.textContent = item.name;
+                        var sizeEl = document.createElement('span');
+                        sizeEl.textContent = 'size ' + item.size;
+                        var priceEl = document.createElement('span');
+                        priceEl.textContent = 'KRW ' + item.price.toLocaleString();
+                        meta.appendChild(nameEl);
+                        meta.appendChild(sizeEl);
+                        meta.appendChild(priceEl);
+                        li.appendChild(meta);
+
+                        var removeBtn = document.createElement('button');
+                        removeBtn.type = 'button';
+                        removeBtn.className = 'cart-item__remove';
+                        removeBtn.dataset.idx = idx;
+                        removeBtn.setAttribute('aria-label', 'remove');
+                        removeBtn.textContent = '×';
+                        li.appendChild(removeBtn);
+
+                        cartList.appendChild(li);
+                    });
+                }
+                var total = cartData.reduce(function (s, i) { return s + i.price; }, 0);
+                if (cartTotalEl) cartTotalEl.textContent = 'KRW ' + total.toLocaleString();
+            }
+
+            if (cartList) {
+                cartList.addEventListener('click', function (e) {
+                    if (e.target.classList && e.target.classList.contains('cart-item__remove')) {
+                        var idx = parseInt(e.target.dataset.idx, 10);
+                        if (!isNaN(idx)) {
+                            cartData.splice(idx, 1);
+                            saveCartData();
+                            renderCart();
+                        }
+                    }
+                });
+            }
+
+            if (cartButton) {
+                cartButton.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    if (cartDrawer) cartDrawer.classList.add('is-open');
+                });
+            }
+
+            if (cartCloseBtn) {
+                cartCloseBtn.addEventListener('click', function () {
+                    if (cartDrawer) cartDrawer.classList.remove('is-open');
+                });
+            }
+
+            if (addToCartBtn) {
+                addToCartBtn.addEventListener('click', function () {
+                    if (!selectedSize) {
+                        sizeButtons.forEach(function (b) {
+                            b.classList.remove('is-blinking');
+                            void b.offsetWidth;
+                            b.classList.add('is-blinking');
+                        });
+                        return;
+                    }
+                    var item = {
+                        name: 'Gin Shirt(ravender)',
+                        size: selectedSize,
+                        price: 149000,
+                        image: 'shop/shirt' + (currentShirtIndex + 1) + '.png'
+                    };
+                    cartData.push(item);
+                    saveCartData();
+                    renderCart();
+                    if (cartDrawer) cartDrawer.classList.add('is-open');
+                });
+            }
+
+            renderCart();
 
             function syncDetailHeight() {
                 if (!detailMainImg) return;
@@ -340,6 +489,12 @@
                     detailMainImg.src = 'shop/shirt' + (shopIndex + 1) + '.png';
                 }
                 if (detailImagesContainer) detailImagesContainer.scrollTop = 0;
+                currentShirtIndex = shopIndex;
+                selectedSize = null;
+                sizeButtons.forEach(function (b) {
+                    b.classList.remove('is-selected');
+                    b.classList.remove('is-blinking');
+                });
             }
 
             function openDetail(shopIndex, fromPopstate) {
