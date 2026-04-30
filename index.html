@@ -224,16 +224,20 @@
                 try {
                     bass = new Tone.Sampler({
                         urls: {
-                            'E1': 'E1.mp3',
+                            'F#1': 'Fs1.mp3',
                             'G1': 'G1.mp3',
                             'A#1': 'As1.mp3',
-                            'C#2': 'Cs2.mp3',
+                            'C2': 'C2.mp3',
+                            'D2': 'D2.mp3',
                             'E2': 'E2.mp3',
-                            'G2': 'G2.mp3',
-                            'A#2': 'As2.mp3'
+                            'G#2': 'Gs2.mp3',
+                            'A2': 'A2.mp3',
+                            'C#3': 'Cs3.mp3',
+                            'E3': 'E3.mp3'
                         },
-                        release: 1.5,
-                        baseUrl: 'https://nbrosowsky.github.io/tonejs-instruments/samples/bass-electric/',
+                        attack: 0.02,
+                        release: 1.4,
+                        baseUrl: 'https://nbrosowsky.github.io/tonejs-instruments/samples/contrabass/',
                         onload: function () {
                             bassReady = true;
                             console.log('bass samples loaded');
@@ -252,7 +256,7 @@
                 if (!bass) return;
                 var trigger = function () {
                     try {
-                        bass.triggerAttackRelease('C1', 1.8);
+                        bass.triggerAttackRelease('C1', 0.5);
                     } catch (err) {
                         console.warn('bass trigger error', err);
                     }
