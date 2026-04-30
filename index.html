@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sdcr</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="logo">
+        <a href="index.html" class="logo__link">
+            <img src="assets/logo.png" alt="sdcr" class="logo__image">
+        </a>
+    </header>
+
+    <nav class="categories">
+        <a href="#" class="category category--shop"><span class="category__text">shop</span></a>
+        <a href="#" class="category category--look"><span class="category__text">look</span></a>
+        <a href="#" class="category category--about"><span class="category__text">about</span></a>
+    </nav>
+
+    <main class="hero">
+        <img src="assets/home.jpg" alt="home" class="hero__image">
+    </main>
+
+    <section class="headline">
+        <p class="headline__line"><span class="headline__word">spr</span> <span class="headline__word">spr</span> <span class="headline__word">spr</span></p>
+        <p class="headline__line"><span class="headline__word">spring</span> <span class="headline__word">sprout</span> <span class="headline__word">spruce</span></p>
+    </section>
+
+    <section class="look-page" aria-hidden="true">
+        <div class="scroll-spacer" aria-hidden="true"></div>
+        <div class="look-vertical" aria-hidden="true"></div>
+    </section>
+
+    <div class="marquee" aria-hidden="true">
+        <div class="marquee__track"></div>
+    </div>
+
+    <section class="about-page" aria-hidden="true">
+        <div class="about-page__inner">
+            <img src="" alt="" class="about-page__image" data-src="assets/recipe.png">
+            <p class="about-page__text">We make clothes in Seoul.<br>and sometimes drink sidecar</p>
+        </div>
+    </section>
+
+    <div class="transition-overlay" aria-hidden="true"></div>
+    <div class="transition-overlay transition-overlay--about" aria-hidden="true"></div>
+
+    <script>
+        (function () {
+            var shop = document.querySelector('.category--shop');
+            if (!shop) return;
+            var STRIPE_COUNT = 22;
+            for (var i = 0; i < STRIPE_COUNT; i++) {
+                var s = document.createElement('span');
+                s.className = 'stripe';
+                s.style.setProperty('--i', i);
+                s.setAttribute('aria-hidden', 'true');
+                shop.appendChild(s);
+            }
+
+            var look = document.querySelector('.category--look');
+            if (!look) return;
+            var DOT_COUNT = 4;
+            for (var j = 0; j < DOT_COUNT; j++) {
+                var d = document.createElement('span');
+                d.className = 'dot';
+                d.style.setProperty('--i', j);
+                d.setAttribute('aria-hidden', 'true');
+                look.appendChild(d);
+            }
+
+            var lookImages = [
+                'look/look1.png',
+                'look/look2.png',
+                'look/look3.png',
+                'look/look4.png',
+                'look/look5.png'
+            ];
+            var track = document.querySelector('.marquee__track');
+            var imagesInitialized = false;
+
+            function loadLookImages() {
+                if (imagesInitialized || !track) return;
+                imagesInitialized = true;
+                var heights = [];
+                for (var h = 0; h < lookImages.length; h++) {
+                    heights.push(35 + Math.random() * 31);
+                }
+                for (var pass = 0; pass < 2; pass++) {
+                    for (var k = 0; k < lookImages.length; k++) {
+                        var img = document.createElement('img');
+                        img.alt = '';
+                        img.className = 'marquee__img';
+                        img.style.height = heights[k] + 'vh';
+                        img.setAttribute('aria-hidden', 'true');
+                        img.onload = function () {
+                            measureTrack();
+                            applyTranslate();
+                        };
+                        img.src = encodeURI(lookImages[k]);
+                        track.appendChild(img);
+                    }
+                }
+                var verticalContainer = document.querySelector('.look-vertical');
+                if (verticalContainer) {
+                    for (var v = 0; v < lookImages.length; v++) {
+                        var vimg = document.createElement('img');
+                        vimg.alt = '';
+                        vimg.className = 'look-vertical__img';
+                        vimg.style.width = (50 + Math.random() * 38) + 'vw';
+                        vimg.setAttribute('aria-hidden', 'true');
+                        vimg.src = encodeURI(lookImages[v]);
+                        verticalContainer.appendChild(vimg);
+                    }
+                }
+            }
+
+            var lookPage = document.querySelector('.look-page');
+            var overlay = document.querySelector('.transition-overlay');
+            var oneSetWidth = 0;
+            var firstImageWidth = 0;
+            var initialTranslate = 0;
+            function measureTrack() {
+                if (!track) return;
+                var imgs = track.querySelectorAll('.marquee__img');
+                if (imgs.length === 0) return;
+                firstImageWidth = imgs[0].offsetWidth || 0;
+                var halfCount = Math.floor(imgs.length / 2);
+                var total = 0;
+                for (var m = 0; m < halfCount; m++) {
+                    total += imgs[m].offsetWidth;
+                }
+                oneSetWidth = total;
+                if (firstImageWidth > 0) {
+                    initialTranslate = window.innerWidth - firstImageWidth / 2;
+                }
+            }
+            window.addEventListener('load', measureTrack);
+            window.addEventListener('resize', measureTrack);
+
+            var PHASE1_SPEED = 220;
+            var PHASE2_SPEED = 28;
+            var SCROLL_FACTOR = 1.0;
+            var autoDistance = 0;
+            var phase1Done = false;
+            var lastFrame = 0;
+            var marqueeRunning = false;
+
+            function applyTranslate() {
+                if (oneSetWidth === 0) return;
+                var totalLeft = autoDistance + (lookPage ? lookPage.scrollTop * SCROLL_FACTOR : 0);
+                var rawT = initialTranslate - totalLeft;
+                var translate;
+                if (rawT >= 0) {
+                    translate = rawT;
+                } else {
+                    translate = rawT % oneSetWidth;
+                }
+                track.style.transform = 'translateX(' + translate + 'px)';
+            }
+
+            function tick(time) {
+                if (!marqueeRunning) return;
+                if (oneSetWidth === 0) measureTrack();
+                if (lastFrame === 0) lastFrame = time;
+                var dt = (time - lastFrame) / 1000;
+                lastFrame = time;
+                var speed = phase1Done ? PHASE2_SPEED : PHASE1_SPEED;
+                autoDistance += speed * dt;
+                if (!phase1Done) {
+                    var totalLeft = autoDistance + (lookPage ? lookPage.scrollTop * SCROLL_FACTOR : 0);
+                    if (totalLeft >= initialTranslate) phase1Done = true;
+                }
+                applyTranslate();
+                requestAnimationFrame(tick);
+            }
+
+            function startMarquee() {
+                if (marqueeRunning) return;
+                measureTrack();
+                autoDistance = 0;
+                phase1Done = false;
+                lastFrame = 0;
+                applyTranslate();
+                marqueeRunning = true;
+                requestAnimationFrame(tick);
+            }
+
+            if (lookPage) {
+                lookPage.addEventListener('scroll', function () {
+                    applyTranslate();
+                });
+            }
+
+            var about = document.querySelector('.category--about');
+            var aboutOverlay = document.querySelector('.transition-overlay--about');
+            var aboutImage = document.querySelector('.about-page__image');
+            var aboutImageLoaded = false;
+
+            function loadAboutImage() {
+                if (aboutImageLoaded || !aboutImage) return;
+                aboutImageLoaded = true;
+                var src = aboutImage.getAttribute('data-src');
+                if (src) aboutImage.src = src;
+            }
+
+            var currentPage = 'home';
+            var transitioning = false;
+
+            function navigateTo(target) {
+                if (transitioning) return;
+                if (currentPage === target) return;
+                if (target !== 'look' && target !== 'about') return;
+
+                transitioning = true;
+                var oldPage = currentPage;
+                var btn = target === 'look' ? look : about;
+                var ovl = target === 'look' ? overlay : aboutOverlay;
+                if (!btn || !ovl) {
+                    transitioning = false;
+                    return;
+                }
+
+                if (target === 'look') loadLookImages();
+                if (target === 'about') loadAboutImage();
+
+                var newClass = target === 'look' ? 'is-look-active' : 'is-about-active';
+                var oldClass = oldPage === 'look' ? 'is-look-active' : oldPage === 'about' ? 'is-about-active' : null;
+
+                document.body.classList.add(newClass);
+
+                var rect = btn.getBoundingClientRect();
+                ovl.style.top = rect.top + 'px';
+                ovl.style.left = rect.left + 'px';
+                ovl.style.width = rect.width + 'px';
+                ovl.style.height = rect.height + 'px';
+                ovl.style.opacity = '1';
+                ovl.offsetHeight;
+                ovl.classList.add('is-active');
+
+                requestAnimationFrame(function () {
+                    ovl.style.left = '0px';
+                    ovl.style.width = '100vw';
+                });
+
+                setTimeout(function () {
+                    ovl.style.top = '0px';
+                    ovl.style.height = '100vh';
+                }, 900);
+
+                setTimeout(function () {
+                    if (oldClass) document.body.classList.remove(oldClass);
+                    if (!document.body.classList.contains('is-page-active')) {
+                        document.body.classList.add('is-page-active');
+                    }
+                    window.scrollTo(0, 0);
+                    if (oldPage === 'look') {
+                        marqueeRunning = false;
+                        autoDistance = 0;
+                        phase1Done = false;
+                        lastFrame = 0;
+                        if (lookPage) lookPage.scrollTop = 0;
+                        if (track) track.style.transform = 'translateX(0)';
+                    }
+                    if (target === 'look') {
+                        measureTrack();
+                        applyTranslate();
+                    }
+                }, 1700);
+
+                setTimeout(function () {
+                    ovl.style.opacity = '0';
+                }, 1900);
+
+                setTimeout(function () {
+                    currentPage = target;
+                    transitioning = false;
+                    ovl.classList.remove('is-active');
+                    ovl.style.cssText = '';
+                    if (target === 'look') {
+                        startMarquee();
+                    }
+                }, 2300);
+            }
+
+            look.addEventListener('click', function (e) {
+                e.preventDefault();
+                navigateTo('look');
+            });
+
+            if (about) {
+                about.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    navigateTo('about');
+                });
+            }
+        })();
+    </script>
+</body>
+</html>
