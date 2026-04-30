@@ -217,34 +217,58 @@
             var bass = null;
             var bassReady = false;
             function initBass() {
-                if (typeof Tone === 'undefined') return;
+                if (typeof Tone === 'undefined') {
+                    console.warn('Tone.js not loaded');
+                    return;
+                }
                 try {
                     bass = new Tone.Sampler({
                         urls: {
                             'A1': 'A1.mp3',
                             'A2': 'A2.mp3',
-                            'C2': 'Cs2.mp3',
                             'E1': 'E1.mp3',
                             'E2': 'E2.mp3',
                             'G1': 'G1.mp3',
                             'G2': 'G2.mp3'
                         },
-                        release: 1,
+                        release: 1.5,
                         baseUrl: 'https://nbrosowsky.github.io/tonejs-instruments/samples/bass-electric/',
-                        onload: function () { bassReady = true; }
+                        onload: function () {
+                            bassReady = true;
+                            console.log('bass samples loaded');
+                        },
+                        onerror: function (err) {
+                            console.warn('bass sample load error', err);
+                        }
                     }).toDestination();
-                } catch (err) {}
+                } catch (err) {
+                    console.warn('bass init error', err);
+                }
             }
             initBass();
 
             function playViolinTone() {
-                if (!bass || !bassReady) return;
-                try {
-                    if (Tone.context.state !== 'running') {
-                        Tone.start();
+                if (!bass) return;
+                var trigger = function () {
+                    try {
+                        bass.triggerAttackRelease('E1', 1.6);
+                    } catch (err) {
+                        console.warn('bass trigger error', err);
                     }
-                    bass.triggerAttackRelease('E1', 1.6);
-                } catch (err) {}
+                };
+                try {
+                    var startPromise = Tone.start();
+                    if (startPromise && typeof startPromise.then === 'function') {
+                        startPromise.then(function () {
+                            if (bassReady) trigger();
+                            else console.warn('bass not ready yet');
+                        });
+                    } else {
+                        if (bassReady) trigger();
+                    }
+                } catch (err) {
+                    console.warn('Tone.start error', err);
+                }
             }
 
             function navigateTo(target) {
