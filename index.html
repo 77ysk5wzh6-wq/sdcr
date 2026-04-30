@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/tone@14.7.77/build/Tone.js"></script>
 </head>
 <body>
     <header class="logo">
@@ -213,41 +214,35 @@
             var currentPage = 'home';
             var transitioning = false;
 
-            var audioCtx = null;
-            function playViolinTone() {
+            var violin = null;
+            var violinReady = false;
+            function initViolin() {
+                if (typeof Tone === 'undefined') return;
                 try {
-                    if (!audioCtx) {
-                        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    violin = new Tone.Sampler({
+                        urls: {
+                            'A3': 'A3.mp3',
+                            'C4': 'C4.mp3',
+                            'E4': 'E4.mp3',
+                            'A4': 'A4.mp3',
+                            'C5': 'C5.mp3',
+                            'E5': 'E5.mp3'
+                        },
+                        release: 1,
+                        baseUrl: 'https://nbrosowsky.github.io/tonejs-instruments/samples/violin/',
+                        onload: function () { violinReady = true; }
+                    }).toDestination();
+                } catch (err) {}
+            }
+            initViolin();
+
+            function playViolinTone() {
+                if (!violin || !violinReady) return;
+                try {
+                    if (Tone.context.state !== 'running') {
+                        Tone.start();
                     }
-                    if (audioCtx.state === 'suspended') audioCtx.resume();
-                    var osc = audioCtx.createOscillator();
-                    var gain = audioCtx.createGain();
-                    var filter = audioCtx.createBiquadFilter();
-                    var lfo = audioCtx.createOscillator();
-                    var lfoGain = audioCtx.createGain();
-                    lfo.type = 'sine';
-                    lfo.frequency.value = 5.5;
-                    lfoGain.gain.value = 3.5;
-                    lfo.connect(lfoGain);
-                    lfoGain.connect(osc.frequency);
-                    osc.type = 'sawtooth';
-                    osc.frequency.value = 392;
-                    filter.type = 'lowpass';
-                    filter.frequency.value = 2400;
-                    filter.Q.value = 1.4;
-                    osc.connect(filter);
-                    filter.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    var now = audioCtx.currentTime;
-                    var duration = 0.8;
-                    gain.gain.setValueAtTime(0, now);
-                    gain.gain.linearRampToValueAtTime(0.1, now + 0.1);
-                    gain.gain.setValueAtTime(0.1, now + duration - 0.18);
-                    gain.gain.linearRampToValueAtTime(0, now + duration);
-                    osc.start(now);
-                    lfo.start(now);
-                    osc.stop(now + duration);
-                    lfo.stop(now + duration);
+                    violin.triggerAttackRelease('A4', 0.8);
                 } catch (err) {}
             }
 
