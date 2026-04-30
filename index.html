@@ -313,6 +313,18 @@
             ];
             var detailMainImg = document.querySelector('.detail-main__image');
             var detailImagesContainer = document.querySelector('.detail-images');
+            var detailInfoEl = document.querySelector('.detail-info');
+
+            function syncDetailHeight() {
+                if (!detailMainImg) return;
+                var h = detailMainImg.offsetHeight;
+                if (!h) return;
+                if (detailInfoEl) detailInfoEl.style.height = h + 'px';
+                if (detailImagesContainer) detailImagesContainer.style.maxHeight = h + 'px';
+            }
+
+            window.addEventListener('resize', syncDetailHeight);
+
             function loadDetailContent(shopIndex) {
                 if (!detailImagesLoaded && detailImagesContainer) {
                     detailImagesLoaded = true;
@@ -325,6 +337,7 @@
                     }
                 }
                 if (detailMainImg) {
+                    detailMainImg.onload = syncDetailHeight;
                     detailMainImg.src = 'shop/shirt' + (shopIndex + 1) + '.png';
                 }
                 if (detailImagesContainer) detailImagesContainer.scrollTop = 0;
@@ -334,6 +347,7 @@
                 if (!document.body.classList.contains('is-shop-active')) return;
                 loadDetailContent(shopIndex);
                 document.body.classList.add('is-detail-active');
+                requestAnimationFrame(syncDetailHeight);
                 if (!fromPopstate) {
                     try {
                         history.pushState({ page: 'shop', detail: shopIndex }, '', '#shop/' + shopIndex);
