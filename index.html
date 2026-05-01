@@ -470,12 +470,8 @@
                         var idx = parseInt(itemLink.getAttribute('data-shop-index'), 10);
                         if (isNaN(idx)) idx = 0;
                         closeAuthDrawer();
-                        if (currentPage === 'shop') {
-                            openDetail(idx);
-                        } else {
-                            navigateTo('shop');
-                            setTimeout(function () { openDetail(idx); }, 2300);
-                        }
+                        jumpToShop();
+                        openDetail(idx);
                         return;
                     }
                     var viewSwitch = e.target.closest('[data-view]');
@@ -1304,6 +1300,33 @@
                         history.pushState({ page: 'shop', detail: shopIndex }, '', '#shop/' + shopIndex);
                     } catch (err) {}
                 }
+            }
+
+            function jumpToShop() {
+                if (currentPage === 'shop') return;
+                var oldPage = currentPage;
+                var oldClass = oldPage === 'look' ? 'is-look-active'
+                               : oldPage === 'about' ? 'is-about-active'
+                               : oldPage === 'shop' ? 'is-shop-active'
+                               : null;
+                if (oldClass) document.body.classList.remove(oldClass);
+                document.body.classList.remove('is-detail-active');
+                document.body.classList.remove('is-checkout-active');
+                document.body.classList.add('is-shop-active');
+                if (!document.body.classList.contains('is-page-active')) {
+                    document.body.classList.add('is-page-active');
+                }
+                if (oldPage === 'look') {
+                    marqueeRunning = false;
+                    autoDistance = 0;
+                    phase1Done = false;
+                    lastFrame = 0;
+                    if (lookPage) lookPage.scrollTop = 0;
+                    if (track) track.style.transform = 'translateX(0)';
+                }
+                loadShopImages();
+                currentPage = 'shop';
+                try { history.pushState({ page: 'shop' }, '', '#shop'); } catch (err) {}
             }
 
             var currentPage = 'home';
