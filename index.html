@@ -214,6 +214,12 @@
     </section>
 
     <section class="detail-page" aria-hidden="true">
+        <button type="button" class="detail-back" aria-label="back to shop">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="22" y1="14" x2="6" y2="14"></line>
+                <polyline points="12,8 6,14 12,20"></polyline>
+            </svg>
+        </button>
         <div class="detail-layout">
             <div class="detail-main">
                 <img src="" alt="Gin Shirt" class="detail-main__image" data-src="shop/shirt1.png">
@@ -1387,6 +1393,25 @@
             var selectedSize = null;
             var sizeButtons = document.querySelectorAll('.detail-size-btn');
             var addToCartBtn = document.querySelector('.detail-info__cart');
+            var detailBackBtn = document.querySelector('.detail-back');
+
+            if (detailBackBtn) {
+                detailBackBtn.addEventListener('click', function () {
+                    var dp = document.querySelector('.detail-page');
+                    if (dp) {
+                        dp.style.transition = 'none';
+                        document.body.classList.remove('is-detail-active');
+                        dp.offsetHeight;
+                        dp.style.transition = '';
+                    } else {
+                        document.body.classList.remove('is-detail-active');
+                    }
+                    var st = history.state;
+                    if (st && st.detail !== undefined) {
+                        try { history.back(); } catch (err) {}
+                    }
+                });
+            }
 
             sizeButtons.forEach(function (btn) {
                 btn.addEventListener('click', function () {
@@ -1870,14 +1895,23 @@
                     if (!charEls.length) return;
 
                     var centers = [];
-                    var maxPush = 4;
+                    var maxPush = 6;
                     var sigma = 22;
                     var rafId = null;
                     var pendingX = 0;
                     var pendingY = 0;
                     var hovering = false;
+                    var basePadL = 0;
+                    var basePadR = 0;
+
+                    function readBasePadding() {
+                        var s = window.getComputedStyle(catEl);
+                        basePadL = parseFloat(s.paddingLeft) || 0;
+                        basePadR = parseFloat(s.paddingRight) || 0;
+                    }
 
                     function measure() {
+                        readBasePadding();
                         centers = charEls.map(function (el) {
                             var r = el.getBoundingClientRect();
                             return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
@@ -1886,6 +1920,8 @@
 
                     function apply(mx, my) {
                         if (!centers.length) return;
+                        var leftMost = 0;
+                        var rightMost = 0;
                         for (var i = 0; i < charEls.length; i++) {
                             var c = centers[i];
                             var dx = mx - c.x;
@@ -1895,13 +1931,19 @@
                             var dir = dx >= 0 ? -1 : 1;
                             var push = dir * maxPush * falloff;
                             charEls[i].style.transform = 'translateX(' + push.toFixed(2) + 'px)';
+                            if (push < leftMost) leftMost = push;
+                            if (push > rightMost) rightMost = push;
                         }
+                        catEl.style.paddingLeft = (basePadL + (-leftMost)) + 'px';
+                        catEl.style.paddingRight = (basePadR + rightMost) + 'px';
                     }
 
                     function reset() {
                         for (var i = 0; i < charEls.length; i++) {
                             charEls[i].style.transform = 'translateX(0)';
                         }
+                        catEl.style.paddingLeft = '';
+                        catEl.style.paddingRight = '';
                     }
 
                     function resetInstant() {
@@ -1912,6 +1954,11 @@
                             el.offsetHeight;
                             el.style.transition = '';
                         }
+                        catEl.style.transition = 'none';
+                        catEl.style.paddingLeft = '';
+                        catEl.style.paddingRight = '';
+                        catEl.offsetHeight;
+                        catEl.style.transition = '';
                     }
 
                     catEl._headlineHoverReset = resetInstant;
