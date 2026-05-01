@@ -92,7 +92,14 @@
             <div class="auth-view auth-view--profile">
                 <p class="auth-profile-greeting">반갑습니다, <span class="auth-profile-name"></span> 님</p>
                 <p class="auth-profile-email"></p>
+                <button type="button" class="auth-btn" data-view="order-history">나의 주문내역 조회</button>
                 <button type="button" class="auth-btn" data-action="logout">로그아웃</button>
+            </div>
+
+            <div class="auth-view auth-view--order-history">
+                <button type="button" class="auth-back" data-view="profile">← 마이페이지로 돌아가기</button>
+                <h3 class="auth-section-title">나의 주문내역</h3>
+                <ul class="auth-orders-list"></ul>
             </div>
 
         </div>
@@ -644,9 +651,34 @@
                     if (pwd !== pwd2) { alert('비밀번호가 일치하지 않습니다'); return; }
                     if (!allRequiredChecked) { alert('필수 약관에 동의해주세요'); return; }
 
+                    var subAmt = cartData.reduce(function (s, i) { return s + i.price; }, 0);
+                    var shipAmt = subAmt > 0 ? SHIPPING_FEE : 0;
+                    var totAmt = subAmt + shipAmt;
+                    var fullAddr = [zip, addr1, (document.getElementById('ck-addr2') || {}).value || ''].filter(function (x) { return x; }).join(' ');
+                    var orderId = 'ORD-' + Date.now();
+                    orders.push({
+                        id: orderId,
+                        date: new Date().toISOString(),
+                        items: cartData.map(function (i) { return { name: i.name, size: i.size, price: i.price, image: i.image }; }),
+                        subtotal: subAmt,
+                        shipping: shipAmt,
+                        total: totAmt,
+                        userEmail: currentUser ? currentUser.email : null,
+                        recipientName: name,
+                        address: fullAddr,
+                        phone: phone,
+                        email: email,
+                        orderPassword: pwd
+                    });
+                    saveOrders();
+
+                    cartData = [];
+                    saveCartData();
+                    renderCart();
+
                     if (checkoutMessage) {
                         checkoutMessage.hidden = false;
-                        checkoutMessage.textContent = '결제 진행 중입니다... (데모)';
+                        checkoutMessage.textContent = '주문이 완료되었습니다 (' + orderId + ')';
                     }
                     checkoutSubmitBtn.disabled = true;
                 });
@@ -681,7 +713,7 @@
 
             function updateAuthUI() {
                 if (authButton) {
-                    authButton.textContent = currentUser ? currentUser.name : 'Log in';
+                    authButton.textContent = currentUser ? 'My' : 'Log in';
                 }
                 if (currentUser && authDrawer) {
                     var nameSpan = authDrawer.querySelector('.auth-profile-name');
@@ -689,6 +721,66 @@
                     if (nameSpan) nameSpan.textContent = currentUser.name;
                     if (emailSpan) emailSpan.textContent = currentUser.email;
                 }
+            }
+
+            var orders = [];
+            try {
+                var storedOrders = localStorage.getItem('sidecar-orders');
+                if (storedOrders) orders = JSON.parse(storedOrders) || [];
+            } catch (errC) { orders = []; }
+
+            function saveOrders() {
+                try { localStorage.setItem('sidecar-orders', JSON.stringify(orders)); } catch (err) {}
+            }
+
+            function renderOrderHistory() {
+                if (!authDrawer) return;
+                var list = authDrawer.querySelector('.auth-orders-list');
+                if (!list) return;
+                list.innerHTML = '';
+                if (!currentUser) {
+                    var msg = document.createElement('li');
+                    msg.className = 'auth-orders-empty';
+                    msg.textContent = '로그인이 필요합니다';
+                    list.appendChild(msg);
+                    return;
+                }
+                var mine = orders.filter(function (o) { return o.userEmail === currentUser.email; });
+                if (mine.length === 0) {
+                    var empty = document.createElement('li');
+                    empty.className = 'auth-orders-empty';
+                    empty.textContent = '주문 내역이 없습니다';
+                    list.appendChild(empty);
+                    return;
+                }
+                mine.slice().reverse().forEach(function (order) {
+                    var li = document.createElement('li');
+                    li.className = 'auth-order';
+
+                    var date = document.createElement('div');
+                    date.className = 'auth-order__date';
+                    date.textContent = new Date(order.date).toLocaleDateString('ko-KR');
+                    li.appendChild(date);
+
+                    var idEl = document.createElement('div');
+                    idEl.className = 'auth-order__id';
+                    idEl.textContent = '주문번호 ' + order.id;
+                    li.appendChild(idEl);
+
+                    var items = document.createElement('div');
+                    items.className = 'auth-order__items';
+                    items.textContent = order.items.map(function (i) {
+                        return i.name + ' (' + i.size + '사이즈)';
+                    }).join(', ');
+                    li.appendChild(items);
+
+                    var total = document.createElement('div');
+                    total.className = 'auth-order__total';
+                    total.textContent = '총 ' + order.total.toLocaleString() + '원';
+                    li.appendChild(total);
+
+                    list.appendChild(li);
+                });
             }
 
             function setAuthView(viewName) {
@@ -702,6 +794,7 @@
                     m.textContent = '';
                     m.classList.remove('is-success');
                 });
+                if (viewName === 'order-history') renderOrderHistory();
             }
 
             function setAuthMessage(formKey, msg, isSuccess) {
