@@ -1549,6 +1549,14 @@
                     overlayTextCleanupTimer = null;
                 }
 
+                var catsEl = document.querySelector('.categories');
+                if (catsEl) {
+                    catsEl.style.transition = 'none';
+                    document.body.classList.add('is-categories-out');
+                    catsEl.offsetHeight;
+                    catsEl.style.transition = '';
+                }
+
                 var newClass = target === 'look' ? 'is-look-active'
                                : target === 'about' ? 'is-about-active'
                                : 'is-shop-active';
@@ -1645,7 +1653,8 @@
                         overlayText.style.transition = 'opacity 1.05s ease';
                         overlayText.style.opacity = '0';
                     }
-                }, 2400);
+                    document.body.classList.remove('is-categories-out');
+                }, 2700);
 
                 if (!isShop) {
                     setTimeout(function () {
@@ -1671,7 +1680,7 @@
                         overlayText.innerHTML = '';
                     }
                     overlayTextCleanupTimer = null;
-                }, 3500);
+                }, 3850);
             }
 
             look.addEventListener('click', function (e) {
