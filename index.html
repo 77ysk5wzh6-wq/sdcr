@@ -408,8 +408,9 @@
             loadCartData();
 
             function renderCart() {
+                var totalQty = cartData.reduce(function (s, i) { return s + (i.quantity || 1); }, 0);
                 if (cartButton) {
-                    cartButton.textContent = 'Bag (' + cartData.length + ')';
+                    cartButton.textContent = 'Bag (' + totalQty + ')';
                 }
                 if (!cartList) return;
                 cartList.innerHTML = '';
@@ -420,6 +421,7 @@
                     cartList.appendChild(empty);
                 } else {
                     cartData.forEach(function (item, idx) {
+                        var qty = item.quantity || 1;
                         var li = document.createElement('li');
                         li.className = 'cart-item';
 
@@ -436,10 +438,33 @@
                         var sizeEl = document.createElement('span');
                         sizeEl.textContent = 'size ' + item.size;
                         var priceEl = document.createElement('span');
-                        priceEl.textContent = 'KRW ' + item.price.toLocaleString();
+                        priceEl.textContent = 'KRW ' + (item.price * qty).toLocaleString();
                         meta.appendChild(nameEl);
                         meta.appendChild(sizeEl);
                         meta.appendChild(priceEl);
+
+                        var qtyRow = document.createElement('div');
+                        qtyRow.className = 'cart-item__qty';
+                        var dec = document.createElement('button');
+                        dec.type = 'button';
+                        dec.className = 'cart-item__qty-btn cart-item__qty-dec';
+                        dec.dataset.idx = idx;
+                        dec.setAttribute('aria-label', 'decrease');
+                        dec.textContent = '−';
+                        var num = document.createElement('span');
+                        num.className = 'cart-item__qty-num';
+                        num.textContent = qty;
+                        var inc = document.createElement('button');
+                        inc.type = 'button';
+                        inc.className = 'cart-item__qty-btn cart-item__qty-inc';
+                        inc.dataset.idx = idx;
+                        inc.setAttribute('aria-label', 'increase');
+                        inc.textContent = '+';
+                        qtyRow.appendChild(dec);
+                        qtyRow.appendChild(num);
+                        qtyRow.appendChild(inc);
+                        meta.appendChild(qtyRow);
+
                         li.appendChild(meta);
 
                         var removeBtn = document.createElement('button');
@@ -453,19 +478,39 @@
                         cartList.appendChild(li);
                     });
                 }
-                var total = cartData.reduce(function (s, i) { return s + i.price; }, 0);
+                var total = cartData.reduce(function (s, i) { return s + i.price * (i.quantity || 1); }, 0);
                 if (cartTotalEl) cartTotalEl.textContent = 'KRW ' + total.toLocaleString();
             }
 
             if (cartList) {
                 cartList.addEventListener('click', function (e) {
-                    if (e.target.classList && e.target.classList.contains('cart-item__remove')) {
-                        var idx = parseInt(e.target.dataset.idx, 10);
-                        if (!isNaN(idx)) {
-                            cartData.splice(idx, 1);
-                            saveCartData();
-                            renderCart();
-                        }
+                    var inc = e.target.closest('.cart-item__qty-inc');
+                    var dec = e.target.closest('.cart-item__qty-dec');
+                    var rem = e.target.closest('.cart-item__remove');
+                    var idx;
+                    if (inc) {
+                        idx = parseInt(inc.dataset.idx, 10);
+                        if (isNaN(idx) || !cartData[idx]) return;
+                        cartData[idx].quantity = (cartData[idx].quantity || 1) + 1;
+                        saveCartData();
+                        renderCart();
+                        return;
+                    }
+                    if (dec) {
+                        idx = parseInt(dec.dataset.idx, 10);
+                        if (isNaN(idx) || !cartData[idx]) return;
+                        cartData[idx].quantity = (cartData[idx].quantity || 1) - 1;
+                        if (cartData[idx].quantity <= 0) cartData.splice(idx, 1);
+                        saveCartData();
+                        renderCart();
+                        return;
+                    }
+                    if (rem) {
+                        idx = parseInt(rem.dataset.idx, 10);
+                        if (isNaN(idx)) return;
+                        cartData.splice(idx, 1);
+                        saveCartData();
+                        renderCart();
                     }
                 });
             }
@@ -557,6 +602,7 @@
                 checkoutItemsEl.innerHTML = '';
                 var subtotal = 0;
                 cartData.forEach(function (item) {
+                    var qty = item.quantity || 1;
                     var li = document.createElement('li');
                     li.className = 'checkout-item';
 
@@ -580,16 +626,16 @@
 
                     var qtyEl = document.createElement('span');
                     qtyEl.className = 'checkout-item__qty';
-                    qtyEl.textContent = '× 1';
+                    qtyEl.textContent = '× ' + qty;
                     li.appendChild(qtyEl);
 
                     var priceEl = document.createElement('span');
                     priceEl.className = 'checkout-item__price';
-                    priceEl.textContent = item.price.toLocaleString() + '원';
+                    priceEl.textContent = (item.price * qty).toLocaleString() + '원';
                     li.appendChild(priceEl);
 
                     checkoutItemsEl.appendChild(li);
-                    subtotal += item.price;
+                    subtotal += item.price * qty;
                 });
                 var shipping = subtotal > 0 ? SHIPPING_FEE : 0;
                 var total = subtotal + shipping;
@@ -708,7 +754,7 @@
                     }
                     if (!allRequiredChecked) { alert('필수 약관에 동의해주세요'); return; }
 
-                    var subAmt = cartData.reduce(function (s, i) { return s + i.price; }, 0);
+                    var subAmt = cartData.reduce(function (s, i) { return s + i.price * (i.quantity || 1); }, 0);
                     var shipAmt = subAmt > 0 ? SHIPPING_FEE : 0;
                     var totAmt = subAmt + shipAmt;
                     var fullAddr = [zip, addr1, (document.getElementById('ck-addr2') || {}).value || ''].filter(function (x) { return x; }).join(' ');
@@ -716,7 +762,7 @@
                     orders.push({
                         id: orderId,
                         date: new Date().toISOString(),
-                        items: cartData.map(function (i) { return { shopIndex: i.shopIndex, name: i.name, size: i.size, price: i.price, image: i.image }; }),
+                        items: cartData.map(function (i) { return { shopIndex: i.shopIndex, name: i.name, size: i.size, price: i.price, image: i.image, quantity: i.quantity || 1 }; }),
                         subtotal: subAmt,
                         shipping: shipAmt,
                         total: totAmt,
@@ -854,11 +900,12 @@
                     itemsBox.className = 'auth-order__items';
                     order.items.forEach(function (it) {
                         var idx = (typeof it.shopIndex === 'number') ? it.shopIndex : extractShopIndex(it);
+                        var qty = it.quantity || 1;
                         var link = document.createElement('button');
                         link.type = 'button';
                         link.className = 'auth-order__item-link';
                         link.setAttribute('data-shop-index', idx);
-                        link.textContent = it.name + ' (' + it.size + '사이즈)';
+                        link.textContent = it.name + ' (' + it.size + '사이즈) × ' + qty;
                         itemsBox.appendChild(link);
                     });
                     li.appendChild(itemsBox);
@@ -1327,14 +1374,24 @@
                         });
                         return;
                     }
-                    var item = {
-                        shopIndex: currentShirtIndex,
-                        name: 'Gin Shirt(ravender)',
-                        size: selectedSize,
-                        price: 149000,
-                        image: 'shop/shirt' + (currentShirtIndex + 1) + '.png'
-                    };
-                    cartData.push(item);
+                    var existingIdx = -1;
+                    for (var ci = 0; ci < cartData.length; ci++) {
+                        if (cartData[ci].shopIndex === currentShirtIndex && cartData[ci].size === selectedSize) {
+                            existingIdx = ci; break;
+                        }
+                    }
+                    if (existingIdx >= 0) {
+                        cartData[existingIdx].quantity = (cartData[existingIdx].quantity || 1) + 1;
+                    } else {
+                        cartData.push({
+                            shopIndex: currentShirtIndex,
+                            name: 'Gin Shirt(ravender)',
+                            size: selectedSize,
+                            price: 149000,
+                            image: 'shop/shirt' + (currentShirtIndex + 1) + '.png',
+                            quantity: 1
+                        });
+                    }
                     saveCartData();
                     renderCart();
                     if (cartDrawer) cartDrawer.classList.add('is-open');

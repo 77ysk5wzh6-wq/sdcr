@@ -798,6 +798,33 @@ body.is-member .checkout-section--guest-only {
     font-style: italic;
 }
 
+.cart-item__qty {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    font-style: normal;
+}
+
+.cart-item__qty-btn {
+    width: 22px;
+    height: 22px;
+    border: 1px solid #000000;
+    background: transparent;
+    color: #000000;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1;
+    padding: 0;
+}
+
+.cart-item__qty-num {
+    min-width: 20px;
+    text-align: center;
+    font-size: 13px;
+}
+
 .cart-item__remove {
     background: transparent;
     border: none;
