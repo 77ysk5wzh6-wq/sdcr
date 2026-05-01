@@ -392,17 +392,182 @@ body.is-loaded {
     animation: sizeBlink 0.4s ease 3;
 }
 
-.cart-button {
+.header-actions {
     position: fixed;
     top: 32px;
     right: 40px;
     z-index: 95;
+    display: flex;
+    align-items: baseline;
+    gap: 22px;
+}
+
+.cart-button,
+.auth-button {
     font-family: 'Cormorant Garamond', serif;
     font-style: italic;
     font-size: 18px;
     color: #000000;
     text-decoration: none;
     cursor: pointer;
+}
+
+.auth-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(0, 0, 0, 0.45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    font-family: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+}
+
+.auth-modal.is-open {
+    display: flex;
+}
+
+.auth-modal__panel {
+    background: #ffffff;
+    width: min(380px, 100%);
+    padding: 32px 32px 28px;
+    border-radius: 4px;
+    position: relative;
+}
+
+.auth-modal__close {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    background: transparent;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: #000000;
+    padding: 0;
+    line-height: 1;
+}
+
+.auth-modal__tabs {
+    display: flex;
+    gap: 24px;
+    border-bottom: 1px solid #eeeeee;
+    margin-bottom: 24px;
+}
+
+.auth-tab {
+    background: transparent;
+    border: none;
+    padding: 10px 0;
+    font-family: inherit;
+    font-size: 14px;
+    color: #888888;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+}
+
+.auth-tab.is-active {
+    color: #000000;
+    border-bottom-color: #000000;
+}
+
+.auth-form {
+    display: none;
+}
+
+.auth-form.is-active {
+    display: block;
+}
+
+.auth-field {
+    margin-bottom: 14px;
+}
+
+.auth-field label {
+    display: block;
+    font-size: 13px;
+    color: #555555;
+    margin-bottom: 4px;
+}
+
+.auth-field input {
+    width: 100%;
+    padding: 6px 0;
+    border: none;
+    border-bottom: 1px solid #000000;
+    background: transparent;
+    font-family: inherit;
+    font-size: 14px;
+    color: #000000;
+    outline: none;
+    border-radius: 0;
+    box-sizing: border-box;
+}
+
+.auth-submit {
+    display: block;
+    width: 100%;
+    margin-top: 16px;
+    padding: 12px;
+    border: 1px solid #000000;
+    background: #000000;
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.auth-message {
+    margin: 12px 0 0;
+    font-size: 13px;
+    color: #c44a3f;
+    text-align: center;
+}
+
+.auth-form--profile {
+    text-align: center;
+}
+
+.auth-profile-greeting {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 4px;
+}
+
+.auth-profile-email {
+    font-size: 13px;
+    color: #888888;
+    margin: 0 0 20px;
+}
+
+.auth-modal.is-logged-in .auth-modal__tabs,
+.auth-modal.is-logged-in .auth-form--login,
+.auth-modal.is-logged-in .auth-form--signup {
+    display: none;
+}
+
+.auth-modal.is-logged-in .auth-form--profile {
+    display: block;
+}
+
+.auth-modal:not(.is-logged-in) .auth-form--profile {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .header-actions {
+        top: 40px;
+        right: 16px;
+        gap: 14px;
+    }
+
+    .cart-button,
+    .auth-button {
+        font-size: 16px;
+    }
 }
 
 .cart-drawer {
@@ -1280,12 +1445,6 @@ body.is-loaded {
     .shop-item__image:hover {
         transform: none;
         z-index: auto;
-    }
-
-    .cart-button {
-        top: 40px;
-        right: 16px;
-        font-size: 16px;
     }
 
     .cart-drawer {

@@ -19,7 +19,61 @@
         </a>
     </header>
 
-    <a href="#" class="cart-button">Bag (0)</a>
+    <div class="header-actions">
+        <a href="#" class="auth-button">Log in</a>
+        <a href="#" class="cart-button">Bag (0)</a>
+    </div>
+
+    <div class="auth-modal" aria-hidden="true">
+        <div class="auth-modal__panel">
+            <button type="button" class="auth-modal__close" aria-label="close">×</button>
+
+            <div class="auth-modal__tabs">
+                <button type="button" class="auth-tab is-active" data-tab="login">Log in</button>
+                <button type="button" class="auth-tab" data-tab="signup">Sign up</button>
+            </div>
+
+            <form class="auth-form auth-form--login is-active" novalidate>
+                <div class="auth-field">
+                    <label for="auth-login-email">이메일</label>
+                    <input id="auth-login-email" name="email" type="email" autocomplete="email">
+                </div>
+                <div class="auth-field">
+                    <label for="auth-login-password">비밀번호</label>
+                    <input id="auth-login-password" name="password" type="password" autocomplete="current-password">
+                </div>
+                <button type="submit" class="auth-submit">로그인</button>
+                <p class="auth-message" hidden></p>
+            </form>
+
+            <form class="auth-form auth-form--signup" novalidate>
+                <div class="auth-field">
+                    <label for="auth-signup-name">이름</label>
+                    <input id="auth-signup-name" name="name" type="text" autocomplete="name">
+                </div>
+                <div class="auth-field">
+                    <label for="auth-signup-email">이메일</label>
+                    <input id="auth-signup-email" name="email" type="email" autocomplete="email">
+                </div>
+                <div class="auth-field">
+                    <label for="auth-signup-password">비밀번호</label>
+                    <input id="auth-signup-password" name="password" type="password" autocomplete="new-password">
+                </div>
+                <div class="auth-field">
+                    <label for="auth-signup-password2">비밀번호 확인</label>
+                    <input id="auth-signup-password2" name="password2" type="password" autocomplete="new-password">
+                </div>
+                <button type="submit" class="auth-submit">회원가입</button>
+                <p class="auth-message" hidden></p>
+            </form>
+
+            <div class="auth-form auth-form--profile">
+                <p class="auth-profile-greeting">반갑습니다, <span class="auth-profile-name"></span> 님</p>
+                <p class="auth-profile-email"></p>
+                <button type="button" class="auth-submit auth-logout-btn">로그아웃</button>
+            </div>
+        </div>
+    </div>
 
     <aside class="cart-drawer" aria-hidden="true">
         <div class="cart-drawer__header">
@@ -345,6 +399,27 @@
 
             document.addEventListener('click', function (e) {
                 if (!e.target || !e.target.closest) return;
+                var authTrigger = e.target.closest('.auth-button');
+                if (authTrigger) {
+                    e.preventDefault();
+                    openAuthModal();
+                    return;
+                }
+                if (e.target.closest('.auth-modal__close')) {
+                    closeAuthModal();
+                    return;
+                }
+                if (e.target.classList && e.target.classList.contains('auth-modal')) {
+                    closeAuthModal();
+                    return;
+                }
+                if (e.target.closest('.auth-logout-btn')) {
+                    currentUser = null;
+                    saveAuth();
+                    updateAuthUI();
+                    closeAuthModal();
+                    return;
+                }
                 var openTrigger = e.target.closest('.cart-button');
                 if (openTrigger) {
                     e.preventDefault();
@@ -549,6 +624,153 @@
             }
 
             renderCart();
+
+            var authButton = document.querySelector('.auth-button');
+            var authModal = document.querySelector('.auth-modal');
+            var authTabs = document.querySelectorAll('.auth-tab');
+            var authLoginForm = document.querySelector('.auth-form--login');
+            var authSignupForm = document.querySelector('.auth-form--signup');
+            var authProfileName = document.querySelector('.auth-profile-name');
+            var authProfileEmail = document.querySelector('.auth-profile-email');
+
+            var users = [];
+            var currentUser = null;
+            try {
+                var storedUsers = localStorage.getItem('sidecar-users');
+                if (storedUsers) users = JSON.parse(storedUsers) || [];
+            } catch (errA) { users = []; }
+            try {
+                var storedCurrent = localStorage.getItem('sidecar-current-user');
+                if (storedCurrent) currentUser = JSON.parse(storedCurrent);
+            } catch (errB) { currentUser = null; }
+
+            function saveAuth() {
+                try {
+                    localStorage.setItem('sidecar-users', JSON.stringify(users));
+                    if (currentUser) {
+                        localStorage.setItem('sidecar-current-user', JSON.stringify(currentUser));
+                    } else {
+                        localStorage.removeItem('sidecar-current-user');
+                    }
+                } catch (err) {}
+            }
+
+            function updateAuthUI() {
+                if (authButton) {
+                    authButton.textContent = currentUser ? currentUser.name : 'Log in';
+                }
+                if (authModal) {
+                    authModal.classList.toggle('is-logged-in', !!currentUser);
+                }
+                if (currentUser) {
+                    if (authProfileName) authProfileName.textContent = currentUser.name;
+                    if (authProfileEmail) authProfileEmail.textContent = currentUser.email;
+                }
+            }
+
+            function setAuthMessage(form, msg) {
+                if (!form) return;
+                var el = form.querySelector('.auth-message');
+                if (!el) return;
+                if (msg) {
+                    el.textContent = msg;
+                    el.hidden = false;
+                } else {
+                    el.textContent = '';
+                    el.hidden = true;
+                }
+            }
+
+            function openAuthModal() {
+                if (authModal) authModal.classList.add('is-open');
+            }
+
+            function closeAuthModal() {
+                if (authModal) authModal.classList.remove('is-open');
+                if (authLoginForm) {
+                    authLoginForm.reset();
+                    setAuthMessage(authLoginForm, '');
+                }
+                if (authSignupForm) {
+                    authSignupForm.reset();
+                    setAuthMessage(authSignupForm, '');
+                }
+            }
+
+            authTabs.forEach(function (tab) {
+                tab.addEventListener('click', function () {
+                    var target = tab.getAttribute('data-tab');
+                    authTabs.forEach(function (t) { t.classList.toggle('is-active', t === tab); });
+                    if (authLoginForm) authLoginForm.classList.toggle('is-active', target === 'login');
+                    if (authSignupForm) authSignupForm.classList.toggle('is-active', target === 'signup');
+                });
+            });
+
+            if (authLoginForm) {
+                authLoginForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    var email = authLoginForm.email.value.trim();
+                    var password = authLoginForm.password.value;
+                    if (!email || !password) {
+                        setAuthMessage(authLoginForm, '이메일과 비밀번호를 입력해주세요');
+                        return;
+                    }
+                    var match = null;
+                    for (var i = 0; i < users.length; i++) {
+                        if (users[i].email === email && users[i].password === password) {
+                            match = users[i];
+                            break;
+                        }
+                    }
+                    if (!match) {
+                        setAuthMessage(authLoginForm, '이메일 또는 비밀번호가 올바르지 않습니다');
+                        return;
+                    }
+                    currentUser = { email: match.email, name: match.name };
+                    saveAuth();
+                    updateAuthUI();
+                    closeAuthModal();
+                });
+            }
+
+            if (authSignupForm) {
+                authSignupForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    var nameVal = authSignupForm.name.value.trim();
+                    var emailVal = authSignupForm.email.value.trim();
+                    var pwd = authSignupForm.password.value;
+                    var pwd2 = authSignupForm.password2.value;
+                    if (!nameVal || !emailVal || !pwd) {
+                        setAuthMessage(authSignupForm, '모든 필드를 입력해주세요');
+                        return;
+                    }
+                    if (emailVal.indexOf('@') === -1) {
+                        setAuthMessage(authSignupForm, '올바른 이메일을 입력해주세요');
+                        return;
+                    }
+                    if (pwd.length < 4) {
+                        setAuthMessage(authSignupForm, '비밀번호는 4자 이상이어야 합니다');
+                        return;
+                    }
+                    if (pwd !== pwd2) {
+                        setAuthMessage(authSignupForm, '비밀번호가 일치하지 않습니다');
+                        return;
+                    }
+                    for (var j = 0; j < users.length; j++) {
+                        if (users[j].email === emailVal) {
+                            setAuthMessage(authSignupForm, '이미 등록된 이메일입니다');
+                            return;
+                        }
+                    }
+                    users.push({ name: nameVal, email: emailVal, password: pwd });
+                    currentUser = { email: emailVal, name: nameVal };
+                    saveAuth();
+                    updateAuthUI();
+                    closeAuthModal();
+                });
+            }
+
+            updateAuthUI();
 
             var shop = document.querySelector('.category--shop');
             if (!shop) return;
