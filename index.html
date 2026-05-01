@@ -527,7 +527,9 @@
                 }
                 var drawerEl = document.querySelector('.cart-drawer');
                 if (drawerEl && drawerEl.classList.contains('is-open')) {
-                    if (!e.target.closest('.cart-drawer') && !e.target.closest('.cart-button')) {
+                    if (!e.target.closest('.cart-drawer')
+                        && !e.target.closest('.cart-button')
+                        && !e.target.closest('.detail-info__cart')) {
                         drawerEl.classList.remove('is-open');
                     }
                 }
