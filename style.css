@@ -648,6 +648,10 @@ body.is-loaded {
     color: #aaaaaa;
 }
 
+body.is-member .checkout-section--guest-only {
+    display: none;
+}
+
 @media (max-width: 768px) {
     .auth-drawer {
         width: 100vw;
