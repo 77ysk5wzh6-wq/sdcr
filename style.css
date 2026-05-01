@@ -190,7 +190,7 @@ body.is-loaded {
 
 .is-page-active .categories {
     opacity: 0;
-    animation: categoriesFadeIn 1.05s ease 0.35s forwards;
+    animation: categoriesFadeIn 1.05s ease 1s forwards;
 }
 
 .shop-page {
@@ -1499,6 +1499,11 @@ body.is-member .checkout-section--guest-only {
     z-index: 50;
     opacity: 0;
     pointer-events: none;
+}
+
+.transition-overlay-text {
+    position: fixed;
+    z-index: 51;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -1507,9 +1512,15 @@ body.is-member .checkout-section--guest-only {
     font-weight: 400;
     font-size: 26px;
     color: #000000;
-    overflow: hidden;
-    box-sizing: border-box;
     line-height: 1.05;
+    box-sizing: border-box;
+    pointer-events: none;
+    overflow: hidden;
+    opacity: 0;
+}
+
+.transition-overlay-text.is-visible {
+    opacity: 1;
 }
 
 .transition-overlay__char {
@@ -1517,7 +1528,7 @@ body.is-member .checkout-section--guest-only {
 }
 
 @media (max-width: 768px) {
-    .transition-overlay {
+    .transition-overlay-text {
         font-size: 20px;
         padding: 0 6px;
     }
