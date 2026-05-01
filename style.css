@@ -14,13 +14,31 @@ html, body {
     overflow: hidden;
 }
 
-body {
-    opacity: 0;
+.loading-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    pointer-events: none;
+    background: #ffffff;
 }
 
-body.is-loaded {
-    opacity: 1;
-    transition: opacity 0.5s ease;
+@media (orientation: portrait) {
+    .loading-screen {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(7, 1fr);
+    }
+}
+
+.loading-tile {
+    width: 100%;
+    height: 100%;
+}
+
+.loading-screen.is-done {
+    display: none;
 }
 
 .logo {
