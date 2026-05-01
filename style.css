@@ -1468,6 +1468,13 @@ body.is-member .checkout-section--guest-only {
     display: block;
 }
 
+.about-page__signature {
+    margin-top: 16px;
+    width: 90px;
+    height: auto;
+    display: block;
+}
+
 .about-page__text {
     margin-top: 56px;
     font-family: 'Cormorant Garamond', serif;

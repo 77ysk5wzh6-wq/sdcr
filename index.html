@@ -176,6 +176,7 @@
         <div class="about-page__inner">
             <img src="" alt="" class="about-page__image" data-src="assets/recipe.png">
             <p class="about-page__text">We are sidecar.<br>We make clothes in Seoul.<br>and sometimes drink sidecar.</p>
+            <img src="" alt="" class="about-page__signature" data-src="assets/sidecar1.png">
         </div>
     </section>
 
@@ -1195,6 +1196,11 @@
                 aboutImageLoaded = true;
                 var src = aboutImage.getAttribute('data-src');
                 if (src) aboutImage.src = src;
+                var sig = document.querySelector('.about-page__signature');
+                if (sig) {
+                    var sigSrc = sig.getAttribute('data-src');
+                    if (sigSrc) sig.src = sigSrc;
+                }
             }
 
             var shopImagesLoaded = false;
