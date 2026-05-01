@@ -622,6 +622,32 @@ body.is-loaded {
     list-style: none;
 }
 
+.auth-info-list {
+    margin: 0 0 24px;
+    border-top: 1px solid #eeeeee;
+}
+
+.auth-info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 4px;
+    border-bottom: 1px solid #eeeeee;
+    font-size: 13px;
+}
+
+.auth-info-label {
+    color: #555555;
+}
+
+.auth-info-value {
+    color: #000000;
+}
+
+.auth-info-value.is-empty {
+    color: #aaaaaa;
+}
+
 @media (max-width: 768px) {
     .auth-drawer {
         width: 100vw;

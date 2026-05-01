@@ -92,6 +92,7 @@
             <div class="auth-view auth-view--profile">
                 <p class="auth-profile-greeting">반갑습니다, <span class="auth-profile-name"></span> 님</p>
                 <p class="auth-profile-email"></p>
+                <button type="button" class="auth-btn" data-view="profile-info">회원정보</button>
                 <button type="button" class="auth-btn" data-view="order-history">나의 주문내역 조회</button>
                 <button type="button" class="auth-btn" data-action="logout">로그아웃</button>
             </div>
@@ -100,6 +101,30 @@
                 <button type="button" class="auth-back" data-view="profile">← 마이페이지로 돌아가기</button>
                 <h3 class="auth-section-title">나의 주문내역</h3>
                 <ul class="auth-orders-list"></ul>
+            </div>
+
+            <div class="auth-view auth-view--profile-info">
+                <button type="button" class="auth-back" data-view="profile">← 마이페이지로 돌아가기</button>
+                <h3 class="auth-section-title">회원정보</h3>
+                <div class="auth-info-list">
+                    <div class="auth-info-item"><span class="auth-info-label">아이디</span><span class="auth-info-value" data-field="email"></span></div>
+                    <div class="auth-info-item"><span class="auth-info-label">이름</span><span class="auth-info-value" data-field="name"></span></div>
+                    <div class="auth-info-item"><span class="auth-info-label">전화번호</span><span class="auth-info-value" data-field="phone"></span></div>
+                    <div class="auth-info-item"><span class="auth-info-label">생년월일</span><span class="auth-info-value" data-field="birthdate"></span></div>
+                </div>
+                <button type="button" class="auth-btn" data-view="profile-edit">정보 수정</button>
+            </div>
+
+            <div class="auth-view auth-view--profile-edit">
+                <button type="button" class="auth-back" data-view="profile-info">← 회원정보로 돌아가기</button>
+                <h3 class="auth-section-title">정보 수정</h3>
+                <form class="auth-fields" data-form="profile-edit" novalidate>
+                    <input class="auth-input" name="name" type="text" placeholder="이름" autocomplete="name">
+                    <input class="auth-input" name="phone" type="tel" placeholder="전화번호 (010-0000-0000)" autocomplete="tel">
+                    <input class="auth-input" name="birthdate" type="date" placeholder="생년월일">
+                </form>
+                <button type="button" class="auth-btn" data-action="submit-profile-edit">저장</button>
+                <p class="auth-message" data-message-for="profile-edit" hidden></p>
             </div>
 
         </div>
@@ -783,6 +808,48 @@
                 });
             }
 
+            function findUserIndex(email) {
+                for (var i = 0; i < users.length; i++) {
+                    if (users[i].email === email) return i;
+                }
+                return -1;
+            }
+
+            function renderProfileInfo() {
+                if (!authDrawer || !currentUser) return;
+                var idx = findUserIndex(currentUser.email);
+                var u = idx >= 0 ? users[idx] : currentUser;
+                var fields = {
+                    email: u.email || '',
+                    name: u.name || '',
+                    phone: u.phone || '',
+                    birthdate: u.birthdate || ''
+                };
+                Object.keys(fields).forEach(function (k) {
+                    var el = authDrawer.querySelector('.auth-info-value[data-field="' + k + '"]');
+                    if (!el) return;
+                    if (fields[k]) {
+                        el.textContent = fields[k];
+                        el.classList.remove('is-empty');
+                    } else {
+                        el.textContent = '미입력';
+                        el.classList.add('is-empty');
+                    }
+                });
+            }
+
+            function renderProfileEdit() {
+                if (!authDrawer || !currentUser) return;
+                var idx = findUserIndex(currentUser.email);
+                if (idx < 0) return;
+                var u = users[idx];
+                var form = authDrawer.querySelector('.auth-view--profile-edit form');
+                if (!form) return;
+                if (form.name) form.name.value = u.name || '';
+                if (form.phone) form.phone.value = u.phone || '';
+                if (form.birthdate) form.birthdate.value = u.birthdate || '';
+            }
+
             function setAuthView(viewName) {
                 if (!authDrawer) return;
                 var views = authDrawer.querySelectorAll('.auth-view');
@@ -795,6 +862,8 @@
                     m.classList.remove('is-success');
                 });
                 if (viewName === 'order-history') renderOrderHistory();
+                if (viewName === 'profile-info') renderProfileInfo();
+                if (viewName === 'profile-edit') renderProfileEdit();
             }
 
             function setAuthMessage(formKey, msg, isSuccess) {
@@ -886,6 +955,21 @@
                     var op = f5.password.value;
                     if (!num || !op) { setAuthMessage('order-lookup', '주문번호와 비밀번호를 입력해주세요'); return; }
                     setAuthMessage('order-lookup', '해당 주문 내역이 없습니다 (데모)');
+                } else if (action === 'submit-profile-edit') {
+                    var fp = getAuthForm('profile-edit');
+                    var nm2 = fp.name.value.trim();
+                    var ph2 = fp.phone.value.trim();
+                    var bd2 = fp.birthdate.value;
+                    if (!nm2) { setAuthMessage('profile-edit', '이름을 입력해주세요'); return; }
+                    var ix = findUserIndex(currentUser.email);
+                    if (ix < 0) { setAuthMessage('profile-edit', '회원 정보를 찾을 수 없습니다'); return; }
+                    users[ix].name = nm2;
+                    users[ix].phone = ph2;
+                    users[ix].birthdate = bd2;
+                    currentUser.name = nm2;
+                    saveAuth();
+                    updateAuthUI();
+                    setAuthView('profile-info');
                 } else if (action === 'logout') {
                     currentUser = null;
                     saveAuth();
