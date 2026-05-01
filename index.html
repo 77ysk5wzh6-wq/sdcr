@@ -487,6 +487,7 @@
                     var inc = e.target.closest('.cart-item__qty-inc');
                     var dec = e.target.closest('.cart-item__qty-dec');
                     var rem = e.target.closest('.cart-item__remove');
+                    if (inc || dec || rem) e.stopPropagation();
                     var idx;
                     if (inc) {
                         idx = parseInt(inc.dataset.idx, 10);
