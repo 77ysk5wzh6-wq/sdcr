@@ -803,6 +803,17 @@
 
             updateAuthUI();
 
+            if (authDrawer) {
+                authDrawer.addEventListener('keydown', function (e) {
+                    if (e.key !== 'Enter') return;
+                    if (!e.target.classList || !e.target.classList.contains('auth-input')) return;
+                    var form = e.target.closest('form[data-form]');
+                    if (!form) return;
+                    e.preventDefault();
+                    handleAuthAction('submit-' + form.getAttribute('data-form'));
+                });
+            }
+
             var shop = document.querySelector('.category--shop');
             if (!shop) return;
             var STRIPE_COUNT = 22;
