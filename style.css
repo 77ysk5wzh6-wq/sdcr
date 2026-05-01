@@ -417,6 +417,7 @@ body.is-loaded {
     top: 0;
     right: 0;
     height: 100vh;
+    height: 100dvh;
     width: 420px;
     max-width: 90vw;
     background: #ffffff;
@@ -720,6 +721,7 @@ body.is-member .checkout-section--guest-only {
     top: 0;
     right: 0;
     height: 100vh;
+    height: 100dvh;
     width: 380px;
     max-width: 90vw;
     background: #ffffff;

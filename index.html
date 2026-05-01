@@ -375,20 +375,37 @@
             });
 
             var cartData = [];
-            try {
-                var stored = localStorage.getItem('sidecar-cart');
-                if (stored) cartData = JSON.parse(stored) || [];
-            } catch (err) { cartData = []; }
-
             var cartButton = document.querySelector('.cart-button');
             var cartDrawer = document.querySelector('.cart-drawer');
             var cartList = document.querySelector('.cart-drawer__list');
             var cartTotalEl = document.querySelector('.cart-drawer__total-price');
             var cartCloseBtn = document.querySelector('.cart-drawer__close');
 
-            function saveCartData() {
-                try { localStorage.setItem('sidecar-cart', JSON.stringify(cartData)); } catch (err) {}
+            function getCurrentUserEmail() {
+                try {
+                    var u = JSON.parse(localStorage.getItem('sidecar-current-user'));
+                    return u && u.email ? u.email : null;
+                } catch (e) { return null; }
             }
+
+            function cartStorageKey() {
+                var em = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.email : getCurrentUserEmail();
+                return em ? 'sidecar-cart-' + em : 'sidecar-cart';
+            }
+
+            function loadCartData() {
+                cartData = [];
+                try {
+                    var stored = localStorage.getItem(cartStorageKey());
+                    if (stored) cartData = JSON.parse(stored) || [];
+                } catch (err) { cartData = []; }
+            }
+
+            function saveCartData() {
+                try { localStorage.setItem(cartStorageKey(), JSON.stringify(cartData)); } catch (err) {}
+            }
+
+            loadCartData();
 
             function renderCart() {
                 if (cartButton) {
@@ -489,6 +506,7 @@
                 var openTrigger = e.target.closest('.cart-button');
                 if (openTrigger) {
                     e.preventDefault();
+                    if (authDrawer) authDrawer.classList.remove('is-open');
                     var drawer = document.querySelector('.cart-drawer');
                     if (drawer) drawer.classList.add('is-open');
                     return;
@@ -748,6 +766,31 @@
                 } catch (err) {}
             }
 
+            function migrateAnonCartIntoUser() {
+                if (!currentUser) return;
+                var anon = [];
+                try {
+                    var s = localStorage.getItem('sidecar-cart');
+                    if (s) anon = JSON.parse(s) || [];
+                } catch (e) {}
+                var userCart = [];
+                try {
+                    var u = localStorage.getItem('sidecar-cart-' + currentUser.email);
+                    if (u) userCart = JSON.parse(u) || [];
+                } catch (e) {}
+                cartData = userCart.concat(anon);
+                saveCartData();
+                if (anon.length) {
+                    try { localStorage.removeItem('sidecar-cart'); } catch (e) {}
+                }
+                renderCart();
+            }
+
+            function reloadCartForCurrentScope() {
+                loadCartData();
+                renderCart();
+            }
+
             function updateAuthUI() {
                 if (authButton) {
                     authButton.textContent = currentUser ? 'My' : 'Log in';
@@ -927,6 +970,7 @@
 
             function openAuthDrawer() {
                 if (!authDrawer) return;
+                if (cartDrawer) cartDrawer.classList.remove('is-open');
                 setAuthView(currentUser ? 'profile' : 'login');
                 authDrawer.classList.add('is-open');
             }
@@ -954,6 +998,7 @@
                     if (!match) { setAuthMessage('login', '아이디 또는 비밀번호가 올바르지 않습니다'); return; }
                     currentUser = { email: match.email, name: match.name };
                     saveAuth();
+                    migrateAnonCartIntoUser();
                     updateAuthUI();
                     closeAuthDrawer();
                 } else if (action === 'submit-signup') {
@@ -972,6 +1017,7 @@
                     users.push({ name: nm, email: em, password: p });
                     currentUser = { email: em, name: nm };
                     saveAuth();
+                    migrateAnonCartIntoUser();
                     updateAuthUI();
                     closeAuthDrawer();
                 } else if (action === 'submit-find-id') {
@@ -1022,6 +1068,7 @@
                 } else if (action === 'logout') {
                     currentUser = null;
                     saveAuth();
+                    reloadCartForCurrentScope();
                     updateAuthUI();
                     closeAuthDrawer();
                 }
@@ -1039,6 +1086,35 @@
                     handleAuthAction('submit-' + form.getAttribute('data-form'));
                 });
             }
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key !== 'Escape') return;
+                if (cartDrawer && cartDrawer.classList.contains('is-open')) {
+                    cartDrawer.classList.remove('is-open');
+                    return;
+                }
+                if (authDrawer && authDrawer.classList.contains('is-open')) {
+                    authDrawer.classList.remove('is-open');
+                    return;
+                }
+                var modal = document.querySelector('.terms-modal');
+                if (modal && modal.classList.contains('is-open')) {
+                    modal.classList.remove('is-open');
+                }
+            });
+
+            window.addEventListener('beforeunload', function (e) {
+                if (!document.body.classList.contains('is-checkout-active')) return;
+                var fields = ['ck-name', 'ck-zip', 'ck-addr1', 'ck-addr2', 'ck-phone', 'ck-email', 'ck-message', 'ck-pwd', 'ck-pwd2'];
+                for (var i = 0; i < fields.length; i++) {
+                    var el = document.getElementById(fields[i]);
+                    if (el && el.value && el.value.toString().trim()) {
+                        e.preventDefault();
+                        e.returnValue = '';
+                        return '';
+                    }
+                }
+            });
 
             var shop = document.querySelector('.category--shop');
             if (!shop) return;
@@ -1285,6 +1361,9 @@
                 }
                 if (detailMainImg) {
                     detailMainImg.onload = syncDetailHeight;
+                    detailMainImg.onerror = function () {
+                        if (detailInfoEl) detailInfoEl.style.height = '500px';
+                    };
                     detailMainImg.src = 'shop/shirt' + (shopIndex + 1) + '.png';
                 }
                 if (detailImagesContainer) detailImagesContainer.scrollTop = 0;
