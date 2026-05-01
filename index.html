@@ -1304,6 +1304,7 @@
             var phase1Done = false;
             var lastFrame = 0;
             var marqueeRunning = false;
+            var tickRafId = 0;
 
             function applyTranslate() {
                 if (oneSetWidth === 0) return;
@@ -1319,7 +1320,10 @@
             }
 
             function tick(time) {
-                if (!marqueeRunning) return;
+                if (!marqueeRunning) {
+                    tickRafId = 0;
+                    return;
+                }
                 if (oneSetWidth === 0) measureTrack();
                 if (lastFrame === 0) lastFrame = time;
                 var dt = (time - lastFrame) / 1000;
@@ -1331,18 +1335,30 @@
                     if (totalLeft >= initialTranslate) phase1Done = true;
                 }
                 applyTranslate();
-                requestAnimationFrame(tick);
+                tickRafId = requestAnimationFrame(tick);
             }
 
             function startMarquee() {
                 if (marqueeRunning) return;
+                if (tickRafId) {
+                    cancelAnimationFrame(tickRafId);
+                    tickRafId = 0;
+                }
                 measureTrack();
                 autoDistance = 0;
                 phase1Done = false;
                 lastFrame = 0;
                 applyTranslate();
                 marqueeRunning = true;
-                requestAnimationFrame(tick);
+                tickRafId = requestAnimationFrame(tick);
+            }
+
+            function stopMarquee() {
+                marqueeRunning = false;
+                if (tickRafId) {
+                    cancelAnimationFrame(tickRafId);
+                    tickRafId = 0;
+                }
             }
 
             if (lookPage) {
@@ -1521,7 +1537,7 @@
                     document.body.classList.add('is-page-active');
                 }
                 if (oldPage === 'look') {
-                    marqueeRunning = false;
+                    stopMarquee();
                     autoDistance = 0;
                     phase1Done = false;
                     lastFrame = 0;
@@ -1536,6 +1552,20 @@
             var currentPage = 'home';
             var transitioning = false;
             var overlayTextCleanupTimer = null;
+            var navTimers = [];
+            function navSchedule(fn, delay) {
+                var id = setTimeout(function () {
+                    fn();
+                }, delay);
+                navTimers.push(id);
+                return id;
+            }
+            function clearNavTimers() {
+                for (var i = 0; i < navTimers.length; i++) {
+                    clearTimeout(navTimers[i]);
+                }
+                navTimers.length = 0;
+            }
 
             try {
                 if (!history.state) {
@@ -1578,6 +1608,7 @@
                     clearTimeout(overlayTextCleanupTimer);
                     overlayTextCleanupTimer = null;
                 }
+                clearNavTimers();
 
                 var catsEl = document.querySelector('.categories');
                 if (catsEl) {
@@ -1652,12 +1683,12 @@
                     }
                 });
 
-                setTimeout(function () {
+                navSchedule(function () {
                     ovl.style.top = '0px';
                     ovl.style.height = '100vh';
                 }, 630);
 
-                setTimeout(function () {
+                navSchedule(function () {
                     if (catsEl) {
                         catsEl.style.transition = 'none';
                         catsEl.style.opacity = '';
@@ -1674,7 +1705,7 @@
                     }
                     window.scrollTo(0, 0);
                     if (oldPage === 'look') {
-                        marqueeRunning = false;
+                        stopMarquee();
                         autoDistance = 0;
                         phase1Done = false;
                         lastFrame = 0;
@@ -1709,7 +1740,7 @@
                     }
                 }, 1190);
 
-                setTimeout(function () {
+                navSchedule(function () {
                     if (overlayText) {
                         overlayText.style.transition = 'opacity 1.05s ease';
                         overlayText.style.opacity = '0';
@@ -1718,12 +1749,12 @@
                 }, 2700);
 
                 if (!isShop) {
-                    setTimeout(function () {
+                    navSchedule(function () {
                         ovl.style.opacity = '0';
                     }, 1330);
                 }
 
-                setTimeout(function () {
+                navSchedule(function () {
                     currentPage = target;
                     transitioning = false;
                     ovl.classList.remove('is-active');
