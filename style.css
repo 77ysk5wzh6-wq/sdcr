@@ -546,13 +546,6 @@ body.is-loaded {
     display: inline-block;
 }
 
-.auth-info {
-    margin: 32px 0 0;
-    font-size: 12px;
-    line-height: 1.6;
-    color: #666666;
-}
-
 .auth-back {
     background: transparent;
     border: none;
