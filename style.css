@@ -1469,7 +1469,10 @@ body.is-member .checkout-section--guest-only {
 }
 
 .about-page__signature {
-    margin-top: 64px;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, -33.3333%);
     width: 90px;
     height: auto;
     display: block;
@@ -1572,6 +1575,12 @@ body.is-member .checkout-section--guest-only {
         position: static;
         transform: none;
         padding: 120px 16px 60px;
+    }
+
+    .about-page__signature {
+        position: static;
+        transform: none;
+        margin: 32px auto 60px;
     }
 
     .shop-grid {
