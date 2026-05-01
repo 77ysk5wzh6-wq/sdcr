@@ -546,41 +546,8 @@ body.is-loaded {
     display: inline-block;
 }
 
-.auth-sns {
-    margin-top: 32px;
-}
-
-.auth-sns__title {
-    text-align: center;
-    font-size: 13px;
-    color: #666666;
-    margin: 0 0 12px;
-}
-
-.auth-sns-btn {
-    display: block;
-    width: 100%;
-    padding: 14px;
-    border: none;
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    margin-bottom: 6px;
-}
-
-.auth-sns-btn--kakao {
-    background: #fee500;
-    color: #3a2929;
-}
-
-.auth-sns-btn--naver {
-    background: #03c75a;
-    color: #ffffff;
-}
-
 .auth-info {
-    margin: 24px 0 0;
+    margin: 32px 0 0;
     font-size: 12px;
     line-height: 1.6;
     color: #666666;

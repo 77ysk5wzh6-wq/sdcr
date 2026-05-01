@@ -43,11 +43,6 @@
                     <button type="button" class="auth-link" data-view="find-id">아이디 찾기</button>
                     <button type="button" class="auth-link" data-view="find-pwd">비밀번호 찾기</button>
                 </div>
-                <div class="auth-sns">
-                    <p class="auth-sns__title">SNS 계정을 연동해 간편하게 로그인해보세요</p>
-                    <button type="button" class="auth-sns-btn auth-sns-btn--kakao">카카오로 시작하기</button>
-                    <button type="button" class="auth-sns-btn auth-sns-btn--naver">네이버로 시작하기</button>
-                </div>
                 <p class="auth-info">※ sidecar는 ㈜sidecar가 운영하는 사이트입니다.<br>본 사이트에 가입하시면, 당사가 운영하는 기타<br>사이트에 동시에 사용 가능합니다.</p>
                 <button type="button" class="auth-link auth-link--solo" data-view="order-lookup">비회원주문조회</button>
             </div>
@@ -447,14 +442,6 @@
                     var actionBtn = e.target.closest('[data-action]');
                     if (actionBtn) {
                         handleAuthAction(actionBtn.getAttribute('data-action'));
-                        return;
-                    }
-                    if (e.target.closest('.auth-sns-btn--kakao')) {
-                        alert('카카오 로그인은 준비 중입니다');
-                        return;
-                    }
-                    if (e.target.closest('.auth-sns-btn--naver')) {
-                        alert('네이버 로그인은 준비 중입니다');
                         return;
                     }
                 }
