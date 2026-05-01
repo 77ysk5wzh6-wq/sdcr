@@ -1592,24 +1592,26 @@
                         applyTranslate();
                     }
                     if (isShop) {
-                        ovl.classList.add('is-sweeping');
+                        ovl.classList.add('is-sliding-out');
                     }
                 }, 1190);
 
-                setTimeout(function () {
-                    ovl.style.opacity = '0';
-                }, isShop ? 1890 : 1330);
+                if (!isShop) {
+                    setTimeout(function () {
+                        ovl.style.opacity = '0';
+                    }, 1330);
+                }
 
                 setTimeout(function () {
                     currentPage = target;
                     transitioning = false;
                     ovl.classList.remove('is-active');
-                    ovl.classList.remove('is-sweeping');
+                    ovl.classList.remove('is-sliding-out');
                     ovl.style.cssText = '';
                     if (target === 'look') {
                         startMarquee();
                     }
-                }, isShop ? 2240 : 1610);
+                }, isShop ? 2000 : 1610);
             }
 
             look.addEventListener('click', function (e) {

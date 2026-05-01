@@ -1507,30 +1507,18 @@ body.is-member .checkout-section--guest-only {
 
 .transition-overlay--shop {
     background: rgb(184, 135, 196);
-    overflow: hidden;
 }
 
-.transition-overlay--shop::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 0;
-    background: linear-gradient(to top, transparent 0%, #ffffff 50%, #ffffff 100%);
-    pointer-events: none;
-    transition: height 0.7s ease;
-}
-
-.transition-overlay--shop.is-sweeping::before {
-    height: 200%;
+.transition-overlay--shop.is-sliding-out {
+    transform: translateY(100%);
 }
 
 .transition-overlay.is-active {
     opacity: 1;
     transition: left 0.56s ease-in-out, width 0.56s ease-in-out,
                 top 0.56s ease-in-out, height 0.56s ease-in-out,
-                opacity 0.21s ease;
+                opacity 0.21s ease,
+                transform 0.7s ease-in;
 }
 
 .look-page {
