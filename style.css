@@ -56,12 +56,6 @@ body.is-loaded {
     line-height: 1.05;
     display: inline-block;
     cursor: pointer;
-    transition: padding-right 0.4s ease-out;
-}
-
-.category:hover {
-    padding-right: 320px;
-    transition: padding-right 3s ease-out;
 }
 
 .category--shop {
@@ -82,11 +76,6 @@ body.is-loaded {
     pointer-events: none;
 }
 
-.category--shop:hover .stripe {
-    transform: translateY(0);
-    transition: transform 0.5s ease-out;
-    transition-delay: calc(0.3s + var(--i) * 0.1s);
-}
 
 .category--look {
     background: rgb(232, 26, 41);
@@ -107,11 +96,6 @@ body.is-loaded {
     pointer-events: none;
 }
 
-.category--look:hover .dot {
-    transform: translate(0, -50%);
-    transition: transform 0.5s ease-out;
-    transition-delay: calc(0.4s + var(--i) * 0.4s);
-}
 
 .category--about {
     background: rgb(224, 255, 237);

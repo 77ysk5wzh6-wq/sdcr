@@ -1510,6 +1510,7 @@
 
             var currentPage = 'home';
             var transitioning = false;
+            var overlayTextCleanupTimer = null;
 
             try {
                 if (!history.state) {
@@ -1542,6 +1543,11 @@
                 if (target === 'look') loadLookImages();
                 if (target === 'about') loadAboutImage();
                 if (target === 'shop') loadShopImages();
+
+                if (overlayTextCleanupTimer) {
+                    clearTimeout(overlayTextCleanupTimer);
+                    overlayTextCleanupTimer = null;
+                }
 
                 var newClass = target === 'look' ? 'is-look-active'
                                : target === 'about' ? 'is-about-active'
@@ -1659,11 +1665,12 @@
                     }
                 }, 2400);
 
-                setTimeout(function () {
+                overlayTextCleanupTimer = setTimeout(function () {
                     if (overlayText) {
                         overlayText.style.cssText = '';
                         overlayText.innerHTML = '';
                     }
+                    overlayTextCleanupTimer = null;
                 }, 3500);
             }
 
