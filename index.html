@@ -465,6 +465,19 @@
                     return;
                 }
                 if (authDrawer && authDrawer.contains(e.target)) {
+                    var itemLink = e.target.closest('.auth-order__item-link');
+                    if (itemLink) {
+                        var idx = parseInt(itemLink.getAttribute('data-shop-index'), 10);
+                        if (isNaN(idx)) idx = 0;
+                        closeAuthDrawer();
+                        if (currentPage === 'shop') {
+                            openDetail(idx);
+                        } else {
+                            navigateTo('shop');
+                            setTimeout(function () { openDetail(idx); }, 2300);
+                        }
+                        return;
+                    }
                     var viewSwitch = e.target.closest('[data-view]');
                     if (viewSwitch) {
                         setAuthView(viewSwitch.getAttribute('data-view'));
@@ -686,7 +699,7 @@
                     orders.push({
                         id: orderId,
                         date: new Date().toISOString(),
-                        items: cartData.map(function (i) { return { name: i.name, size: i.size, price: i.price, image: i.image }; }),
+                        items: cartData.map(function (i) { return { shopIndex: i.shopIndex, name: i.name, size: i.size, price: i.price, image: i.image }; }),
                         subtotal: subAmt,
                         shipping: shipAmt,
                         total: totAmt,
@@ -795,20 +808,52 @@
                     idEl.textContent = '주문번호 ' + order.id;
                     li.appendChild(idEl);
 
-                    var items = document.createElement('div');
-                    items.className = 'auth-order__items';
-                    items.textContent = order.items.map(function (i) {
-                        return i.name + ' (' + i.size + '사이즈)';
-                    }).join(', ');
-                    li.appendChild(items);
+                    var itemsBox = document.createElement('div');
+                    itemsBox.className = 'auth-order__items';
+                    order.items.forEach(function (it) {
+                        var idx = (typeof it.shopIndex === 'number') ? it.shopIndex : extractShopIndex(it);
+                        var link = document.createElement('button');
+                        link.type = 'button';
+                        link.className = 'auth-order__item-link';
+                        link.setAttribute('data-shop-index', idx);
+                        link.textContent = it.name + ' (' + it.size + '사이즈)';
+                        itemsBox.appendChild(link);
+                    });
+                    li.appendChild(itemsBox);
 
                     var total = document.createElement('div');
                     total.className = 'auth-order__total';
                     total.textContent = '총 ' + order.total.toLocaleString() + '원';
                     li.appendChild(total);
 
+                    var actions = document.createElement('div');
+                    actions.className = 'auth-order__actions';
+                    var ex = document.createElement('button');
+                    ex.type = 'button';
+                    ex.className = 'auth-order-btn';
+                    ex.setAttribute('data-action', 'order-exchange');
+                    ex.setAttribute('data-order-id', order.id);
+                    ex.textContent = '교환';
+                    var rt = document.createElement('button');
+                    rt.type = 'button';
+                    rt.className = 'auth-order-btn';
+                    rt.setAttribute('data-action', 'order-return');
+                    rt.setAttribute('data-order-id', order.id);
+                    rt.textContent = '반품';
+                    actions.appendChild(ex);
+                    actions.appendChild(rt);
+                    li.appendChild(actions);
+
                     list.appendChild(li);
                 });
+            }
+
+            function extractShopIndex(item) {
+                if (item && item.image) {
+                    var m = item.image.match(/shirt(\d+)/);
+                    if (m) return parseInt(m[1], 10) - 1;
+                }
+                return 0;
             }
 
             function findUserIndex(email) {
@@ -973,6 +1018,10 @@
                     saveAuth();
                     updateAuthUI();
                     setAuthView('profile-info');
+                } else if (action === 'order-exchange') {
+                    alert('교환 신청이 접수되었습니다 (데모)');
+                } else if (action === 'order-return') {
+                    alert('반품 신청이 접수되었습니다 (데모)');
                 } else if (action === 'logout') {
                     currentUser = null;
                     saveAuth();
@@ -1199,6 +1248,7 @@
                         return;
                     }
                     var item = {
+                        shopIndex: currentShirtIndex,
                         name: 'Gin Shirt(ravender)',
                         size: selectedSize,
                         price: 149000,
