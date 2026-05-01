@@ -368,6 +368,20 @@
         </div>
     </div>
 
+    <a href="#" class="info-button">info</a>
+
+    <aside class="info-drawer" aria-hidden="true">
+        <button type="button" class="info-drawer__close" aria-label="close">×</button>
+        <div class="info-row">
+            <span class="info-row__label">contact</span>
+            <span class="info-row__value">+82 10-1234-5678</span>
+        </div>
+        <div class="info-row">
+            <span class="info-row__label">email</span>
+            <span class="info-row__value">hello@sidecar.kr</span>
+        </div>
+    </aside>
+
     <script>
         (function () {
             requestAnimationFrame(function () {
@@ -582,6 +596,25 @@
                 if (authDrawer && authDrawer.classList.contains('is-open')) {
                     if (!e.target.closest('.auth-drawer') && !e.target.closest('.auth-button')) {
                         authDrawer.classList.remove('is-open');
+                    }
+                }
+
+                var infoBtn = e.target.closest('.info-button');
+                if (infoBtn) {
+                    e.preventDefault();
+                    var iDrawer = document.querySelector('.info-drawer');
+                    if (iDrawer) iDrawer.classList.toggle('is-open');
+                    return;
+                }
+                if (e.target.closest('.info-drawer__close')) {
+                    var iDrawer2 = document.querySelector('.info-drawer');
+                    if (iDrawer2) iDrawer2.classList.remove('is-open');
+                    return;
+                }
+                var infoDrawerEl = document.querySelector('.info-drawer');
+                if (infoDrawerEl && infoDrawerEl.classList.contains('is-open')) {
+                    if (!e.target.closest('.info-drawer') && !e.target.closest('.info-button')) {
+                        infoDrawerEl.classList.remove('is-open');
                     }
                 }
             });
