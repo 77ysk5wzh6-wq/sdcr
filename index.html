@@ -1573,7 +1573,7 @@
                     overlayText.style.left = rect.left + 'px';
                     overlayText.style.width = rect.width + 'px';
                     overlayText.style.height = rect.height + 'px';
-                    overlayText.classList.add('is-visible');
+                    overlayText.style.opacity = '1';
                     overlayText.offsetHeight;
                 }
 
@@ -1624,8 +1624,11 @@
                 }, 1190);
 
                 setTimeout(function () {
-                    if (overlayText) overlayText.classList.remove('is-visible');
-                }, 2190);
+                    if (overlayText) {
+                        overlayText.style.transition = 'opacity 1.05s ease';
+                        overlayText.style.opacity = '0';
+                    }
+                }, 2400);
 
                 if (!isShop) {
                     setTimeout(function () {
@@ -1640,15 +1643,17 @@
                     ovl.classList.remove('is-sliding-out');
                     ovl.style.cssText = '';
                     ovl.innerHTML = '';
-                    if (overlayText) {
-                        overlayText.classList.remove('is-visible');
-                        overlayText.style.cssText = '';
-                        overlayText.innerHTML = '';
-                    }
                     if (target === 'look') {
                         startMarquee();
                     }
                 }, 2400);
+
+                setTimeout(function () {
+                    if (overlayText) {
+                        overlayText.style.cssText = '';
+                        overlayText.innerHTML = '';
+                    }
+                }, 3500);
             }
 
             look.addEventListener('click', function (e) {

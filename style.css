@@ -190,7 +190,7 @@ body.is-loaded {
 
 .is-page-active .categories {
     opacity: 0;
-    animation: categoriesFadeIn 1.05s ease 1s forwards;
+    animation: categoriesFadeIn 1.05s ease 1.2s forwards;
 }
 
 .shop-page {
