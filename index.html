@@ -1552,10 +1552,11 @@
                 var catsEl = document.querySelector('.categories');
                 if (catsEl) {
                     catsEl.style.transition = 'none';
-                    document.body.classList.add('is-categories-out');
+                    catsEl.style.opacity = '1';
                     catsEl.offsetHeight;
                     catsEl.style.transition = '';
                 }
+                document.body.classList.remove('is-categories-out');
 
                 var newClass = target === 'look' ? 'is-look-active'
                                : target === 'about' ? 'is-about-active'
@@ -1567,6 +1568,8 @@
                 var isShop = target === 'shop';
 
                 var rect = btn.getBoundingClientRect();
+                var btnStyles = window.getComputedStyle(btn);
+                var btnPadX = (parseFloat(btnStyles.paddingLeft) || 0) + (parseFloat(btnStyles.paddingRight) || 0);
                 var naturalRect = {
                     top: rect.top,
                     left: rect.left,
@@ -1576,7 +1579,7 @@
                 var textSpan = btn.querySelector('.category__text');
                 if (textSpan) {
                     var textRect = textSpan.getBoundingClientRect();
-                    naturalRect.width = textRect.width + 16;
+                    naturalRect.width = textRect.width + btnPadX;
                 }
                 ovl.style.top = rect.top + 'px';
                 ovl.style.left = rect.left + 'px';
@@ -1618,6 +1621,13 @@
                 }, 630);
 
                 setTimeout(function () {
+                    if (catsEl) {
+                        catsEl.style.transition = 'none';
+                        catsEl.style.opacity = '';
+                        catsEl.offsetHeight;
+                        catsEl.style.transition = '';
+                    }
+                    document.body.classList.add('is-categories-out');
                     if (oldClass) document.body.classList.remove(oldClass);
                     document.body.classList.remove('is-detail-active');
                     document.body.classList.remove('is-checkout-active');
@@ -1641,10 +1651,24 @@
                     if (isShop) {
                         ovl.classList.add('is-sliding-out');
                     }
+                    var postRect = btn.getBoundingClientRect();
+                    var postStyles = window.getComputedStyle(btn);
+                    var postPadX = (parseFloat(postStyles.paddingLeft) || 0) + (parseFloat(postStyles.paddingRight) || 0);
+                    var postTextSpan = btn.querySelector('.category__text');
+                    var postTargetWidth = postRect.width;
+                    if (postTextSpan) {
+                        postTargetWidth = postTextSpan.getBoundingClientRect().width + postPadX;
+                    }
+                    naturalRect.top = postRect.top;
+                    naturalRect.left = postRect.left;
+                    naturalRect.width = postTargetWidth;
+                    naturalRect.height = postRect.height;
                     if (overlayText) {
-                        overlayText.style.transition = 'left 1s ease-in-out, width 1s ease-in-out';
+                        overlayText.style.transition = 'top 1s ease-in-out, left 1s ease-in-out, width 1s ease-in-out, height 1s ease-in-out';
+                        overlayText.style.top = naturalRect.top + 'px';
                         overlayText.style.left = naturalRect.left + 'px';
                         overlayText.style.width = naturalRect.width + 'px';
+                        overlayText.style.height = naturalRect.height + 'px';
                     }
                 }, 1190);
 

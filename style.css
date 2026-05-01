@@ -178,6 +178,7 @@ body.is-loaded {
 
 body.is-categories-out .categories {
     opacity: 0;
+    transition: none;
 }
 
 .shop-page {
