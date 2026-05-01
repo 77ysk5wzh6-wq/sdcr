@@ -412,6 +412,14 @@ body.is-loaded {
     cursor: pointer;
 }
 
+@media (hover: hover) {
+    .cart-button:hover,
+    .auth-button:hover {
+        text-decoration: underline;
+        text-underline-offset: 3px;
+    }
+}
+
 .auth-drawer {
     position: fixed;
     top: 0;
