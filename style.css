@@ -55,6 +55,7 @@ body.is-loaded {
     padding: 1px 8px;
     line-height: 1.05;
     display: inline-block;
+    cursor: pointer;
     transition: padding-right 0.4s ease-out;
 }
 
@@ -919,6 +920,7 @@ body.is-member .checkout-section--guest-only {
     font-size: 14px;
     color: #000000;
     text-decoration: none;
+    cursor: pointer;
 }
 
 .checkout-title {
@@ -1448,6 +1450,7 @@ body.is-member .checkout-section--guest-only {
     color: #000000;
     text-decoration: underline;
     width: fit-content;
+    cursor: pointer;
 }
 
 .detail-info__cart {
