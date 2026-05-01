@@ -24,56 +24,85 @@
         <a href="#" class="cart-button">Bag (0)</a>
     </div>
 
-    <div class="auth-modal" aria-hidden="true">
-        <div class="auth-modal__panel">
-            <button type="button" class="auth-modal__close" aria-label="close">×</button>
+    <aside class="auth-drawer" aria-hidden="true">
+        <div class="auth-drawer__header">
+            <h2 class="auth-drawer__title">로그인 또는 회원가입</h2>
+            <button type="button" class="auth-drawer__close" aria-label="close">×</button>
+        </div>
+        <div class="auth-drawer__body">
 
-            <div class="auth-modal__tabs">
-                <button type="button" class="auth-tab is-active" data-tab="login">Log in</button>
-                <button type="button" class="auth-tab" data-tab="signup">Sign up</button>
+            <div class="auth-view auth-view--login is-active">
+                <form class="auth-fields" data-form="login" novalidate>
+                    <input class="auth-input" name="email" type="text" placeholder="아이디 또는 이메일" autocomplete="email">
+                    <input class="auth-input" name="password" type="password" placeholder="비밀번호" autocomplete="current-password">
+                </form>
+                <button type="button" class="auth-btn" data-action="submit-login">로그인</button>
+                <button type="button" class="auth-btn" data-view="signup">회원가입</button>
+                <p class="auth-message" data-message-for="login" hidden></p>
+                <div class="auth-links">
+                    <button type="button" class="auth-link" data-view="find-id">아이디 찾기</button>
+                    <button type="button" class="auth-link" data-view="find-pwd">비밀번호 찾기</button>
+                </div>
+                <div class="auth-sns">
+                    <p class="auth-sns__title">SNS 계정을 연동해 간편하게 로그인해보세요</p>
+                    <button type="button" class="auth-sns-btn auth-sns-btn--kakao">카카오로 시작하기</button>
+                    <button type="button" class="auth-sns-btn auth-sns-btn--naver">네이버로 시작하기</button>
+                </div>
+                <p class="auth-info">※ sidecar는 ㈜sidecar가 운영하는 사이트입니다.<br>본 사이트에 가입하시면, 당사가 운영하는 기타<br>사이트에 동시에 사용 가능합니다.</p>
+                <button type="button" class="auth-link auth-link--solo" data-view="order-lookup">비회원주문조회</button>
             </div>
 
-            <form class="auth-form auth-form--login is-active" novalidate>
-                <div class="auth-field">
-                    <label for="auth-login-email">이메일</label>
-                    <input id="auth-login-email" name="email" type="email" autocomplete="email">
-                </div>
-                <div class="auth-field">
-                    <label for="auth-login-password">비밀번호</label>
-                    <input id="auth-login-password" name="password" type="password" autocomplete="current-password">
-                </div>
-                <button type="submit" class="auth-submit">로그인</button>
-                <p class="auth-message" hidden></p>
-            </form>
+            <div class="auth-view auth-view--signup">
+                <button type="button" class="auth-back" data-view="login">← 로그인으로 돌아가기</button>
+                <form class="auth-fields" data-form="signup" novalidate>
+                    <input class="auth-input" name="name" type="text" placeholder="이름" autocomplete="name">
+                    <input class="auth-input" name="email" type="email" placeholder="이메일" autocomplete="email">
+                    <input class="auth-input" name="password" type="password" placeholder="비밀번호 (4자 이상)" autocomplete="new-password">
+                    <input class="auth-input" name="password2" type="password" placeholder="비밀번호 확인" autocomplete="new-password">
+                </form>
+                <button type="button" class="auth-btn" data-action="submit-signup">회원가입</button>
+                <p class="auth-message" data-message-for="signup" hidden></p>
+            </div>
 
-            <form class="auth-form auth-form--signup" novalidate>
-                <div class="auth-field">
-                    <label for="auth-signup-name">이름</label>
-                    <input id="auth-signup-name" name="name" type="text" autocomplete="name">
-                </div>
-                <div class="auth-field">
-                    <label for="auth-signup-email">이메일</label>
-                    <input id="auth-signup-email" name="email" type="email" autocomplete="email">
-                </div>
-                <div class="auth-field">
-                    <label for="auth-signup-password">비밀번호</label>
-                    <input id="auth-signup-password" name="password" type="password" autocomplete="new-password">
-                </div>
-                <div class="auth-field">
-                    <label for="auth-signup-password2">비밀번호 확인</label>
-                    <input id="auth-signup-password2" name="password2" type="password" autocomplete="new-password">
-                </div>
-                <button type="submit" class="auth-submit">회원가입</button>
-                <p class="auth-message" hidden></p>
-            </form>
+            <div class="auth-view auth-view--find-id">
+                <button type="button" class="auth-back" data-view="login">← 로그인으로 돌아가기</button>
+                <p class="auth-hint">가입 시 등록한 이메일을 입력하세요.</p>
+                <form class="auth-fields" data-form="find-id" novalidate>
+                    <input class="auth-input" name="email" type="email" placeholder="이메일">
+                </form>
+                <button type="button" class="auth-btn" data-action="submit-find-id">아이디 찾기</button>
+                <p class="auth-message" data-message-for="find-id" hidden></p>
+            </div>
 
-            <div class="auth-form auth-form--profile">
+            <div class="auth-view auth-view--find-pwd">
+                <button type="button" class="auth-back" data-view="login">← 로그인으로 돌아가기</button>
+                <p class="auth-hint">가입 시 등록한 이메일로 임시 비밀번호를 보내드립니다.</p>
+                <form class="auth-fields" data-form="find-pwd" novalidate>
+                    <input class="auth-input" name="email" type="email" placeholder="이메일">
+                </form>
+                <button type="button" class="auth-btn" data-action="submit-find-pwd">임시 비밀번호 발송</button>
+                <p class="auth-message" data-message-for="find-pwd" hidden></p>
+            </div>
+
+            <div class="auth-view auth-view--order-lookup">
+                <button type="button" class="auth-back" data-view="login">← 로그인으로 돌아가기</button>
+                <p class="auth-hint">주문번호와 주문 시 설정한 조회 비밀번호로 조회합니다.</p>
+                <form class="auth-fields" data-form="order-lookup" novalidate>
+                    <input class="auth-input" name="orderNumber" type="text" placeholder="주문번호">
+                    <input class="auth-input" name="password" type="password" placeholder="주문 조회 비밀번호">
+                </form>
+                <button type="button" class="auth-btn" data-action="submit-order-lookup">주문 조회</button>
+                <p class="auth-message" data-message-for="order-lookup" hidden></p>
+            </div>
+
+            <div class="auth-view auth-view--profile">
                 <p class="auth-profile-greeting">반갑습니다, <span class="auth-profile-name"></span> 님</p>
                 <p class="auth-profile-email"></p>
-                <button type="button" class="auth-submit auth-logout-btn">로그아웃</button>
+                <button type="button" class="auth-btn" data-action="logout">로그아웃</button>
             </div>
+
         </div>
-    </div>
+    </aside>
 
     <aside class="cart-drawer" aria-hidden="true">
         <div class="cart-drawer__header">
@@ -402,23 +431,32 @@
                 var authTrigger = e.target.closest('.auth-button');
                 if (authTrigger) {
                     e.preventDefault();
-                    openAuthModal();
+                    openAuthDrawer();
                     return;
                 }
-                if (e.target.closest('.auth-modal__close')) {
-                    closeAuthModal();
+                if (e.target.closest('.auth-drawer__close')) {
+                    closeAuthDrawer();
                     return;
                 }
-                if (e.target.classList && e.target.classList.contains('auth-modal')) {
-                    closeAuthModal();
-                    return;
-                }
-                if (e.target.closest('.auth-logout-btn')) {
-                    currentUser = null;
-                    saveAuth();
-                    updateAuthUI();
-                    closeAuthModal();
-                    return;
+                if (authDrawer && authDrawer.contains(e.target)) {
+                    var viewSwitch = e.target.closest('[data-view]');
+                    if (viewSwitch) {
+                        setAuthView(viewSwitch.getAttribute('data-view'));
+                        return;
+                    }
+                    var actionBtn = e.target.closest('[data-action]');
+                    if (actionBtn) {
+                        handleAuthAction(actionBtn.getAttribute('data-action'));
+                        return;
+                    }
+                    if (e.target.closest('.auth-sns-btn--kakao')) {
+                        alert('카카오 로그인은 준비 중입니다');
+                        return;
+                    }
+                    if (e.target.closest('.auth-sns-btn--naver')) {
+                        alert('네이버 로그인은 준비 중입니다');
+                        return;
+                    }
                 }
                 var openTrigger = e.target.closest('.cart-button');
                 if (openTrigger) {
@@ -445,6 +483,11 @@
                 if (drawerEl && drawerEl.classList.contains('is-open')) {
                     if (!e.target.closest('.cart-drawer') && !e.target.closest('.cart-button')) {
                         drawerEl.classList.remove('is-open');
+                    }
+                }
+                if (authDrawer && authDrawer.classList.contains('is-open')) {
+                    if (!e.target.closest('.auth-drawer') && !e.target.closest('.auth-button')) {
+                        authDrawer.classList.remove('is-open');
                     }
                 }
             });
@@ -626,12 +669,7 @@
             renderCart();
 
             var authButton = document.querySelector('.auth-button');
-            var authModal = document.querySelector('.auth-modal');
-            var authTabs = document.querySelectorAll('.auth-tab');
-            var authLoginForm = document.querySelector('.auth-form--login');
-            var authSignupForm = document.querySelector('.auth-form--signup');
-            var authProfileName = document.querySelector('.auth-profile-name');
-            var authProfileEmail = document.querySelector('.auth-profile-email');
+            var authDrawer = document.querySelector('.auth-drawer');
 
             var users = [];
             var currentUser = null;
@@ -659,115 +697,122 @@
                 if (authButton) {
                     authButton.textContent = currentUser ? currentUser.name : 'Log in';
                 }
-                if (authModal) {
-                    authModal.classList.toggle('is-logged-in', !!currentUser);
-                }
-                if (currentUser) {
-                    if (authProfileName) authProfileName.textContent = currentUser.name;
-                    if (authProfileEmail) authProfileEmail.textContent = currentUser.email;
+                if (currentUser && authDrawer) {
+                    var nameSpan = authDrawer.querySelector('.auth-profile-name');
+                    var emailSpan = authDrawer.querySelector('.auth-profile-email');
+                    if (nameSpan) nameSpan.textContent = currentUser.name;
+                    if (emailSpan) emailSpan.textContent = currentUser.email;
                 }
             }
 
-            function setAuthMessage(form, msg) {
-                if (!form) return;
-                var el = form.querySelector('.auth-message');
+            function setAuthView(viewName) {
+                if (!authDrawer) return;
+                var views = authDrawer.querySelectorAll('.auth-view');
+                views.forEach(function (v) {
+                    v.classList.toggle('is-active', v.classList.contains('auth-view--' + viewName));
+                });
+                authDrawer.querySelectorAll('.auth-message').forEach(function (m) {
+                    m.hidden = true;
+                    m.textContent = '';
+                    m.classList.remove('is-success');
+                });
+            }
+
+            function setAuthMessage(formKey, msg, isSuccess) {
+                if (!authDrawer) return;
+                var el = authDrawer.querySelector('.auth-message[data-message-for="' + formKey + '"]');
                 if (!el) return;
                 if (msg) {
                     el.textContent = msg;
                     el.hidden = false;
+                    el.classList.toggle('is-success', !!isSuccess);
                 } else {
                     el.textContent = '';
                     el.hidden = true;
                 }
             }
 
-            function openAuthModal() {
-                if (authModal) authModal.classList.add('is-open');
+            function openAuthDrawer() {
+                if (!authDrawer) return;
+                setAuthView(currentUser ? 'profile' : 'login');
+                authDrawer.classList.add('is-open');
             }
 
-            function closeAuthModal() {
-                if (authModal) authModal.classList.remove('is-open');
-                if (authLoginForm) {
-                    authLoginForm.reset();
-                    setAuthMessage(authLoginForm, '');
-                }
-                if (authSignupForm) {
-                    authSignupForm.reset();
-                    setAuthMessage(authSignupForm, '');
-                }
+            function closeAuthDrawer() {
+                if (authDrawer) authDrawer.classList.remove('is-open');
             }
 
-            authTabs.forEach(function (tab) {
-                tab.addEventListener('click', function () {
-                    var target = tab.getAttribute('data-tab');
-                    authTabs.forEach(function (t) { t.classList.toggle('is-active', t === tab); });
-                    if (authLoginForm) authLoginForm.classList.toggle('is-active', target === 'login');
-                    if (authSignupForm) authSignupForm.classList.toggle('is-active', target === 'signup');
-                });
-            });
+            function getAuthForm(viewName) {
+                return authDrawer.querySelector('.auth-view--' + viewName + ' form');
+            }
 
-            if (authLoginForm) {
-                authLoginForm.addEventListener('submit', function (e) {
-                    e.preventDefault();
-                    var email = authLoginForm.email.value.trim();
-                    var password = authLoginForm.password.value;
-                    if (!email || !password) {
-                        setAuthMessage(authLoginForm, '이메일과 비밀번호를 입력해주세요');
-                        return;
-                    }
+            function handleAuthAction(action) {
+                if (action === 'submit-login') {
+                    var f = getAuthForm('login');
+                    var email = f.email.value.trim();
+                    var pwd = f.password.value;
+                    if (!email || !pwd) { setAuthMessage('login', '아이디와 비밀번호를 입력해주세요'); return; }
                     var match = null;
                     for (var i = 0; i < users.length; i++) {
-                        if (users[i].email === email && users[i].password === password) {
-                            match = users[i];
-                            break;
+                        if ((users[i].email === email || users[i].name === email) && users[i].password === pwd) {
+                            match = users[i]; break;
                         }
                     }
-                    if (!match) {
-                        setAuthMessage(authLoginForm, '이메일 또는 비밀번호가 올바르지 않습니다');
-                        return;
-                    }
+                    if (!match) { setAuthMessage('login', '아이디 또는 비밀번호가 올바르지 않습니다'); return; }
                     currentUser = { email: match.email, name: match.name };
                     saveAuth();
                     updateAuthUI();
-                    closeAuthModal();
-                });
-            }
-
-            if (authSignupForm) {
-                authSignupForm.addEventListener('submit', function (e) {
-                    e.preventDefault();
-                    var nameVal = authSignupForm.name.value.trim();
-                    var emailVal = authSignupForm.email.value.trim();
-                    var pwd = authSignupForm.password.value;
-                    var pwd2 = authSignupForm.password2.value;
-                    if (!nameVal || !emailVal || !pwd) {
-                        setAuthMessage(authSignupForm, '모든 필드를 입력해주세요');
-                        return;
-                    }
-                    if (emailVal.indexOf('@') === -1) {
-                        setAuthMessage(authSignupForm, '올바른 이메일을 입력해주세요');
-                        return;
-                    }
-                    if (pwd.length < 4) {
-                        setAuthMessage(authSignupForm, '비밀번호는 4자 이상이어야 합니다');
-                        return;
-                    }
-                    if (pwd !== pwd2) {
-                        setAuthMessage(authSignupForm, '비밀번호가 일치하지 않습니다');
-                        return;
-                    }
+                    closeAuthDrawer();
+                } else if (action === 'submit-signup') {
+                    var f2 = getAuthForm('signup');
+                    var nm = f2.name.value.trim();
+                    var em = f2.email.value.trim();
+                    var p = f2.password.value;
+                    var p2 = f2.password2.value;
+                    if (!nm || !em || !p) { setAuthMessage('signup', '모든 필드를 입력해주세요'); return; }
+                    if (em.indexOf('@') === -1) { setAuthMessage('signup', '올바른 이메일을 입력해주세요'); return; }
+                    if (p.length < 4) { setAuthMessage('signup', '비밀번호는 4자 이상이어야 합니다'); return; }
+                    if (p !== p2) { setAuthMessage('signup', '비밀번호가 일치하지 않습니다'); return; }
                     for (var j = 0; j < users.length; j++) {
-                        if (users[j].email === emailVal) {
-                            setAuthMessage(authSignupForm, '이미 등록된 이메일입니다');
-                            return;
-                        }
+                        if (users[j].email === em) { setAuthMessage('signup', '이미 등록된 이메일입니다'); return; }
                     }
-                    users.push({ name: nameVal, email: emailVal, password: pwd });
-                    currentUser = { email: emailVal, name: nameVal };
+                    users.push({ name: nm, email: em, password: p });
+                    currentUser = { email: em, name: nm };
                     saveAuth();
                     updateAuthUI();
-                    closeAuthModal();
-                });
+                    closeAuthDrawer();
+                } else if (action === 'submit-find-id') {
+                    var f3 = getAuthForm('find-id');
+                    var em3 = f3.email.value.trim();
+                    if (!em3) { setAuthMessage('find-id', '이메일을 입력해주세요'); return; }
+                    var found = null;
+                    for (var k = 0; k < users.length; k++) {
+                        if (users[k].email === em3) { found = users[k]; break; }
+                    }
+                    if (found) setAuthMessage('find-id', '회원님의 아이디는 ' + found.email + ' 입니다', true);
+                    else setAuthMessage('find-id', '등록된 회원이 없습니다');
+                } else if (action === 'submit-find-pwd') {
+                    var f4 = getAuthForm('find-pwd');
+                    var em4 = f4.email.value.trim();
+                    if (!em4) { setAuthMessage('find-pwd', '이메일을 입력해주세요'); return; }
+                    var ok = false;
+                    for (var l = 0; l < users.length; l++) {
+                        if (users[l].email === em4) { ok = true; break; }
+                    }
+                    if (ok) setAuthMessage('find-pwd', '임시 비밀번호가 이메일로 발송되었습니다 (데모)', true);
+                    else setAuthMessage('find-pwd', '등록된 회원이 없습니다');
+                } else if (action === 'submit-order-lookup') {
+                    var f5 = getAuthForm('order-lookup');
+                    var num = f5.orderNumber.value.trim();
+                    var op = f5.password.value;
+                    if (!num || !op) { setAuthMessage('order-lookup', '주문번호와 비밀번호를 입력해주세요'); return; }
+                    setAuthMessage('order-lookup', '해당 주문 내역이 없습니다 (데모)');
+                } else if (action === 'logout') {
+                    currentUser = null;
+                    saveAuth();
+                    updateAuthUI();
+                    closeAuthDrawer();
+                }
             }
 
             updateAuthUI();
