@@ -695,13 +695,22 @@ body.is-member .checkout-section--guest-only {
 
 @media (max-width: 768px) {
     .header-actions {
-        top: 40px;
-        right: 16px;
-        gap: 14px;
+        display: contents;
     }
 
-    .cart-button,
     .auth-button {
+        position: fixed;
+        top: 40px;
+        left: 16px;
+        z-index: 95;
+        font-size: 16px;
+    }
+
+    .cart-button {
+        position: fixed;
+        top: 40px;
+        right: 16px;
+        z-index: 95;
         font-size: 16px;
     }
 }
