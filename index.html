@@ -1620,6 +1620,13 @@
                 ovl.classList.add('is-active');
 
                 var overlayText = document.querySelector('.transition-overlay-text');
+                var overlayTextAbsolute = false;
+                if (overlayText) {
+                    overlayTextAbsolute = window.getComputedStyle(overlayText).position === 'absolute';
+                }
+                function topFor(viewportY) {
+                    return overlayTextAbsolute ? viewportY + window.scrollY : viewportY;
+                }
                 if (overlayText) {
                     var labelHtml = '';
                     for (var ch = 0; ch < target.length; ch++) {
@@ -1627,7 +1634,7 @@
                     }
                     overlayText.innerHTML = labelHtml;
                     overlayText.style.transition = 'none';
-                    overlayText.style.top = rect.top + 'px';
+                    overlayText.style.top = topFor(rect.top) + 'px';
                     overlayText.style.left = rect.left + 'px';
                     overlayText.style.width = rect.width + 'px';
                     overlayText.style.height = rect.height + 'px';
@@ -1695,7 +1702,7 @@
                     naturalRect.height = postRect.height;
                     if (overlayText) {
                         overlayText.style.transition = 'top 1s ease-in-out, left 1s ease-in-out, width 1s ease-in-out, height 1s ease-in-out';
-                        overlayText.style.top = naturalRect.top + 'px';
+                        overlayText.style.top = topFor(naturalRect.top) + 'px';
                         overlayText.style.left = naturalRect.left + 'px';
                         overlayText.style.width = naturalRect.width + 'px';
                         overlayText.style.height = naturalRect.height + 'px';
