@@ -379,8 +379,8 @@
                 var loading = document.querySelector('.loading-screen');
                 if (!loading) return;
                 var portrait = window.innerHeight > window.innerWidth;
-                var rows = portrait ? 7 : 3;
-                var cols = portrait ? 3 : 7;
+                var rows = portrait ? 12 : 5;
+                var cols = portrait ? 5 : 12;
                 loading.style.gridTemplateColumns = 'repeat(' + cols + ', 1fr)';
                 loading.style.gridTemplateRows = 'repeat(' + rows + ', 1fr)';
                 var total = rows * cols;
