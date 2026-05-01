@@ -1553,6 +1553,17 @@
                 var isShop = target === 'shop';
 
                 var rect = btn.getBoundingClientRect();
+                var naturalRect = {
+                    top: rect.top,
+                    left: rect.left,
+                    width: rect.width,
+                    height: rect.height
+                };
+                var textSpan = btn.querySelector('.category__text');
+                if (textSpan) {
+                    var textRect = textSpan.getBoundingClientRect();
+                    naturalRect.width = textRect.width + 16;
+                }
                 ovl.style.top = rect.top + 'px';
                 ovl.style.left = rect.left + 'px';
                 ovl.style.width = rect.width + 'px';
@@ -1618,8 +1629,8 @@
                     }
                     if (overlayText) {
                         overlayText.style.transition = 'left 1s ease-in-out, width 1s ease-in-out';
-                        overlayText.style.left = rect.left + 'px';
-                        overlayText.style.width = rect.width + 'px';
+                        overlayText.style.left = naturalRect.left + 'px';
+                        overlayText.style.width = naturalRect.width + 'px';
                     }
                 }, 1190);
 
