@@ -136,6 +136,20 @@ body.is-loaded {
     text-align: center;
 }
 
+.headline__char {
+    display: inline-block;
+    transform: translateX(0);
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+}
+
+.category__char {
+    display: inline-block;
+    transform: translateX(0);
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+}
+
 .headline__line + .headline__line {
     margin-top: 0;
 }
