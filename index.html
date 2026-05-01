@@ -1557,6 +1557,11 @@
                 ovl.style.width = rect.width + 'px';
                 ovl.style.height = rect.height + 'px';
                 ovl.style.opacity = '1';
+                var labelHtml = '';
+                for (var ch = 0; ch < target.length; ch++) {
+                    labelHtml += '<span class="transition-overlay__char">' + target.charAt(ch) + '</span>';
+                }
+                ovl.innerHTML = labelHtml;
                 ovl.offsetHeight;
                 ovl.classList.add('is-active');
 
@@ -1608,6 +1613,7 @@
                     ovl.classList.remove('is-active');
                     ovl.classList.remove('is-sliding-out');
                     ovl.style.cssText = '';
+                    ovl.innerHTML = '';
                     if (target === 'look') {
                         startMarquee();
                     }
