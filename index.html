@@ -13,7 +13,6 @@
     <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js" defer></script>
 </head>
 <body>
-    <div class="loading-screen" aria-hidden="true"></div>
     <header class="logo">
         <a href="index.html" class="logo__link">
             <img src="assets/logo.png" alt="sdcr" class="logo__image">
@@ -374,40 +373,6 @@
             requestAnimationFrame(function () {
                 document.body.classList.add('is-loaded');
             });
-
-            (function setupLoadingScreen() {
-                var loading = document.querySelector('.loading-screen');
-                if (!loading) return;
-                var portrait = window.innerHeight > window.innerWidth;
-                var rows = portrait ? 7 : 3;
-                var cols = portrait ? 3 : 7;
-                loading.style.gridTemplateColumns = 'repeat(' + cols + ', 1fr)';
-                loading.style.gridTemplateRows = 'repeat(' + rows + ', 1fr)';
-                var total = rows * cols;
-                var colors = ['rgb(184, 135, 196)', 'rgb(232, 26, 41)', 'rgb(224, 255, 237)'];
-                var tiles = [];
-                for (var i = 0; i < total; i++) {
-                    var tile = document.createElement('div');
-                    tile.className = 'loading-tile';
-                    tile.style.background = colors[Math.floor(Math.random() * colors.length)];
-                    loading.appendChild(tile);
-                    tiles.push(tile);
-                }
-                requestAnimationFrame(function () {
-                    requestAnimationFrame(function () {
-                        tiles.forEach(function (t) {
-                            var start = Math.random() * 1.5;
-                            var rest = 2 - start;
-                            var minDur = 0.2;
-                            var maxDur = rest > minDur ? rest : minDur;
-                            var duration = minDur + Math.random() * (maxDur - minDur);
-                            t.style.transition = 'opacity ' + duration.toFixed(3) + 's linear ' + start.toFixed(3) + 's';
-                            t.style.opacity = '0';
-                        });
-                    });
-                });
-                setTimeout(function () { loading.classList.add('is-done'); }, 2200);
-            })();
 
             var cartData = [];
             var cartButton = document.querySelector('.cart-button');
