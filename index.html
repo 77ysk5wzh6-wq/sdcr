@@ -391,6 +391,11 @@
 
     <script>
         (function () {
+            try {
+                if ('scrollRestoration' in history) {
+                    history.scrollRestoration = 'manual';
+                }
+            } catch (err) {}
             requestAnimationFrame(function () {
                 document.body.classList.add('is-loaded');
             });
@@ -1416,11 +1421,11 @@
                     var dp = document.querySelector('.detail-page');
                     if (dp) {
                         dp.style.transition = 'none';
-                        document.body.classList.remove('is-detail-active');
+                        closeDetail();
                         dp.offsetHeight;
                         dp.style.transition = '';
                     } else {
-                        document.body.classList.remove('is-detail-active');
+                        closeDetail();
                     }
                     var st = history.state;
                     if (st && st.detail !== undefined) {
@@ -1510,8 +1515,10 @@
                 });
             }
 
+            var shopScrollY = 0;
             function openDetail(shopIndex, fromPopstate) {
                 if (!document.body.classList.contains('is-shop-active')) return;
+                shopScrollY = window.scrollY;
                 loadDetailContent(shopIndex);
                 document.body.classList.add('is-detail-active');
                 window.scrollTo(0, 0);
@@ -1521,6 +1528,14 @@
                         history.pushState({ page: 'shop', detail: shopIndex }, '', '#shop/' + shopIndex);
                     } catch (err) {}
                 }
+            }
+            function closeDetail() {
+                document.body.classList.remove('is-detail-active');
+                var y = shopScrollY;
+                window.scrollTo(0, y);
+                requestAnimationFrame(function () {
+                    window.scrollTo(0, y);
+                });
             }
 
             function jumpToShop() {
@@ -1813,7 +1828,7 @@
                     if (hasDetail && !currentHasDetail) {
                         openDetail(state.detail, true);
                     } else if (!hasDetail && currentHasDetail) {
-                        document.body.classList.remove('is-detail-active');
+                        closeDetail();
                     }
                 } else {
                     if (currentHasDetail) {
