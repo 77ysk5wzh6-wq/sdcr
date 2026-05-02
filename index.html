@@ -26,18 +26,17 @@
 
     <aside class="auth-drawer" aria-hidden="true">
         <div class="auth-drawer__header">
-            <h2 class="auth-drawer__title">로그인 또는 회원가입</h2>
             <button type="button" class="auth-drawer__close" aria-label="close">×</button>
         </div>
         <div class="auth-drawer__body">
 
             <div class="auth-view auth-view--login is-active">
                 <form class="auth-fields" data-form="login" novalidate>
-                    <input class="auth-input" name="email" type="text" placeholder="아이디 또는 이메일" autocomplete="email">
-                    <input class="auth-input" name="password" type="password" placeholder="비밀번호" autocomplete="current-password">
+                    <input class="auth-input" name="email" type="text" placeholder="e-mail" autocomplete="email">
+                    <input class="auth-input" name="password" type="password" placeholder="password" autocomplete="current-password">
                 </form>
-                <button type="button" class="auth-btn" data-action="submit-login">로그인</button>
-                <button type="button" class="auth-btn" data-view="signup">회원가입</button>
+                <button type="button" class="auth-btn" data-action="submit-login">login</button>
+                <button type="button" class="auth-btn" data-view="signup">create account</button>
                 <p class="auth-message" data-message-for="login" hidden></p>
                 <div class="auth-links">
                     <button type="button" class="auth-link" data-view="find-id">아이디 찾기</button>

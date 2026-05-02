@@ -477,7 +477,7 @@ body.is-categories-out .categories {
 
 .auth-drawer__header {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
     padding: 24px 28px 18px;
 }
@@ -517,15 +517,28 @@ body.is-categories-out .categories {
     display: block;
 }
 
+.auth-view--login,
+.auth-view--login .auth-input,
+.auth-view--login .auth-btn {
+    font-family: 'Cormorant Garamond', serif;
+}
+
+.auth-view--login .auth-input {
+    font-size: 16px;
+}
+
+.auth-view--login .auth-btn {
+    font-size: 16px;
+}
+
 .auth-fields {
-    border: 1px solid #000000;
     margin-bottom: 14px;
 }
 
 .auth-input {
     display: block;
     width: 100%;
-    padding: 16px;
+    padding: 14px 4px;
     border: none;
     border-bottom: 1px solid #000000;
     background: transparent;
@@ -537,8 +550,8 @@ body.is-categories-out .categories {
     border-radius: 0;
 }
 
-.auth-input:last-child {
-    border-bottom: none;
+.auth-input + .auth-input {
+    margin-top: 6px;
 }
 
 .auth-btn {
@@ -546,7 +559,7 @@ body.is-categories-out .categories {
     width: 100%;
     padding: 14px;
     border: 1px solid #000000;
-    background: #ffffff;
+    background: transparent;
     color: #000000;
     font-family: inherit;
     font-size: 14px;
@@ -575,11 +588,11 @@ body.is-categories-out .categories {
     background: transparent;
     border: none;
     padding: 0 0 1px;
-    font-family: inherit;
+    font-family: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     font-size: 13px;
-    color: #555555;
+    color: #000000;
     cursor: pointer;
-    border-bottom: 1px solid #cccccc;
+    border-bottom: 1px solid #000000;
 }
 
 .auth-link--solo {
