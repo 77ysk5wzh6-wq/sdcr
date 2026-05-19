@@ -130,7 +130,7 @@ body.is-loaded {
 .headline__line {
     font-family: 'Cormorant Garamond', serif;
     font-weight: 400;
-    font-size: 180px;
+    font-size: clamp(96px, 11vw, 220px);
     line-height: 0.78;
     letter-spacing: -0.01em;
     white-space: nowrap;
