@@ -1955,7 +1955,7 @@ body.is-member .checkout-section--guest-only {
     .look-vertical {
         display: flex;
         flex-direction: column;
-        align-items: flex-start;
+        align-items: center;
         padding: 40px 0 60px;
         gap: 0;
     }
@@ -1963,7 +1963,7 @@ body.is-member .checkout-section--guest-only {
     .look-vertical__img {
         height: auto;
         display: block;
-        margin: 0;
+        margin: 0 auto;
     }
 
     .about-page__image {
