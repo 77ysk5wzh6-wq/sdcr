@@ -151,7 +151,7 @@
     </nav>
 
     <main class="hero">
-        <img src="" alt="home" class="hero__image" data-home-images="assets/home2.jpg,assets/home3.jpg">
+        <img src="assets/home2.jpg" alt="home" class="hero__image">
     </main>
 
     <section class="headline">
@@ -395,12 +395,6 @@
                     history.scrollRestoration = 'manual';
                 }
             } catch (err) {}
-
-            var heroImg = document.querySelector('.hero__image');
-            if (heroImg && heroImg.dataset.homeImages) {
-                var pool = heroImg.dataset.homeImages.split(',');
-                heroImg.src = pool[Math.floor(Math.random() * pool.length)];
-            }
 
             requestAnimationFrame(function () {
                 document.body.classList.add('is-loaded');
@@ -1240,11 +1234,26 @@
             }
 
             var lookImages = [
-                'look/look1.png',
-                'look/look2.png',
-                'look/look3.png',
-                'look/look4.png',
-                'look/look5.png'
+                'look/look1.jpg',
+                'look/look2.jpg',
+                'look/look3.jpg',
+                'look/look4.jpg',
+                'look/look5.jpg',
+                'look/look6.jpg',
+                'look/look7.jpg',
+                'look/look8.jpg',
+                'look/look9.jpg',
+                'look/look10.jpg',
+                'look/look11.jpg',
+                'look/look12.jpg',
+                'look/look13.jpg',
+                'look/look14.jpg',
+                'look/look15.jpg',
+                'look/look16.jpg',
+                'look/look17.jpg',
+                'look/look18.jpg',
+                'look/look19.jpg',
+                'look/look20.jpg'
             ];
             var track = document.querySelector('.marquee__track');
             var imagesInitialized = false;
@@ -1252,12 +1261,17 @@
             function loadLookImages() {
                 if (imagesInitialized || !track) return;
                 imagesInitialized = true;
+                var shuffled = lookImages.slice();
+                for (var s = shuffled.length - 1; s > 0; s--) {
+                    var r = Math.floor(Math.random() * (s + 1));
+                    var tmp = shuffled[s]; shuffled[s] = shuffled[r]; shuffled[r] = tmp;
+                }
                 var heights = [];
-                for (var h = 0; h < lookImages.length; h++) {
+                for (var h = 0; h < shuffled.length; h++) {
                     heights.push(35 + Math.random() * 31);
                 }
                 for (var pass = 0; pass < 2; pass++) {
-                    for (var k = 0; k < lookImages.length; k++) {
+                    for (var k = 0; k < shuffled.length; k++) {
                         var img = document.createElement('img');
                         img.alt = '';
                         img.className = 'marquee__img';
@@ -1267,19 +1281,24 @@
                             measureTrack();
                             applyTranslate();
                         };
-                        img.src = encodeURI(lookImages[k]);
+                        img.src = encodeURI(shuffled[k]);
                         track.appendChild(img);
                     }
                 }
                 var verticalContainer = document.querySelector('.look-vertical');
                 if (verticalContainer) {
-                    for (var v = 0; v < lookImages.length; v++) {
+                    var vShuffled = lookImages.slice();
+                    for (var vs = vShuffled.length - 1; vs > 0; vs--) {
+                        var vr = Math.floor(Math.random() * (vs + 1));
+                        var vtmp = vShuffled[vs]; vShuffled[vs] = vShuffled[vr]; vShuffled[vr] = vtmp;
+                    }
+                    for (var v = 0; v < vShuffled.length; v++) {
                         var vimg = document.createElement('img');
                         vimg.alt = '';
                         vimg.className = 'look-vertical__img';
                         vimg.style.width = (50 + Math.random() * 38) + 'vw';
                         vimg.setAttribute('aria-hidden', 'true');
-                        vimg.src = encodeURI(lookImages[v]);
+                        vimg.src = encodeURI(vShuffled[v]);
                         verticalContainer.appendChild(vimg);
                     }
                 }
@@ -1407,12 +1426,14 @@
                 }
             }
 
-            var detailImagesLoaded = false;
-            var detailImageList = [
-                'look/look1_detail/look1_detail1.png',
-                'look/look1_detail/look1_detail2.png',
-                'look/look1_detail/look1_detail3.png'
-            ];
+            var shopColors = ['ravender', 'lime', 'red', 'white'];
+            function buildDetailImageList(shopIndex) {
+                var color = shopColors[shopIndex] || shopColors[0];
+                var list = [];
+                for (var n = 1; n <= 4; n++) list.push('look/look1_detail/male/' + color + '_' + n + '.jpg');
+                for (var n2 = 1; n2 <= 4; n2++) list.push('look/look1_detail/female/' + color + '_' + n2 + '.jpg');
+                return list;
+            }
             var detailMainImg = document.querySelector('.detail-main__image');
             var detailImagesContainer = document.querySelector('.detail-images');
             var detailInfoEl = document.querySelector('.detail-info');
@@ -1495,13 +1516,14 @@
             window.addEventListener('resize', syncDetailHeight);
 
             function loadDetailContent(shopIndex) {
-                if (!detailImagesLoaded && detailImagesContainer) {
-                    detailImagesLoaded = true;
-                    for (var d = 0; d < detailImageList.length; d++) {
+                if (detailImagesContainer) {
+                    detailImagesContainer.innerHTML = '';
+                    var list = buildDetailImageList(shopIndex);
+                    for (var d = 0; d < list.length; d++) {
                         var dimg = document.createElement('img');
                         dimg.className = 'detail-images__img';
                         dimg.alt = '';
-                        dimg.src = encodeURI(detailImageList[d]);
+                        dimg.src = encodeURI(list[d]);
                         detailImagesContainer.appendChild(dimg);
                     }
                 }
