@@ -151,7 +151,7 @@
     </nav>
 
     <main class="hero">
-        <img src="assets/home.jpg" alt="home" class="hero__image">
+        <img src="" alt="home" class="hero__image" data-home-images="assets/home2.jpg,assets/home3.jpg">
     </main>
 
     <section class="headline">
@@ -395,6 +395,13 @@
                     history.scrollRestoration = 'manual';
                 }
             } catch (err) {}
+
+            var heroImg = document.querySelector('.hero__image');
+            if (heroImg && heroImg.dataset.homeImages) {
+                var pool = heroImg.dataset.homeImages.split(',');
+                heroImg.src = pool[Math.floor(Math.random() * pool.length)];
+            }
+
             requestAnimationFrame(function () {
                 document.body.classList.add('is-loaded');
             });

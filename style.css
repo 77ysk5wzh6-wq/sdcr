@@ -111,8 +111,8 @@ body.is-loaded {
 }
 
 .hero__image {
-    width: 540px;
-    max-width: 36vw;
+    width: 559px;
+    max-width: 37.26vw;
     height: auto;
     display: block;
     border: 5px solid #000000;
@@ -120,7 +120,7 @@ body.is-loaded {
 
 .headline {
     position: absolute;
-    bottom: 75px;
+    bottom: 58px;
     left: 0;
     width: 100%;
     padding: 0 40px;
