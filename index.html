@@ -2277,6 +2277,7 @@
                 }
 
                 function closeLightbox() {
+                    playClickSound();
                     lightbox.classList.remove('is-open');
                     lightbox.setAttribute('aria-hidden', 'true');
                     setTimeout(function () {

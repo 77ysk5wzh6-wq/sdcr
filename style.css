@@ -1653,7 +1653,7 @@ body.is-member .checkout-section--guest-only {
 .is-look-active .marquee__img,
 .is-look-active .look-vertical__img {
     pointer-events: auto;
-    cursor: zoom-in;
+    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'><circle cx='12' cy='12' r='8' fill='black' fill-opacity='0.4'/></svg>") 12 12, pointer;
 }
 
 .about-page {
@@ -1721,6 +1721,17 @@ body.is-member .checkout-section--guest-only {
     width: auto;
     display: block;
     flex: 0 0 auto;
+    transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    transform-origin: center center;
+    position: relative;
+}
+
+@media (hover: hover) {
+    .is-look-active .marquee__img:hover {
+        transform: translateY(-15px);
+        z-index: 2;
+        box-shadow: 0 22px 36px rgba(0, 0, 0, 0.2);
+    }
 }
 
 .look-vertical {
@@ -2085,7 +2096,7 @@ body.is-look-active .look-label {
     transform: scale(0.92);
     opacity: 0;
     transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s ease;
-    cursor: zoom-out;
+    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'><g fill='none' stroke='white' stroke-opacity='0.6' stroke-width='1' stroke-linecap='round'><line x1='6' y1='6' x2='14' y2='14'/><line x1='14' y1='6' x2='6' y2='14'/></g></svg>") 10 10, zoom-out;
     box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
 }
 
