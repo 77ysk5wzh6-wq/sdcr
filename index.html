@@ -4,7 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>sdcr</title>
+    <meta name="description" content="We are sidecar. We make clothes in Seoul.">
     <link rel="icon" type="image/jpeg" href="assets/favicon.jpg">
+
+    <!-- Open Graph (Facebook, KakaoTalk, Discord 등) -->
+    <meta property="og:title" content="sdcr · sidecar">
+    <meta property="og:description" content="We are sidecar. We make clothes in Seoul.">
+    <meta property="og:image" content="https://youngikyoun.com/assets/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:url" content="https://youngikyoun.com/">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="sidecar">
+    <meta property="og:locale" content="ko_KR">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="sdcr · sidecar">
+    <meta name="twitter:description" content="We are sidecar. We make clothes in Seoul.">
+    <meta name="twitter:image" content="https://youngikyoun.com/assets/og-image.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
@@ -1862,6 +1880,20 @@
                     setTimeout(function () {
                         window.location.href = 'https://sidecar.imweb.me';
                     }, 1300);
+                });
+
+                window.addEventListener('pageshow', function (e) {
+                    if (e.persisted || (window.performance && window.performance.navigation && window.performance.navigation.type === 2)) {
+                        if (shopOverlay) {
+                            shopOverlay.classList.remove('is-active');
+                            shopOverlay.classList.remove('is-sliding-out');
+                            shopOverlay.style.cssText = '';
+                            shopOverlay.innerHTML = '';
+                        }
+                        transitioning = false;
+                        document.body.classList.remove('is-shop-active');
+                        document.body.classList.remove('is-transitioning-cat');
+                    }
                 });
             }
 
