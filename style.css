@@ -2030,7 +2030,7 @@ body.is-auth-open .auth-drawer {
     font-style: italic;
     font-size: 18px;
     line-height: 1.05;
-    color: #ffffff;
+    color: #000000;
     text-decoration: underline;
     text-underline-offset: 3px;
     text-decoration-thickness: 1px;
