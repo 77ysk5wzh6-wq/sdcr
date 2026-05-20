@@ -60,7 +60,7 @@ body.is-loaded {
 }
 
 .category--shop {
-    background: rgb(184, 135, 196);
+    background: rgb(232, 26, 41);
     position: relative;
     overflow: hidden;
 }
@@ -79,7 +79,7 @@ body.is-loaded {
 
 
 .category--look {
-    background: rgb(232, 26, 41);
+    background: rgb(224, 255, 237);
     position: relative;
     overflow: hidden;
 }
@@ -99,7 +99,7 @@ body.is-loaded {
 
 
 .category--about {
-    background: rgb(224, 255, 237);
+    background: rgb(184, 135, 196);
 }
 
 .hero {
@@ -1546,7 +1546,7 @@ body.is-member .checkout-section--guest-only {
     left: 0;
     width: 0;
     height: 0;
-    background: rgb(232, 26, 41);
+    background: rgb(224, 255, 237);
     z-index: 50;
     opacity: 0;
     pointer-events: none;
@@ -1587,11 +1587,11 @@ body.is-member .checkout-section--guest-only {
 }
 
 .transition-overlay--about {
-    background: rgb(224, 255, 237);
+    background: rgb(184, 135, 196);
 }
 
 .transition-overlay--shop {
-    background: rgb(184, 135, 196);
+    background: rgb(232, 26, 41);
 }
 
 .transition-overlay--shop.is-sliding-out {
@@ -1610,7 +1610,7 @@ body.is-member .checkout-section--guest-only {
     position: fixed;
     inset: 0;
     z-index: 40;
-    background: rgb(232, 26, 41);
+    background: rgb(224, 255, 237);
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.175s ease;
@@ -1650,11 +1650,17 @@ body.is-member .checkout-section--guest-only {
     opacity: 1;
 }
 
+.is-look-active .marquee__img,
+.is-look-active .look-vertical__img {
+    pointer-events: auto;
+    cursor: zoom-in;
+}
+
 .about-page {
     position: fixed;
     inset: 0;
     z-index: 40;
-    background: rgb(224, 255, 237);
+    background: rgb(184, 135, 196);
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.175s ease;
@@ -1765,15 +1771,15 @@ body.is-member .checkout-section--guest-only {
     }
 
     body.is-look-active {
-        background: rgb(232, 26, 41);
-    }
-
-    body.is-about-active {
         background: rgb(224, 255, 237);
     }
 
+    body.is-about-active {
+        background: rgb(184, 135, 196);
+    }
+
     body.is-shop-active {
-        background: #ffffff;
+        background: rgb(232, 26, 41);
     }
 
     body.is-look-active .hero,
@@ -2041,5 +2047,101 @@ body.is-look-active .look-label {
 @media (max-width: 768px) {
     .look-label {
         display: none;
+    }
+}
+
+/* === LOOK LIGHTBOX =========== */
+.look-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.look-lightbox.is-open {
+    pointer-events: auto;
+    opacity: 1;
+}
+
+.look-lightbox__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+}
+
+.look-lightbox__image {
+    position: relative;
+    max-width: 70vw;
+    max-height: 86vh;
+    width: auto;
+    height: auto;
+    display: block;
+    object-fit: contain;
+    transform: scale(0.92);
+    opacity: 0;
+    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s ease;
+    cursor: zoom-out;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+}
+
+.look-lightbox.is-open .look-lightbox__image {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.marquee__img,
+.look-vertical__img {
+    cursor: zoom-in;
+}
+
+/* 라이트박스 좌우 네비게이션 — 미니멀 */
+.look-lightbox__nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    padding: 16px;
+    z-index: 3;
+    opacity: 1;
+    transition: opacity 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.look-lightbox__nav svg {
+    display: block;
+}
+
+.look-lightbox__nav--prev {
+    left: 24px;
+}
+
+.look-lightbox__nav--next {
+    right: 24px;
+}
+
+@media (max-width: 768px) {
+    .look-lightbox__image {
+        max-width: 92vw;
+        max-height: 80vh;
+    }
+    .look-lightbox__nav {
+        padding: 10px;
+    }
+    .look-lightbox__nav--prev { left: 6px; }
+    .look-lightbox__nav--next { right: 6px; }
+    .look-lightbox__nav svg {
+        width: 24px;
+        height: 24px;
+        stroke-width: 1;
     }
 }

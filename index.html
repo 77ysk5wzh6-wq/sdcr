@@ -191,6 +191,21 @@
 
     <div class="look-label" aria-hidden="true">2026.6 spring</div>
 
+    <div class="look-lightbox" aria-hidden="true">
+        <div class="look-lightbox__backdrop"></div>
+        <button type="button" class="look-lightbox__nav look-lightbox__nav--prev" aria-label="previous">
+            <svg width="36" height="36" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="19,8 11,16 19,24"></polyline>
+            </svg>
+        </button>
+        <img src="" alt="" class="look-lightbox__image">
+        <button type="button" class="look-lightbox__nav look-lightbox__nav--next" aria-label="next">
+            <svg width="36" height="36" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="13,8 21,16 13,24"></polyline>
+            </svg>
+        </button>
+    </div>
+
     <section class="about-page" aria-hidden="true">
         <div class="about-page__inner">
             <img src="" alt="" class="about-page__image" data-src="assets/recipe.png">
@@ -1288,7 +1303,7 @@
                 }
                 var heights = [];
                 for (var h = 0; h < shuffled.length; h++) {
-                    heights.push(35 + Math.random() * 31);
+                    heights.push(30 + Math.random() * 27);
                 }
                 for (var pass = 0; pass < 2; pass++) {
                     for (var k = 0; k < shuffled.length; k++) {
@@ -1316,7 +1331,7 @@
                         var vimg = document.createElement('img');
                         vimg.alt = '';
                         vimg.className = 'look-vertical__img';
-                        vimg.style.width = (70 + Math.random() * 28) + 'vw';
+                        vimg.style.width = (60 + Math.random() * 24) + 'vw';
                         vimg.setAttribute('aria-hidden', 'true');
                         vimg.src = encodeURI(vShuffled[v]);
                         verticalContainer.appendChild(vimg);
@@ -1409,6 +1424,13 @@
                     cancelAnimationFrame(tickRafId);
                     tickRafId = 0;
                 }
+            }
+
+            function resumeMarquee() {
+                if (marqueeRunning) return;
+                lastFrame = 0;
+                marqueeRunning = true;
+                tickRafId = requestAnimationFrame(tick);
             }
 
             if (lookPage) {
@@ -2171,6 +2193,124 @@
                         }
                     });
                 };
+            })();
+
+            (function forwardMarqueeWheel() {
+                var marqueeEl = document.querySelector('.marquee');
+                var lookPageEl = document.querySelector('.look-page');
+                if (!marqueeEl || !lookPageEl) return;
+                marqueeEl.addEventListener('wheel', function (e) {
+                    if (!document.body.classList.contains('is-look-active')) return;
+                    lookPageEl.scrollTop += e.deltaY;
+                    e.preventDefault();
+                }, { passive: false });
+            })();
+
+            (function setupLookLightbox() {
+                var lightbox = document.querySelector('.look-lightbox');
+                if (!lightbox) return;
+                var lightboxImg = lightbox.querySelector('.look-lightbox__image');
+                var backdrop = lightbox.querySelector('.look-lightbox__backdrop');
+                var prevBtn = lightbox.querySelector('.look-lightbox__nav--prev');
+                var nextBtn = lightbox.querySelector('.look-lightbox__nav--next');
+
+                /* 실제 마우스 클릭음 — 미리 디코드된 AudioBuffer로 즉시 재생 */
+                var audioCtx = null;
+                var clickBuffer = null;
+                (function preloadClick() {
+                    try {
+                        var AC = window.AudioContext || window.webkitAudioContext;
+                        if (!AC) return;
+                        audioCtx = new AC();
+                        fetch('assets/click.mp3')
+                            .then(function (r) { return r.arrayBuffer(); })
+                            .then(function (buf) { return audioCtx.decodeAudioData(buf); })
+                            .then(function (decoded) { clickBuffer = decoded; })
+                            .catch(function () {});
+                    } catch (err) {}
+                })();
+                function playClickSound() {
+                    if (!audioCtx || !clickBuffer) return;
+                    try {
+                        if (audioCtx.state === 'suspended') audioCtx.resume();
+                        var src = audioCtx.createBufferSource();
+                        var gain = audioCtx.createGain();
+                        gain.gain.value = 0.7;
+                        src.buffer = clickBuffer;
+                        src.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        src.start(0);
+                    } catch (err) {}
+                }
+
+                var orderedSrcs = [];
+                var currentIdx = -1;
+
+                function refreshOrdered() {
+                    var imgs = document.querySelectorAll('.marquee__img, .look-vertical__img');
+                    orderedSrcs = Array.prototype.slice.call(imgs).map(function (im) { return im.src; });
+                }
+
+                function openLightboxBySrc(src) {
+                    refreshOrdered();
+                    var idx = orderedSrcs.indexOf(src);
+                    openLightboxByIdx(idx >= 0 ? idx : 0);
+                }
+
+                function openLightboxByIdx(idx) {
+                    if (!orderedSrcs.length) return;
+                    playClickSound();
+                    currentIdx = (idx + orderedSrcs.length) % orderedSrcs.length;
+                    lightboxImg.src = orderedSrcs[currentIdx];
+                    lightbox.classList.add('is-open');
+                    lightbox.setAttribute('aria-hidden', 'false');
+                    if (typeof stopMarquee === 'function') stopMarquee();
+                }
+
+                function closeLightbox() {
+                    lightbox.classList.remove('is-open');
+                    lightbox.setAttribute('aria-hidden', 'true');
+                    setTimeout(function () {
+                        if (!lightbox.classList.contains('is-open')) {
+                            lightboxImg.src = '';
+                        }
+                    }, 450);
+                    if (document.body.classList.contains('is-look-active') && typeof resumeMarquee === 'function') {
+                        resumeMarquee();
+                    }
+                }
+
+                function showPrev() {
+                    if (currentIdx < 0) return;
+                    openLightboxByIdx(currentIdx - 1);
+                }
+                function showNext() {
+                    if (currentIdx < 0) return;
+                    openLightboxByIdx(currentIdx + 1);
+                }
+
+                if (prevBtn) prevBtn.addEventListener('click', function (e) { e.stopPropagation(); showPrev(); });
+                if (nextBtn) nextBtn.addEventListener('click', function (e) { e.stopPropagation(); showNext(); });
+
+                document.addEventListener('click', function (e) {
+                    var t = e.target;
+                    if (t && t.tagName === 'IMG' && (t.classList.contains('marquee__img') || t.classList.contains('look-vertical__img'))) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        openLightboxBySrc(t.src);
+                        return;
+                    }
+                    if (lightbox.classList.contains('is-open') && (e.target === backdrop || e.target === lightboxImg || e.target === lightbox)) {
+                        closeLightbox();
+                    }
+                }, true);
+
+                document.addEventListener('keydown', function (e) {
+                    if (!lightbox.classList.contains('is-open')) return;
+                    if (e.key === 'Escape') closeLightbox();
+                    else if (e.key === 'ArrowLeft') showPrev();
+                    else if (e.key === 'ArrowRight') showNext();
+                });
             })();
         })();
     </script>
