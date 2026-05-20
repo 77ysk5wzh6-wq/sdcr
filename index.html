@@ -2039,11 +2039,20 @@
                         var t = (now - ghostStartTime) / 1000;
                         var rect = headlineEl.getBoundingClientRect();
                         var cx = rect.left + rect.width / 2;
-                        var cy = rect.top + rect.height / 2;
+                        /* 두 줄 사이 중앙 — 첫 줄 bottom과 둘째 줄 top의 중점 */
+                        var lineEls = headlineEl.querySelectorAll('.headline__line');
+                        var cy;
+                        if (lineEls.length >= 2) {
+                            var r1 = lineEls[0].getBoundingClientRect();
+                            var r2 = lineEls[1].getBoundingClientRect();
+                            cy = (r1.bottom + r2.top) / 2;
+                        } else {
+                            cy = rect.top + rect.height / 2;
+                        }
                         var ax = rect.width * 0.22;
                         var ay = rect.height * 0.35;
                         var mx = cx + Math.sin(t * 0.45) * ax;
-                        var my = cy + Math.sin(t * 0.31 + 1.2) * ay;
+                        var my = cy + Math.sin(t * 0.31) * ay;
                         apply(mx, my);
                         ghostRaf = requestAnimationFrame(ghostTick);
                     }
