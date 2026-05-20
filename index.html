@@ -1930,7 +1930,10 @@
             (function setupHeadlineHover() {
                 var headlineEl = document.querySelector('.headline');
                 if (!headlineEl) return;
-                var isTouch = window.matchMedia && window.matchMedia('(hover: none)').matches;
+                var hoverNone = window.matchMedia && window.matchMedia('(hover: none)').matches;
+                var narrow = window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
+                var hasTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+                var isTouch = hoverNone || narrow || hasTouch;
 
                 var wordEls = headlineEl.querySelectorAll('.headline__word');
                 var charEls = [];
@@ -2007,10 +2010,6 @@
                         reset();
                     });
                 } else {
-                    var ghostDot = document.createElement('div');
-                    ghostDot.style.cssText = 'position:fixed;width:16px;height:16px;background:red;border-radius:50%;z-index:9999;pointer-events:none;left:0;top:0;transform:translate(-50%,-50%);box-shadow:0 0 8px rgba(255,0,0,0.6);';
-                    document.body.appendChild(ghostDot);
-
                     var ghostRaf = 0;
                     var ghostStartTime = 0;
                     function ghostTick(now) {
@@ -2019,12 +2018,10 @@
                         var rect = headlineEl.getBoundingClientRect();
                         var cx = rect.left + rect.width / 2;
                         var cy = rect.top + rect.height / 2;
-                        var ax = rect.width * 0.42;
+                        var ax = rect.width * 0.22;
                         var ay = rect.height * 0.35;
                         var mx = cx + Math.sin(t * 0.45) * ax;
                         var my = cy + Math.sin(t * 0.31 + 1.2) * ay;
-                        ghostDot.style.left = mx + 'px';
-                        ghostDot.style.top = my + 'px';
                         apply(mx, my);
                         ghostRaf = requestAnimationFrame(ghostTick);
                     }
