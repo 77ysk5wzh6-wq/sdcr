@@ -1978,7 +1978,7 @@ body.is-member .checkout-section--guest-only {
         font-style: italic;
         font-size: 14px;
         line-height: 1.05;
-        color: #ffffff;
+        color: #000000;
         text-decoration: underline;
         text-underline-offset: 3px;
         text-decoration-thickness: 1px;
