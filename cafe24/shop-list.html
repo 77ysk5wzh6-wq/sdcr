@@ -1,0 +1,217 @@
+<!--
+    SIDECAR × CAFE24 — 상품 목록 페이지 (shop)
+    적용 위치: 디자인 보관함 > 사용 중인 스킨 편집 > /product/list.html
+    설명: Cafe24의 기본 상품 목록 페이지를 sidecar 톤으로 덮어쓰는 마크업.
+    유지 필요: 상단의 @layout, 상품 리스트 모듈(product_listmain).
+-->
+<!--@layout(/layout/basic/layout.html)-->
+
+<section class="sidecar-shop">
+    <div class="sidecar-shop__inner">
+
+        <header class="sidecar-shop__header">
+            <h1 class="sidecar-shop__title">shop</h1>
+            <p class="sidecar-shop__count"><span class="sidecar-shop__count-num" id="totalProducts">{$total_count}</span> items</p>
+        </header>
+
+        <div data-ez-holder="product_listmain">
+            <div module="product_listmain" class="ec-base-product">
+                <!--
+                    $count = 100
+                    $basket_result = /product/add_basket.html
+                    $basket_option = /product/basket_option.html
+                    $moreview = no
+                    $cache = yes
+                -->
+                <ul class="prdList sidecar-shop__grid" data-ez-role="layout ez-discount-tag">
+                    <!--@import(/product/list_product.html)-->
+                </ul>
+            </div>
+        </div>
+
+        <div class="sidecar-shop__empty" id="sidecarEmpty" style="display:none;">
+            <p>준비 중인 상품이 없습니다.</p>
+        </div>
+
+    </div>
+</section>
+
+<style>
+/* === SIDECAR SHOP LIST ============================================ */
+.sidecar-shop {
+    background: #ffffff;
+    padding: 110px 40px 120px;
+    min-height: 80vh;
+    font-family: 'Cormorant Garamond', serif;
+    color: #000000;
+}
+
+.sidecar-shop__inner {
+    max-width: 1500px;
+    margin: 0 auto;
+}
+
+/* header */
+.sidecar-shop__header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin: 0 0 56px;
+    padding: 0 4px;
+}
+.sidecar-shop__title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 400;
+    font-style: italic;
+    font-size: 48px;
+    line-height: 1;
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+.sidecar-shop__count {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 16px;
+    color: #000000;
+    margin: 0;
+}
+
+/* product grid — Cafe24 prdList 위에 sidecar 톤으로 덮어쓰기 */
+.sidecar-shop__grid.prdList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px 28px;
+}
+.sidecar-shop__grid.prdList > li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: auto !important;        /* Cafe24 inline width 무력화 */
+    background: transparent;
+    border: none;
+}
+
+/* 각 상품 카드 내부 (Cafe24 prdList 표준 마크업 재스타일) */
+.sidecar-shop__grid .thumbnail {
+    position: relative;
+    margin: 0;
+    overflow: hidden;
+    background: #f5f5f5;
+}
+.sidecar-shop__grid .thumbnail a {
+    display: block;
+}
+.sidecar-shop__grid .thumbnail img {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.25s ease;
+}
+@media (hover: hover) {
+    .sidecar-shop__grid .thumbnail img:hover {
+        transform: scale(1.04);
+    }
+}
+
+/* prdList의 아이콘/딱지 영역 정리 */
+.sidecar-shop__grid .thumbnail .icon,
+.sidecar-shop__grid .thumbnail .promotion,
+.sidecar-shop__grid .icon.product_icon {
+    display: none !important;
+}
+
+/* description (상품명·가격) */
+.sidecar-shop__grid .description {
+    margin: 6px 0 0;
+    padding: 0 4px;
+    text-align: left;
+}
+.sidecar-shop__grid .description .name,
+.sidecar-shop__grid .description .name a {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 16px;
+    color: #000000;
+    font-weight: 400;
+    line-height: 1.3;
+    text-decoration: none;
+}
+
+/* 가격 라인 — Cafe24의 spec / price 정리 */
+.sidecar-shop__grid .description .spec {
+    margin-top: 2px;
+    padding: 0;
+    border: none;
+    background: transparent;
+}
+.sidecar-shop__grid .description .spec li {
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: transparent;
+    list-style: none;
+}
+.sidecar-shop__grid .description .price,
+.sidecar-shop__grid .description strong.title,
+.sidecar-shop__grid .description ul.spec li {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 16px;
+    color: #000000 !important;
+    font-weight: 400 !important;
+}
+
+/* 상품명·가격을 한 줄로 배치하고 싶다면 description을 flex로 */
+.sidecar-shop__grid .description {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+}
+
+/* 옵션·할인·아이콘 라인 숨김 (sidecar 미니멀 톤) */
+.sidecar-shop__grid .description .promotion,
+.sidecar-shop__grid .description .button,
+.sidecar-shop__grid .description ul.xans-product-listitem {
+    display: none !important;
+}
+
+/* empty state */
+.sidecar-shop__empty {
+    text-align: center;
+    padding: 80px 0;
+    font-style: italic;
+    color: #999;
+}
+
+/* ========== MOBILE ========== */
+@media (max-width: 768px) {
+    .sidecar-shop {
+        padding: 80px 16px 80px;
+    }
+    .sidecar-shop__header {
+        margin-bottom: 32px;
+    }
+    .sidecar-shop__title {
+        font-size: 36px;
+    }
+    .sidecar-shop__grid.prdList {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px 12px;
+    }
+    .sidecar-shop__grid .description {
+        flex-direction: column;
+        gap: 2px;
+    }
+    .sidecar-shop__grid .description .name,
+    .sidecar-shop__grid .description .name a,
+    .sidecar-shop__grid .description .price {
+        font-size: 14px;
+    }
+}
+</style>
+
+<!--@define(cmc_log)-->

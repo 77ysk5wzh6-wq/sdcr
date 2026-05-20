@@ -1835,11 +1835,33 @@
             if (shop) {
                 shop.addEventListener('click', function (e) {
                     e.preventDefault();
-                    if (document.body.classList.contains('is-detail-active')) {
-                        history.back();
+                    if (transitioning) return;
+                    transitioning = true;
+                    var btn = shop;
+                    var ovl = shopOverlay;
+                    if (!btn || !ovl) {
+                        window.location.href = 'https://sidecar.imweb.me';
                         return;
                     }
-                    navigateTo('shop');
+                    var rect = btn.getBoundingClientRect();
+                    ovl.style.top = rect.top + 'px';
+                    ovl.style.left = rect.left + 'px';
+                    ovl.style.width = rect.width + 'px';
+                    ovl.style.height = rect.height + 'px';
+                    ovl.style.opacity = '1';
+                    ovl.offsetHeight;
+                    ovl.classList.add('is-active');
+                    requestAnimationFrame(function () {
+                        ovl.style.left = '0px';
+                        ovl.style.width = '100vw';
+                    });
+                    setTimeout(function () {
+                        ovl.style.top = '0px';
+                        ovl.style.height = '100vh';
+                    }, 630);
+                    setTimeout(function () {
+                        window.location.href = 'https://sidecar.imweb.me';
+                    }, 1300);
                 });
             }
 

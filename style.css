@@ -1976,3 +1976,21 @@ body.is-member .checkout-section--guest-only {
         margin-top: 40px;
     }
 }
+
+
+/* === EXTERNAL SHOP MODE — sidecar.imweb.me로 이동 =========== */
+/* 회원/장바구니/체크아웃 UI 숨김 (HTML/JS는 유지, 화면만 가림) */
+
+.header-actions,
+.auth-button,
+.cart-button,
+.auth-drawer,
+.cart-drawer,
+.checkout-page,
+.detail-page,
+.info-button,
+.info-drawer,
+body.is-cart-open .cart-drawer,
+body.is-auth-open .auth-drawer {
+    display: none !important;
+}
