@@ -1617,6 +1617,15 @@ body.is-member .checkout-section--guest-only {
     overflow-y: auto;
     overflow-x: hidden;
     scrollbar-width: none;
+    touch-action: manipulation;
+}
+
+.look-page .marquee__img,
+.look-page .look-vertical__img,
+.marquee__img,
+.look-vertical__img,
+.look-lightbox {
+    touch-action: manipulation;
 }
 
 .look-page::-webkit-scrollbar {

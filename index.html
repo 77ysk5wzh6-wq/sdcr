@@ -2376,6 +2376,23 @@
                 }, { passive: false });
             })();
 
+            /* iOS 사파리 더블탭 줌 차단 — look 활성 시 빠른 두 번째 탭의 기본동작 막기 */
+            (function blockDoubleTapZoom() {
+                var lastTouchEnd = 0;
+                document.addEventListener('touchend', function (e) {
+                    if (!document.body.classList.contains('is-look-active') &&
+                        !(document.querySelector('.look-lightbox') &&
+                          document.querySelector('.look-lightbox').classList.contains('is-open'))) {
+                        return;
+                    }
+                    var now = Date.now();
+                    if (now - lastTouchEnd <= 320) {
+                        e.preventDefault();
+                    }
+                    lastTouchEnd = now;
+                }, { passive: false });
+            })();
+
             (function setupHoverSound() {
                 if (window.matchMedia && window.matchMedia('(hover: none)').matches) return;
                 var marqueeEl = document.querySelector('.marquee');
