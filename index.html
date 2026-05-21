@@ -198,7 +198,10 @@
                 <polyline points="19,8 11,16 19,24"></polyline>
             </svg>
         </button>
-        <img src="" alt="" class="look-lightbox__image">
+        <div class="look-lightbox__stage">
+            <img src="" alt="" class="look-lightbox__image look-lightbox__image--a is-current">
+            <img src="" alt="" class="look-lightbox__image look-lightbox__image--b">
+        </div>
         <button type="button" class="look-lightbox__nav look-lightbox__nav--next" aria-label="next">
             <svg width="36" height="36" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <polyline points="13,8 21,16 13,24"></polyline>
@@ -1303,7 +1306,7 @@
                 }
                 var heights = [];
                 for (var h = 0; h < shuffled.length; h++) {
-                    heights.push(30 + Math.random() * 27);
+                    heights.push(27 + Math.random() * 24.3);
                 }
                 for (var pass = 0; pass < 2; pass++) {
                     for (var k = 0; k < shuffled.length; k++) {
@@ -1331,7 +1334,7 @@
                         var vimg = document.createElement('img');
                         vimg.alt = '';
                         vimg.className = 'look-vertical__img';
-                        vimg.style.width = (60 + Math.random() * 24) + 'vw';
+                        vimg.style.width = (54 + Math.random() * 21.6) + 'vw';
                         vimg.setAttribute('aria-hidden', 'true');
                         vimg.src = encodeURI(vShuffled[v]);
                         verticalContainer.appendChild(vimg);
@@ -2174,18 +2177,37 @@
                 /* tick 사운드 (monophonic) — 카테고리 글자 이동 시 */
                 var catCtx = null;
                 var catTickBuffer = null;
+                var catArrowBuffer = null;
                 (function preloadCatTick() {
                     try {
                         var AC = window.AudioContext || window.webkitAudioContext;
                         if (!AC) return;
                         catCtx = new AC();
-                        fetch('assets/tick_fx.mp3')
-                            .then(function (r) { return r.arrayBuffer(); })
-                            .then(function (buf) { return catCtx.decodeAudioData(buf); })
-                            .then(function (decoded) { catTickBuffer = decoded; })
-                            .catch(function () {});
+                        function load(url, setter) {
+                            fetch(url)
+                                .then(function (r) { return r.arrayBuffer(); })
+                                .then(function (buf) { return catCtx.decodeAudioData(buf); })
+                                .then(function (decoded) { setter(decoded); })
+                                .catch(function () {});
+                        }
+                        load('assets/tick_fx.mp3', function (b) { catTickBuffer = b; });
+                        load('assets/arrowhover.mp3', function (b) { catArrowBuffer = b; });
                     } catch (err) {}
                 })();
+                function playCatArrow() {
+                    if (window.__soundMuted) return;
+                    if (!catCtx || !catArrowBuffer) return;
+                    try {
+                        if (catCtx.state === 'suspended') catCtx.resume();
+                        var src = catCtx.createBufferSource();
+                        var gain = catCtx.createGain();
+                        gain.gain.value = 0.3;
+                        src.buffer = catArrowBuffer;
+                        src.connect(gain);
+                        gain.connect(catCtx.destination);
+                        src.start(0);
+                    } catch (err) {}
+                }
                 var catCurSrc = null;
                 var catCurGain = null;
                 function playCatTick() {
@@ -2321,6 +2343,7 @@
                         if (document.body.classList.contains('is-transitioning-cat')) return;
                         hovering = true;
                         measure();
+                        playCatArrow();
                     });
                     catEl.addEventListener('mousemove', onMove);
                     catEl.addEventListener('mouseleave', function () {
@@ -2398,7 +2421,10 @@
             (function setupLookLightbox() {
                 var lightbox = document.querySelector('.look-lightbox');
                 if (!lightbox) return;
-                var lightboxImg = lightbox.querySelector('.look-lightbox__image');
+                var lbImgs = lightbox.querySelectorAll('.look-lightbox__image');
+                var lbImgA = lbImgs[0];
+                var lbImgB = lbImgs[1];
+                var lbCurrent = lbImgA;   /* 현재 보이는 이미지 */
                 var backdrop = lightbox.querySelector('.look-lightbox__backdrop');
                 var prevBtn = lightbox.querySelector('.look-lightbox__nav--prev');
                 var nextBtn = lightbox.querySelector('.look-lightbox__nav--next');
@@ -2407,6 +2433,7 @@
                 var audioCtx = null;
                 var clickBuffer = null;
                 var tickBuffer = null;
+                var arrowBuffer = null;
                 (function preloadSounds() {
                     try {
                         var AC = window.AudioContext || window.webkitAudioContext;
@@ -2421,6 +2448,7 @@
                         }
                         load('assets/click.mp3', function (b) { clickBuffer = b; });
                         load('assets/hover_tick.mp3', function (b) { tickBuffer = b; });
+                        load('assets/arrowhover.mp3', function (b) { arrowBuffer = b; });
                     } catch (err) {}
                 })();
                 function playBuffer(buffer, volume) {
@@ -2438,6 +2466,7 @@
                 }
                 function playClickSound() { playBuffer(clickBuffer, 0.7); }
                 function playTickSound() { playBuffer(tickBuffer, 0.39); }
+                function playArrowHover() { playBuffer(arrowBuffer, 0.3); }
 
                 var orderedSrcs = [];
                 var currentIdx = -1;
@@ -2457,7 +2486,24 @@
                 function openLightboxByIdx(idx) {
                     if (!orderedSrcs.length) return;
                     currentIdx = (idx + orderedSrcs.length) % orderedSrcs.length;
-                    lightboxImg.src = orderedSrcs[currentIdx];
+                    var src = orderedSrcs[currentIdx];
+                    var alreadyOpen = lightbox.classList.contains('is-open');
+                    if (alreadyOpen) {
+                        /* 크로스페이드 — 현재 안 보이는 이미지에 새 src 깔고 동시에 교차 */
+                        var incoming = (lbCurrent === lbImgA) ? lbImgB : lbImgA;
+                        incoming.src = src;
+                        /* 현재는 사라지고 들어오는 건 나타남 (동시) */
+                        lbCurrent.classList.remove('is-current');
+                        incoming.classList.add('is-current');
+                        lbCurrent = incoming;
+                    } else {
+                        /* 처음 열 때 — current 이미지에 깔고 fade in */
+                        lbCurrent = lbImgA;
+                        lbImgB.classList.remove('is-current');
+                        lbImgB.removeAttribute('src');
+                        lbImgA.classList.add('is-current');
+                        lbImgA.src = src;
+                    }
                     lightbox.classList.add('is-open');
                     lightbox.setAttribute('aria-hidden', 'false');
                     if (typeof stopMarquee === 'function') stopMarquee();
@@ -2469,7 +2515,11 @@
                     lightbox.setAttribute('aria-hidden', 'true');
                     setTimeout(function () {
                         if (!lightbox.classList.contains('is-open')) {
-                            lightboxImg.src = '';
+                            lbImgA.removeAttribute('src');
+                            lbImgB.removeAttribute('src');
+                            lbImgB.classList.remove('is-current');
+                            lbImgA.classList.add('is-current');
+                            lbCurrent = lbImgA;
                         }
                     }, 450);
                     if (document.body.classList.contains('is-look-active') && typeof resumeMarquee === 'function') {
@@ -2499,7 +2549,10 @@
                         openLightboxBySrc(t.src);
                         return;
                     }
-                    if (lightbox.classList.contains('is-open') && (e.target === backdrop || e.target === lightboxImg || e.target === lightbox)) {
+                    /* 라이트박스 열려있을 때 — 화살표 버튼이 아닌 라이트박스 내부 클릭은 닫기 */
+                    if (lightbox.classList.contains('is-open') &&
+                        lightbox.contains(t) &&
+                        !(t.closest && t.closest('.look-lightbox__nav'))) {
                         closeLightbox();
                     }
                 }, true);

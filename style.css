@@ -1721,14 +1721,14 @@ body.is-member .checkout-section--guest-only {
     width: auto;
     display: block;
     flex: 0 0 auto;
-    transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.85s cubic-bezier(0.22, 1, 0.36, 1);
     transform-origin: center center;
     position: relative;
 }
 
 @media (hover: hover) {
     .is-look-active .marquee__img:hover {
-        transform: translateY(-15px);
+        transform: translateY(-20px);
         z-index: 2;
         box-shadow: 0 22px 36px rgba(0, 0, 0, 0.2);
     }
@@ -2072,6 +2072,7 @@ body.is-look-active .look-label {
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.4s ease;
+    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'><g fill='none' stroke='white' stroke-opacity='0.6' stroke-width='1' stroke-linecap='round'><line x1='6' y1='6' x2='14' y2='14'/><line x1='14' y1='6' x2='6' y2='14'/></g></svg>") 10 10, zoom-out;
 }
 
 .look-lightbox.is-open {
@@ -2085,23 +2086,36 @@ body.is-look-active .look-label {
     background: rgba(0, 0, 0, 0.85);
 }
 
-.look-lightbox__image {
+.look-lightbox__stage {
     position: relative;
+    width: 70vw;
+    height: 86vh;
+    transform: scale(0.92);
+    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.look-lightbox.is-open .look-lightbox__stage {
+    transform: scale(1);
+}
+
+/* 두 이미지 모두 stage 안에서 정중앙에 겹침, 비율 유지 */
+.look-lightbox__image {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     max-width: 70vw;
     max-height: 86vh;
     width: auto;
     height: auto;
     display: block;
     object-fit: contain;
-    transform: scale(0.92);
     opacity: 0;
-    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s ease;
-    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'><g fill='none' stroke='white' stroke-opacity='0.6' stroke-width='1' stroke-linecap='round'><line x1='6' y1='6' x2='14' y2='14'/><line x1='14' y1='6' x2='6' y2='14'/></g></svg>") 10 10, zoom-out;
+    transition: opacity 0.32s ease;
     box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
 }
 
-.look-lightbox.is-open .look-lightbox__image {
-    transform: scale(1);
+.look-lightbox.is-open .look-lightbox__image.is-current {
     opacity: 1;
 }
 
@@ -2129,6 +2143,16 @@ body.is-look-active .look-label {
 }
 
 .look-lightbox__nav svg {
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (hover: hover) {
+    .look-lightbox__nav:hover svg {
+        transform: scale(1.25);
+    }
+}
+
+.look-lightbox__nav svg {
     display: block;
 }
 
@@ -2141,6 +2165,10 @@ body.is-look-active .look-label {
 }
 
 @media (max-width: 768px) {
+    .look-lightbox__stage {
+        width: 92vw;
+        height: 80vh;
+    }
     .look-lightbox__image {
         max-width: 92vw;
         max-height: 80vh;
