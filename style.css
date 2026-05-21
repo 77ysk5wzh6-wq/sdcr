@@ -645,47 +645,6 @@ body.is-loaded .mute-toggle {
 body.is-muted .mute-toggle__icon--on { display: none; }
 body.is-muted .mute-toggle__icon--off { display: block; }
 
-/* 힌트 라벨 — 첫 클릭 전까지만 보임 */
-.mute-toggle__hint {
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    font-size: 15px;
-    line-height: 1;
-    color: currentColor;
-    white-space: nowrap;
-    opacity: 0;
-    transform: translateX(4px);
-    transition: opacity 0.5s ease, transform 0.5s ease;
-    pointer-events: none;
-}
-/* 아직 사운드가 언락되지 않았을 때만 힌트 노출 */
-body.is-loaded.sound-locked .mute-toggle__hint {
-    opacity: 0.85;
-    transform: translateX(0);
-}
-
-/* 펄싱 닷 — 언락 전까지 토글 아이콘 곁에서 깜빡 */
-.mute-toggle__pulse {
-    position: absolute;
-    top: -3px;
-    right: -3px;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: currentColor;
-    opacity: 0;
-    pointer-events: none;
-}
-body.sound-locked .mute-toggle__pulse {
-    opacity: 1;
-    animation: mute-pulse 1.8s ease-out infinite;
-}
-@keyframes mute-pulse {
-    0%   { box-shadow: 0 0 0 0 currentColor; opacity: 0.9; }
-    70%  { box-shadow: 0 0 0 7px transparent; opacity: 0.9; }
-    100% { box-shadow: 0 0 0 0 transparent; opacity: 0.9; }
-}
-
 /* look 페이지에선 사진에 묻히지 않게 블렌드 */
 body.is-look-active .mute-toggle {
     color: #ffffff;
@@ -694,11 +653,7 @@ body.is-look-active .mute-toggle {
 
 @media (max-width: 768px) {
     .mute-toggle {
-        top: 20px;
-        right: 16px;
-    }
-    .mute-toggle__hint {
-        font-size: 13px;
+        display: none;   /* 모바일에서는 mute 토글 숨김 */
     }
 }
 

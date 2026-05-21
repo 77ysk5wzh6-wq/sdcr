@@ -97,8 +97,6 @@
     <div class="transition-overlay-text" aria-hidden="true"></div>
 
     <button type="button" class="mute-toggle" aria-label="sound on/off">
-        <span class="mute-toggle__hint">sound on</span>
-        <span class="mute-toggle__pulse" aria-hidden="true"></span>
         <svg class="mute-toggle__icon mute-toggle__icon--on" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M11 5 6 9H3v6h3l5 4V5z"></path>
             <path d="M15.5 8.5a5 5 0 0 1 0 7"></path>
@@ -146,18 +144,17 @@
                 } catch (e) { window.__soundMuted = false; }
                 if (window.__soundMuted) document.body.classList.add('is-muted');
 
-                /* 아직 첫 제스처가 없으면 잠긴 상태 — 힌트/펄스 노출 */
-                document.body.classList.add('sound-locked');
-                var unlocked = false;
+                /* 첫 사용자 제스처에 모든 AudioContext를 깨움 (브라우저 자동재생 정책) */
+                /* 언락 전에는 어떤 소리도 재생하지 않음 — 안 그러면 suspended 상태에 쌓인 소리가 첫 클릭에 한꺼번에 터짐 */
+                window.__soundUnlocked = false;
 
                 function unlockAudio() {
-                    if (unlocked) return;
-                    unlocked = true;
+                    if (window.__soundUnlocked) return;
+                    window.__soundUnlocked = true;
                     var list = window.__audioContexts || [];
                     list.forEach(function (ctx) {
                         try { if (ctx.state === 'suspended') ctx.resume(); } catch (e) {}
                     });
-                    document.body.classList.remove('sound-locked');   /* 힌트·펄스 사라짐 */
                     document.removeEventListener('pointerdown', unlockAudio);
                     document.removeEventListener('keydown', unlockAudio);
                     document.removeEventListener('touchend', unlockAudio);
@@ -166,9 +163,40 @@
                 document.addEventListener('keydown', unlockAudio);
                 document.addEventListener('touchend', unlockAudio);
 
+                /* 토글 호버 사운드 (다른 호버와 동일한 sound-hover.mp3) */
+                var tglCtx = null;
+                var tglHoverBuffer = null;
+                (function preloadTglHover() {
+                    try {
+                        var AC = window.AudioContext || window.webkitAudioContext;
+                        if (!AC) return;
+                        tglCtx = new AC();
+                        fetch('assets/sound-hover.mp3')
+                            .then(function (r) { return r.arrayBuffer(); })
+                            .then(function (buf) { return tglCtx.decodeAudioData(buf); })
+                            .then(function (decoded) { tglHoverBuffer = decoded; })
+                            .catch(function () {});
+                    } catch (err) {}
+                })();
+                function playTglHover() {
+                    if (window.__soundMuted || !window.__soundUnlocked) return;
+                    if (!tglCtx || !tglHoverBuffer) return;
+                    try {
+                        if (tglCtx.state === 'suspended') tglCtx.resume();
+                        var src = tglCtx.createBufferSource();
+                        var gain = tglCtx.createGain();
+                        gain.gain.value = 0.3;
+                        src.buffer = tglHoverBuffer;
+                        src.connect(gain);
+                        gain.connect(tglCtx.destination);
+                        src.start(0);
+                    } catch (err) {}
+                }
+
                 /* 음소거 토글 버튼 */
                 var toggle = document.querySelector('.mute-toggle');
                 if (toggle) {
+                    toggle.addEventListener('mouseenter', playTglHover);
                     toggle.addEventListener('click', function (e) {
                         e.stopPropagation();
                         unlockAudio();   /* 토글 클릭도 언락 제스처 */
@@ -177,6 +205,8 @@
                         try {
                             localStorage.setItem('sidecar-muted', window.__soundMuted ? '1' : '0');
                         } catch (err) {}
+                        /* 토글 후 소리가 켜진 상태(=해제)일 때만 클릭음. playCategoryEnter가 __soundMuted 가드로 음소거 켤 땐 자동 무음 */
+                        playCategoryEnter();
                     });
                 }
             })();
@@ -197,7 +227,7 @@
                 } catch (err) {}
             })();
             function playCategoryEnter() {
-                if (window.__soundMuted) return;
+                if (window.__soundMuted || !window.__soundUnlocked) return;
                 if (!catEnterCtx || !catEnterBuffer) return;
                 try {
                     if (catEnterCtx.state === 'suspended') catEnterCtx.resume();
@@ -803,6 +833,7 @@
                 var hlCurrentSrc = null;
                 var hlCurrentGain = null;
                 function playHlTick() {
+                    if (window.__soundMuted || !window.__soundUnlocked) return;
                     if (!hlCtx || !hlTickBuffer) return;
                     try {
                         if (hlCtx.state === 'suspended') hlCtx.resume();
@@ -993,7 +1024,7 @@
                 var abCurrentSrc = null;
                 var abCurrentGain = null;
                 function playAbTick() {
-                    if (window.__soundMuted) return;
+                    if (window.__soundMuted || !window.__soundUnlocked) return;
                     if (!abCtx || !abTickBuffer) return;
                     try {
                         if (abCtx.state === 'suspended') abCtx.resume();
@@ -1027,8 +1058,9 @@
                     });
                 }
 
-                function apply(mx, my) {
+                function apply(mx, my, pushScale) {
                     if (!centers.length) return;
+                    var scale = (pushScale === undefined) ? 1 : pushScale;
                     for (var i = 0; i < charEls.length; i++) {
                         var c = centers[i];
                         var dx = mx - c.x;
@@ -1036,7 +1068,7 @@
                         var dist = Math.sqrt(dx * dx + dy * dy);
                         var falloff = Math.exp(-(dist * dist) / (2 * sigma * sigma));
                         var dir = dx >= 0 ? -1 : 1;
-                        var push = dir * maxPush * falloff;
+                        var push = dir * maxPush * scale * falloff;
                         charEls[i].style.transform = 'translateX(' + push.toFixed(2) + 'px)';
                         if (charAnchor[i] === undefined) charAnchor[i] = push;
                         if (Math.abs(push - charAnchor[i]) >= MOVE_THRESHOLD) {
@@ -1094,7 +1126,7 @@
                         var ay = rect.height * 0.4;
                         var mx = cx + Math.sin(t * 0.45) * ax;
                         var my = cy + Math.sin(t * 0.31) * ay;
-                        apply(mx, my);
+                        apply(mx, my, 0.55);   /* 모바일 ghost: 자간 벌어짐 약하게 */
                         ghostRaf = requestAnimationFrame(ghostTick);
                     }
                     function ghostStart() {
@@ -1181,7 +1213,7 @@
                 var llCurrentSrc = null;
                 var llCurrentGain = null;
                 function playLlTick() {
-                    if (window.__soundMuted) return;
+                    if (window.__soundMuted || !window.__soundUnlocked) return;
                     if (!llCtx || !llTickBuffer) return;
                     try {
                         if (llCtx.state === 'suspended') llCtx.resume();
@@ -1298,7 +1330,7 @@
                     } catch (err) {}
                 })();
                 function playCatArrow() {
-                    if (window.__soundMuted) return;
+                    if (window.__soundMuted || !window.__soundUnlocked) return;
                     if (!catCtx || !catArrowBuffer) return;
                     try {
                         if (catCtx.state === 'suspended') catCtx.resume();
@@ -1314,6 +1346,7 @@
                 var catCurSrc = null;
                 var catCurGain = null;
                 function playCatTick() {
+                    if (window.__soundMuted || !window.__soundUnlocked) return;
                     if (!catCtx || !catTickBuffer) return;
                     try {
                         if (catCtx.state === 'suspended') catCtx.resume();
@@ -1516,6 +1549,7 @@
                     } catch (err) {}
                 })();
                 function playHang() {
+                    if (window.__soundMuted || !window.__soundUnlocked) return;
                     if (!hoverCtx || !hangBuffer) return;
                     try {
                         if (hoverCtx.state === 'suspended') hoverCtx.resume();
@@ -1572,6 +1606,7 @@
                     } catch (err) {}
                 })();
                 function playBuffer(buffer, volume) {
+                    if (window.__soundMuted || !window.__soundUnlocked) return;
                     if (!audioCtx || !buffer) return;
                     try {
                         if (audioCtx.state === 'suspended') audioCtx.resume();
