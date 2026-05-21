@@ -2048,6 +2048,95 @@ body.is-auth-open .auth-drawer {
     display: none !important;
 }
 
+/* === MUTE TOGGLE + 사운드 언락 힌트 =========== */
+.mute-toggle {
+    position: fixed;
+    top: 30px;
+    right: 40px;
+    z-index: 120;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: transparent;
+    color: #000000;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+body.is-loaded .mute-toggle {
+    opacity: 1;
+}
+
+.mute-toggle__icon {
+    display: block;
+}
+/* 기본(소리 켜짐): on 아이콘 표시, off 숨김 */
+.mute-toggle__icon--off { display: none; }
+/* 음소거 상태: off 아이콘 표시 */
+body.is-muted .mute-toggle__icon--on { display: none; }
+body.is-muted .mute-toggle__icon--off { display: block; }
+
+/* 힌트 라벨 — 첫 클릭 전까지만 보임 */
+.mute-toggle__hint {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 15px;
+    line-height: 1;
+    color: currentColor;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateX(4px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    pointer-events: none;
+}
+/* 아직 사운드가 언락되지 않았을 때만 힌트 노출 */
+body.is-loaded.sound-locked .mute-toggle__hint {
+    opacity: 0.85;
+    transform: translateX(0);
+}
+
+/* 펄싱 닷 — 언락 전까지 토글 아이콘 곁에서 깜빡 */
+.mute-toggle__pulse {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0;
+    pointer-events: none;
+}
+body.sound-locked .mute-toggle__pulse {
+    opacity: 1;
+    animation: mute-pulse 1.8s ease-out infinite;
+}
+@keyframes mute-pulse {
+    0%   { box-shadow: 0 0 0 0 currentColor; opacity: 0.9; }
+    70%  { box-shadow: 0 0 0 7px transparent; opacity: 0.9; }
+    100% { box-shadow: 0 0 0 0 transparent; opacity: 0.9; }
+}
+
+/* look 페이지에선 사진에 묻히지 않게 블렌드 */
+body.is-look-active .mute-toggle {
+    color: #ffffff;
+    mix-blend-mode: difference;
+}
+
+@media (max-width: 768px) {
+    .mute-toggle {
+        top: 20px;
+        right: 16px;
+    }
+    .mute-toggle__hint {
+        font-size: 13px;
+    }
+}
+
 /* === LOOK PAGE LABEL — "2026.6 spring" =========== */
 .look-label {
     position: fixed;

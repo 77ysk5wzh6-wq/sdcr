@@ -304,6 +304,21 @@
     <div class="transition-overlay transition-overlay--shop" aria-hidden="true"></div>
     <div class="transition-overlay-text" aria-hidden="true"></div>
 
+    <button type="button" class="mute-toggle" aria-label="sound on/off">
+        <span class="mute-toggle__hint">sound on</span>
+        <span class="mute-toggle__pulse" aria-hidden="true"></span>
+        <svg class="mute-toggle__icon mute-toggle__icon--on" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M11 5 6 9H3v6h3l5 4V5z"></path>
+            <path d="M15.5 8.5a5 5 0 0 1 0 7"></path>
+            <path d="M18 6a8 8 0 0 1 0 12"></path>
+        </svg>
+        <svg class="mute-toggle__icon mute-toggle__icon--off" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M11 5 6 9H3v6h3l5 4V5z"></path>
+            <path d="M22 9l-6 6"></path>
+            <path d="M16 9l6 6"></path>
+        </svg>
+    </button>
+
     <section class="checkout-page" aria-hidden="true">
         <div class="checkout-layout">
             <div class="checkout-header">
@@ -427,6 +442,21 @@
     </aside>
 
     <script>
+        /* === AudioContext 레지스트리 — 생성되는 모든 컨텍스트를 추적해 첫 제스처에 일괄 resume === */
+        (function () {
+            var Native = window.AudioContext || window.webkitAudioContext;
+            if (!Native) return;
+            window.__audioContexts = [];
+            function Tracked() {
+                var ctx = new Native();
+                window.__audioContexts.push(ctx);
+                return ctx;
+            }
+            Tracked.prototype = Native.prototype;
+            window.AudioContext = Tracked;
+            window.webkitAudioContext = Tracked;
+        })();
+
         (function () {
             try {
                 if ('scrollRestoration' in history) {
@@ -437,6 +467,49 @@
             requestAnimationFrame(function () {
                 document.body.classList.add('is-loaded');
             });
+
+            /* === 사운드: 음소거 토글 + 첫 제스처 언락 힌트 === */
+            (function setupSound() {
+                /* 저장된 음소거 상태 복원 */
+                try {
+                    window.__soundMuted = localStorage.getItem('sidecar-muted') === '1';
+                } catch (e) { window.__soundMuted = false; }
+                if (window.__soundMuted) document.body.classList.add('is-muted');
+
+                /* 아직 첫 제스처가 없으면 잠긴 상태 — 힌트/펄스 노출 */
+                document.body.classList.add('sound-locked');
+                var unlocked = false;
+
+                function unlockAudio() {
+                    if (unlocked) return;
+                    unlocked = true;
+                    var list = window.__audioContexts || [];
+                    list.forEach(function (ctx) {
+                        try { if (ctx.state === 'suspended') ctx.resume(); } catch (e) {}
+                    });
+                    document.body.classList.remove('sound-locked');   /* 힌트·펄스 사라짐 */
+                    document.removeEventListener('pointerdown', unlockAudio);
+                    document.removeEventListener('keydown', unlockAudio);
+                    document.removeEventListener('touchend', unlockAudio);
+                }
+                document.addEventListener('pointerdown', unlockAudio);
+                document.addEventListener('keydown', unlockAudio);
+                document.addEventListener('touchend', unlockAudio);
+
+                /* 음소거 토글 버튼 */
+                var toggle = document.querySelector('.mute-toggle');
+                if (toggle) {
+                    toggle.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        unlockAudio();   /* 토글 클릭도 언락 제스처 */
+                        window.__soundMuted = !window.__soundMuted;
+                        document.body.classList.toggle('is-muted', window.__soundMuted);
+                        try {
+                            localStorage.setItem('sidecar-muted', window.__soundMuted ? '1' : '0');
+                        } catch (err) {}
+                    });
+                }
+            })();
 
             /* 카테고리 클릭 진입 사운드 (라이트박스 진입과 동일) */
             var catEnterCtx = null;
