@@ -2027,7 +2027,7 @@
                         var AC = window.AudioContext || window.webkitAudioContext;
                         if (!AC) return;
                         hlCtx = new AC();
-                        fetch('assets/tick_fx.mp3')
+                        fetch('assets/sound-text-tick.mp3')
                             .then(function (r) { return r.arrayBuffer(); })
                             .then(function (buf) { return hlCtx.decodeAudioData(buf); })
                             .then(function (decoded) { hlTickBuffer = decoded; })
@@ -2190,8 +2190,8 @@
                                 .then(function (decoded) { setter(decoded); })
                                 .catch(function () {});
                         }
-                        load('assets/tick_fx.mp3', function (b) { catTickBuffer = b; });
-                        load('assets/arrowhover.mp3', function (b) { catArrowBuffer = b; });
+                        load('assets/sound-text-tick.mp3', function (b) { catTickBuffer = b; });
+                        load('assets/sound-hover.mp3', function (b) { catArrowBuffer = b; });
                     } catch (err) {}
                 })();
                 function playCatArrow() {
@@ -2405,7 +2405,7 @@
                         var AC = window.AudioContext || window.webkitAudioContext;
                         if (!AC) return;
                         hoverCtx = new AC();
-                        fetch('assets/arrowhover.mp3')
+                        fetch('assets/sound-hover.mp3')
                             .then(function (r) { return r.arrayBuffer(); })
                             .then(function (buf) { return hoverCtx.decodeAudioData(buf); })
                             .then(function (decoded) { hangBuffer = decoded; })
@@ -2463,9 +2463,9 @@
                                 .then(function (decoded) { setter(decoded); })
                                 .catch(function () {});
                         }
-                        load('assets/click.mp3', function (b) { clickBuffer = b; });
-                        load('assets/click2_first.mp3', function (b) { tickBuffer = b; });
-                        load('assets/arrowhover.mp3', function (b) { arrowBuffer = b; });
+                        load('assets/sound-lightbox-open.mp3', function (b) { clickBuffer = b; });
+                        load('assets/sound-lightbox-nav.mp3', function (b) { tickBuffer = b; });
+                        load('assets/sound-hover.mp3', function (b) { arrowBuffer = b; });
                     } catch (err) {}
                 })();
                 function playBuffer(buffer, volume) {
