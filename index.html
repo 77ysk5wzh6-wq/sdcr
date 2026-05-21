@@ -1891,9 +1891,40 @@
                     ovl.style.opacity = '1';
                     ovl.offsetHeight;
                     ovl.classList.add('is-active');
+
+                    /* 텍스트 확장 애니매이션 — 'shop' 글자가 버튼에서 시작해 가로로 펼쳐짐 */
+                    var overlayText = document.querySelector('.transition-overlay-text');
+                    var overlayTextAbsolute = false;
+                    if (overlayText) {
+                        overlayTextAbsolute = window.getComputedStyle(overlayText).position === 'absolute';
+                    }
+                    function topFor(viewportY) {
+                        return overlayTextAbsolute ? viewportY + window.scrollY : viewportY;
+                    }
+                    if (overlayText) {
+                        var target = 'shop';
+                        var labelHtml = '';
+                        for (var ch = 0; ch < target.length; ch++) {
+                            labelHtml += '<span class="transition-overlay__char">' + target.charAt(ch) + '</span>';
+                        }
+                        overlayText.innerHTML = labelHtml;
+                        overlayText.style.transition = 'none';
+                        overlayText.style.top = topFor(rect.top) + 'px';
+                        overlayText.style.left = rect.left + 'px';
+                        overlayText.style.width = rect.width + 'px';
+                        overlayText.style.height = rect.height + 'px';
+                        overlayText.style.opacity = '1';
+                        overlayText.offsetHeight;
+                    }
+
                     requestAnimationFrame(function () {
                         ovl.style.left = '0px';
                         ovl.style.width = '100vw';
+                        if (overlayText) {
+                            overlayText.style.transition = 'left 0.56s ease-in-out, width 0.56s ease-in-out';
+                            overlayText.style.left = '0px';
+                            overlayText.style.width = '100vw';
+                        }
                     });
                     setTimeout(function () {
                         ovl.style.top = '0px';
@@ -1911,6 +1942,11 @@
                             shopOverlay.classList.remove('is-sliding-out');
                             shopOverlay.style.cssText = '';
                             shopOverlay.innerHTML = '';
+                        }
+                        var ot = document.querySelector('.transition-overlay-text');
+                        if (ot) {
+                            ot.style.cssText = '';
+                            ot.innerHTML = '';
                         }
                         transitioning = false;
                         document.body.classList.remove('is-shop-active');
