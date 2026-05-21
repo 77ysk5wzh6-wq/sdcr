@@ -2016,6 +2016,50 @@
                 var pendingY = 0;
                 var hovering = false;
 
+                /* tick 사운드 — 글자 자간이 임계 이상 벌어지면 재생 */
+                var hlCtx = null;
+                var hlTickBuffer = null;
+                (function preloadHlTick() {
+                    try {
+                        var AC = window.AudioContext || window.webkitAudioContext;
+                        if (!AC) return;
+                        hlCtx = new AC();
+                        fetch('assets/tick_fx.mp3')
+                            .then(function (r) { return r.arrayBuffer(); })
+                            .then(function (buf) { return hlCtx.decodeAudioData(buf); })
+                            .then(function (decoded) { hlTickBuffer = decoded; })
+                            .catch(function () {});
+                    } catch (err) {}
+                })();
+                var hlCurrentSrc = null;
+                var hlCurrentGain = null;
+                function playHlTick() {
+                    if (!hlCtx || !hlTickBuffer) return;
+                    try {
+                        if (hlCtx.state === 'suspended') hlCtx.resume();
+                        var now = hlCtx.currentTime;
+                        if (hlCurrentGain && hlCurrentSrc) {
+                            try {
+                                hlCurrentGain.gain.cancelScheduledValues(now);
+                                hlCurrentGain.gain.setValueAtTime(hlCurrentGain.gain.value, now);
+                                hlCurrentGain.gain.linearRampToValueAtTime(0, now + 0.03);
+                                hlCurrentSrc.stop(now + 0.04);
+                            } catch (e) {}
+                        }
+                        var src = hlCtx.createBufferSource();
+                        var gain = hlCtx.createGain();
+                        gain.gain.value = 0.33;
+                        src.buffer = hlTickBuffer;
+                        src.connect(gain);
+                        gain.connect(hlCtx.destination);
+                        src.start(0);
+                        hlCurrentSrc = src;
+                        hlCurrentGain = gain;
+                    } catch (err) {}
+                }
+                var MOVE_THRESHOLD = 14;       /* 직전 발동 위치 대비 이만큼 더 이동하면 tick */
+                var charAnchor = [];           /* 각 글자의 직전 기준 push 값 */
+
                 function measure() {
                     centers = charEls.map(function (el) {
                         var r = el.getBoundingClientRect();
@@ -2034,12 +2078,19 @@
                         var dir = dx >= 0 ? -1 : 1;
                         var push = dir * maxPush * falloff;
                         charEls[i].style.transform = 'translateX(' + push.toFixed(2) + 'px)';
+                        /* 직전 기준 위치 대비 임계 이상 움직였을 때만 tick + 기준 갱신 */
+                        if (charAnchor[i] === undefined) charAnchor[i] = push;
+                        if (Math.abs(push - charAnchor[i]) >= MOVE_THRESHOLD) {
+                            playHlTick();
+                            charAnchor[i] = push;
+                        }
                     }
                 }
 
                 function reset() {
                     for (var i = 0; i < charEls.length; i++) {
                         charEls[i].style.transform = 'translateX(0)';
+                        charAnchor[i] = 0;
                     }
                 }
 
@@ -2120,6 +2171,49 @@
                 var categoryEls = document.querySelectorAll('.category');
                 if (!categoryEls.length) return;
 
+                /* tick 사운드 (monophonic) — 카테고리 글자 이동 시 */
+                var catCtx = null;
+                var catTickBuffer = null;
+                (function preloadCatTick() {
+                    try {
+                        var AC = window.AudioContext || window.webkitAudioContext;
+                        if (!AC) return;
+                        catCtx = new AC();
+                        fetch('assets/tick_fx.mp3')
+                            .then(function (r) { return r.arrayBuffer(); })
+                            .then(function (buf) { return catCtx.decodeAudioData(buf); })
+                            .then(function (decoded) { catTickBuffer = decoded; })
+                            .catch(function () {});
+                    } catch (err) {}
+                })();
+                var catCurSrc = null;
+                var catCurGain = null;
+                function playCatTick() {
+                    if (!catCtx || !catTickBuffer) return;
+                    try {
+                        if (catCtx.state === 'suspended') catCtx.resume();
+                        var now = catCtx.currentTime;
+                        if (catCurGain && catCurSrc) {
+                            try {
+                                catCurGain.gain.cancelScheduledValues(now);
+                                catCurGain.gain.setValueAtTime(catCurGain.gain.value, now);
+                                catCurGain.gain.linearRampToValueAtTime(0, now + 0.03);
+                                catCurSrc.stop(now + 0.04);
+                            } catch (e) {}
+                        }
+                        var src = catCtx.createBufferSource();
+                        var gain = catCtx.createGain();
+                        gain.gain.value = 0.33;
+                        src.buffer = catTickBuffer;
+                        src.connect(gain);
+                        gain.connect(catCtx.destination);
+                        src.start(0);
+                        catCurSrc = src;
+                        catCurGain = gain;
+                    } catch (err) {}
+                }
+                var CAT_MOVE_THRESHOLD = 3;   /* 카테고리 글자가 이만큼 더 이동하면 tick */
+
                 categoryEls.forEach(function (catEl) {
                     var textEl = catEl.querySelector('.category__text');
                     if (!textEl) return;
@@ -2144,6 +2238,7 @@
                     var hovering = false;
                     var basePadL = 0;
                     var basePadR = 0;
+                    var charAnchor = [];
 
                     function readBasePadding() {
                         var s = window.getComputedStyle(catEl);
@@ -2174,6 +2269,12 @@
                             charEls[i].style.transform = 'translateX(' + push.toFixed(2) + 'px)';
                             if (push < leftMost) leftMost = push;
                             if (push > rightMost) rightMost = push;
+                            /* 직전 기준 대비 임계 이상 이동 시 tick + 기준 갱신 */
+                            if (charAnchor[i] === undefined) charAnchor[i] = push;
+                            if (Math.abs(push - charAnchor[i]) >= CAT_MOVE_THRESHOLD) {
+                                playCatTick();
+                                charAnchor[i] = push;
+                            }
                         }
                         catEl.style.paddingLeft = (basePadL + (-leftMost)) + 'px';
                         catEl.style.paddingRight = (basePadR + rightMost) + 'px';
@@ -2182,6 +2283,7 @@
                     function reset() {
                         for (var i = 0; i < charEls.length; i++) {
                             charEls[i].style.transform = 'translateX(0)';
+                            charAnchor[i] = 0;
                         }
                         catEl.style.paddingLeft = '';
                         catEl.style.paddingRight = '';
@@ -2251,6 +2353,48 @@
                 }, { passive: false });
             })();
 
+            (function setupHoverSound() {
+                if (window.matchMedia && window.matchMedia('(hover: none)').matches) return;
+                var marqueeEl = document.querySelector('.marquee');
+                if (!marqueeEl) return;
+
+                var hoverCtx = null;
+                var hangBuffer = null;
+                (function preload() {
+                    try {
+                        var AC = window.AudioContext || window.webkitAudioContext;
+                        if (!AC) return;
+                        hoverCtx = new AC();
+                        fetch('assets/hover_tick.mp3')
+                            .then(function (r) { return r.arrayBuffer(); })
+                            .then(function (buf) { return hoverCtx.decodeAudioData(buf); })
+                            .then(function (decoded) { hangBuffer = decoded; })
+                            .catch(function () {});
+                    } catch (err) {}
+                })();
+                function playHang() {
+                    if (!hoverCtx || !hangBuffer) return;
+                    try {
+                        if (hoverCtx.state === 'suspended') hoverCtx.resume();
+                        var src = hoverCtx.createBufferSource();
+                        var gain = hoverCtx.createGain();
+                        gain.gain.value = 0.39;
+                        src.buffer = hangBuffer;
+                        src.connect(gain);
+                        gain.connect(hoverCtx.destination);
+                        src.start(0);
+                    } catch (err) {}
+                }
+
+                marqueeEl.addEventListener('mouseover', function (e) {
+                    if (!document.body.classList.contains('is-look-active')) return;
+                    var t = e.target;
+                    if (t && t.classList && t.classList.contains('marquee__img')) {
+                        playHang();
+                    }
+                });
+            })();
+
             (function setupLookLightbox() {
                 var lightbox = document.querySelector('.look-lightbox');
                 if (!lightbox) return;
@@ -2259,34 +2403,41 @@
                 var prevBtn = lightbox.querySelector('.look-lightbox__nav--prev');
                 var nextBtn = lightbox.querySelector('.look-lightbox__nav--next');
 
-                /* 실제 마우스 클릭음 — 미리 디코드된 AudioBuffer로 즉시 재생 */
+                /* 사운드 — 미리 디코드된 AudioBuffer로 즉시 재생 */
                 var audioCtx = null;
                 var clickBuffer = null;
-                (function preloadClick() {
+                var tickBuffer = null;
+                (function preloadSounds() {
                     try {
                         var AC = window.AudioContext || window.webkitAudioContext;
                         if (!AC) return;
                         audioCtx = new AC();
-                        fetch('assets/click.mp3')
-                            .then(function (r) { return r.arrayBuffer(); })
-                            .then(function (buf) { return audioCtx.decodeAudioData(buf); })
-                            .then(function (decoded) { clickBuffer = decoded; })
-                            .catch(function () {});
+                        function load(url, setter) {
+                            fetch(url)
+                                .then(function (r) { return r.arrayBuffer(); })
+                                .then(function (buf) { return audioCtx.decodeAudioData(buf); })
+                                .then(function (decoded) { setter(decoded); })
+                                .catch(function () {});
+                        }
+                        load('assets/click.mp3', function (b) { clickBuffer = b; });
+                        load('assets/hover_tick.mp3', function (b) { tickBuffer = b; });
                     } catch (err) {}
                 })();
-                function playClickSound() {
-                    if (!audioCtx || !clickBuffer) return;
+                function playBuffer(buffer, volume) {
+                    if (!audioCtx || !buffer) return;
                     try {
                         if (audioCtx.state === 'suspended') audioCtx.resume();
                         var src = audioCtx.createBufferSource();
                         var gain = audioCtx.createGain();
-                        gain.gain.value = 0.7;
-                        src.buffer = clickBuffer;
+                        gain.gain.value = volume;
+                        src.buffer = buffer;
                         src.connect(gain);
                         gain.connect(audioCtx.destination);
                         src.start(0);
                     } catch (err) {}
                 }
+                function playClickSound() { playBuffer(clickBuffer, 0.7); }
+                function playTickSound() { playBuffer(tickBuffer, 0.39); }
 
                 var orderedSrcs = [];
                 var currentIdx = -1;
@@ -2299,12 +2450,12 @@
                 function openLightboxBySrc(src) {
                     refreshOrdered();
                     var idx = orderedSrcs.indexOf(src);
+                    playClickSound();
                     openLightboxByIdx(idx >= 0 ? idx : 0);
                 }
 
                 function openLightboxByIdx(idx) {
                     if (!orderedSrcs.length) return;
-                    playClickSound();
                     currentIdx = (idx + orderedSrcs.length) % orderedSrcs.length;
                     lightboxImg.src = orderedSrcs[currentIdx];
                     lightbox.classList.add('is-open');
@@ -2328,10 +2479,12 @@
 
                 function showPrev() {
                     if (currentIdx < 0) return;
+                    playTickSound();
                     openLightboxByIdx(currentIdx - 1);
                 }
                 function showNext() {
                     if (currentIdx < 0) return;
+                    playTickSound();
                     openLightboxByIdx(currentIdx + 1);
                 }
 
