@@ -1730,6 +1730,7 @@ body.is-member .checkout-section--guest-only {
     width: auto;
     display: block;
     flex: 0 0 auto;
+    margin-left: -0.33px;
     transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.85s cubic-bezier(0.22, 1, 0.36, 1);
     transform-origin: center center;
     position: relative;
