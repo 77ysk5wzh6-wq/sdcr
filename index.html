@@ -2388,7 +2388,7 @@
                         var AC = window.AudioContext || window.webkitAudioContext;
                         if (!AC) return;
                         hoverCtx = new AC();
-                        fetch('assets/hover_tick.mp3')
+                        fetch('assets/arrowhover.mp3')
                             .then(function (r) { return r.arrayBuffer(); })
                             .then(function (buf) { return hoverCtx.decodeAudioData(buf); })
                             .then(function (decoded) { hangBuffer = decoded; })
@@ -2447,7 +2447,7 @@
                                 .catch(function () {});
                         }
                         load('assets/click.mp3', function (b) { clickBuffer = b; });
-                        load('assets/hover_tick.mp3', function (b) { tickBuffer = b; });
+                        load('assets/click2_first.mp3', function (b) { tickBuffer = b; });
                         load('assets/arrowhover.mp3', function (b) { arrowBuffer = b; });
                     } catch (err) {}
                 })();
@@ -2464,20 +2464,18 @@
                         src.start(0);
                     } catch (err) {}
                 }
+                function playClickSound() { playBuffer(clickBuffer, 0.7); }
                 function isTouchLb() {
                     var hoverNone = window.matchMedia && window.matchMedia('(hover: none)').matches;
                     var narrow = window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
                     var hasTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
                     return hoverNone || narrow || hasTouch;
                 }
-                function playClickSound() {
-                    /* 모바일(터치)에서는 열고/닫을 때 arrowhover, PC는 click */
-                    var touch = isTouchLb();
-                    console.log('[lb sound] touch:', touch, 'arrowBuffer:', !!arrowBuffer, 'clickBuffer:', !!clickBuffer);
-                    if (touch) playBuffer(arrowBuffer, 0.3);
-                    else playBuffer(clickBuffer, 0.7);
+                function playTickSound() {
+                    /* 모바일에서는 화살표 넘김에 arrowhover, PC는 click2 첫 음 */
+                    if (isTouchLb()) playBuffer(arrowBuffer, 0.3);
+                    else playBuffer(tickBuffer, 0.39);
                 }
-                function playTickSound() { playBuffer(tickBuffer, 0.39); }
                 function playArrowHover() { playBuffer(arrowBuffer, 0.3); }
 
                 var orderedSrcs = [];
