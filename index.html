@@ -212,7 +212,7 @@
     <section class="about-page" aria-hidden="true">
         <div class="about-page__inner">
             <img src="" alt="" class="about-page__image" data-src="assets/recipe.png">
-            <p class="about-page__text">We are sidecar.<br>We make clothes in Seoul.<br>and sometimes drink sidecar.</p>
+            <p class="about-page__text">We are sidecar.<br>We make clothes in Seoul.<br>And sometimes drink sidecar.</p>
         </div>
         <img src="" alt="" class="about-page__signature" data-src="assets/sidecar1.png">
     </section>
@@ -437,6 +437,36 @@
             requestAnimationFrame(function () {
                 document.body.classList.add('is-loaded');
             });
+
+            /* 카테고리 클릭 진입 사운드 (라이트박스 진입과 동일) */
+            var catEnterCtx = null;
+            var catEnterBuffer = null;
+            (function preloadCatEnter() {
+                try {
+                    var AC = window.AudioContext || window.webkitAudioContext;
+                    if (!AC) return;
+                    catEnterCtx = new AC();
+                    fetch('assets/sound-lightbox-open.mp3')
+                        .then(function (r) { return r.arrayBuffer(); })
+                        .then(function (buf) { return catEnterCtx.decodeAudioData(buf); })
+                        .then(function (decoded) { catEnterBuffer = decoded; })
+                        .catch(function () {});
+                } catch (err) {}
+            })();
+            function playCategoryEnter() {
+                if (window.__soundMuted) return;
+                if (!catEnterCtx || !catEnterBuffer) return;
+                try {
+                    if (catEnterCtx.state === 'suspended') catEnterCtx.resume();
+                    var src = catEnterCtx.createBufferSource();
+                    var gain = catEnterCtx.createGain();
+                    gain.gain.value = 0.7;
+                    src.buffer = catEnterBuffer;
+                    src.connect(gain);
+                    gain.connect(catEnterCtx.destination);
+                    src.start(0);
+                } catch (err) {}
+            }
 
             var cartData = [];
             var cartButton = document.querySelector('.cart-button');
@@ -1836,7 +1866,8 @@
                         overlayText.style.opacity = '0';
                     }
                     document.body.classList.remove('is-categories-out');
-                }, 2700);
+                    document.body.classList.remove('is-transitioning-cat');
+                }, 2100);
 
                 if (!isShop) {
                     navSchedule(function () {
@@ -1858,19 +1889,20 @@
                         overlayText.style.cssText = '';
                         overlayText.innerHTML = '';
                     }
-                    document.body.classList.remove('is-transitioning-cat');
                     overlayTextCleanupTimer = null;
                 }, 3850);
             }
 
             look.addEventListener('click', function (e) {
                 e.preventDefault();
+                playCategoryEnter();
                 navigateTo('look');
             });
 
             if (about) {
                 about.addEventListener('click', function (e) {
                     e.preventDefault();
+                    playCategoryEnter();
                     navigateTo('about');
                 });
             }
@@ -1879,6 +1911,7 @@
                 shop.addEventListener('click', function (e) {
                     e.preventDefault();
                     if (transitioning) return;
+                    playCategoryEnter();
                     transitioning = true;
                     var btn = shop;
                     var ovl = shopOverlay;
@@ -2169,8 +2202,345 @@
                 });
             })();
 
+            (function setupAboutHover() {
+                var textEl = document.querySelector('.about-page__text');
+                if (!textEl) return;
+                var hoverNone = window.matchMedia && window.matchMedia('(hover: none)').matches;
+                var narrow = window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
+                var hasTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+                var isTouch = hoverNone || narrow || hasTouch;
+
+                /* <br>은 보존하고, 텍스트 노드의 각 글자만 span으로 쪼갬 (공백·마침표 포함) */
+                var charEls = [];
+                var nodes = Array.prototype.slice.call(textEl.childNodes);
+                textEl.textContent = '';
+                nodes.forEach(function (node) {
+                    if (node.nodeType === 3) {
+                        var text = node.textContent;
+                        for (var i = 0; i < text.length; i++) {
+                            var ch = text.charAt(i);
+                            var span = document.createElement('span');
+                            span.className = 'about-page__char';
+                            span.textContent = ch;
+                            if (ch === ' ') span.style.whiteSpace = 'pre';
+                            textEl.appendChild(span);
+                            if (ch !== ' ') charEls.push(span);
+                        }
+                    } else if (node.nodeName === 'BR') {
+                        textEl.appendChild(document.createElement('br'));
+                    } else {
+                        textEl.appendChild(node);
+                    }
+                });
+                if (!charEls.length) return;
+
+                var centers = [];
+                var maxPush = 12;
+                var sigma = 30;
+                var rafId = null;
+                var pendingX = 0;
+                var pendingY = 0;
+                var hovering = false;
+
+                /* tick 사운드 — headline과 동일한 음원/방식 */
+                var abCtx = null;
+                var abTickBuffer = null;
+                (function preloadAbTick() {
+                    try {
+                        var AC = window.AudioContext || window.webkitAudioContext;
+                        if (!AC) return;
+                        abCtx = new AC();
+                        fetch('assets/sound-text-tick.mp3')
+                            .then(function (r) { return r.arrayBuffer(); })
+                            .then(function (buf) { return abCtx.decodeAudioData(buf); })
+                            .then(function (decoded) { abTickBuffer = decoded; })
+                            .catch(function () {});
+                    } catch (err) {}
+                })();
+                var abCurrentSrc = null;
+                var abCurrentGain = null;
+                function playAbTick() {
+                    if (window.__soundMuted) return;
+                    if (!abCtx || !abTickBuffer) return;
+                    try {
+                        if (abCtx.state === 'suspended') abCtx.resume();
+                        var now = abCtx.currentTime;
+                        if (abCurrentGain && abCurrentSrc) {
+                            try {
+                                abCurrentGain.gain.cancelScheduledValues(now);
+                                abCurrentGain.gain.setValueAtTime(abCurrentGain.gain.value, now);
+                                abCurrentGain.gain.linearRampToValueAtTime(0, now + 0.03);
+                                abCurrentSrc.stop(now + 0.04);
+                            } catch (e) {}
+                        }
+                        var src = abCtx.createBufferSource();
+                        var gain = abCtx.createGain();
+                        gain.gain.value = 0.33;
+                        src.buffer = abTickBuffer;
+                        src.connect(gain);
+                        gain.connect(abCtx.destination);
+                        src.start(0);
+                        abCurrentSrc = src;
+                        abCurrentGain = gain;
+                    } catch (err) {}
+                }
+                var MOVE_THRESHOLD = 5;   /* maxPush(12)보다 작게 — 안 그러면 임계 미달로 소리가 안 남 */
+                var charAnchor = [];
+
+                function measure() {
+                    centers = charEls.map(function (el) {
+                        var r = el.getBoundingClientRect();
+                        return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+                    });
+                }
+
+                function apply(mx, my) {
+                    if (!centers.length) return;
+                    for (var i = 0; i < charEls.length; i++) {
+                        var c = centers[i];
+                        var dx = mx - c.x;
+                        var dy = my - c.y;
+                        var dist = Math.sqrt(dx * dx + dy * dy);
+                        var falloff = Math.exp(-(dist * dist) / (2 * sigma * sigma));
+                        var dir = dx >= 0 ? -1 : 1;
+                        var push = dir * maxPush * falloff;
+                        charEls[i].style.transform = 'translateX(' + push.toFixed(2) + 'px)';
+                        if (charAnchor[i] === undefined) charAnchor[i] = push;
+                        if (Math.abs(push - charAnchor[i]) >= MOVE_THRESHOLD) {
+                            playAbTick();
+                            charAnchor[i] = push;
+                        }
+                    }
+                }
+
+                function reset() {
+                    for (var i = 0; i < charEls.length; i++) {
+                        charEls[i].style.transform = 'translateX(0)';
+                        charAnchor[i] = 0;
+                    }
+                }
+
+                function onMove(e) {
+                    pendingX = e.clientX;
+                    pendingY = e.clientY;
+                    if (rafId) return;
+                    rafId = requestAnimationFrame(function () {
+                        rafId = null;
+                        if (hovering) apply(pendingX, pendingY);
+                    });
+                }
+
+                if (!isTouch) {
+                    textEl.addEventListener('mouseenter', function () {
+                        hovering = true;
+                        measure();
+                    });
+                    textEl.addEventListener('mousemove', onMove);
+                    textEl.addEventListener('mouseleave', function () {
+                        hovering = false;
+                        if (rafId) {
+                            cancelAnimationFrame(rafId);
+                            rafId = null;
+                        }
+                        reset();
+                    });
+                    window.addEventListener('resize', function () {
+                        if (hovering) measure();
+                    });
+                } else {
+                    /* 모바일: about 활성일 때만 ghost cursor 자동 애니매이션 */
+                    var ghostRaf = 0;
+                    var ghostStartTime = 0;
+                    function ghostTick(now) {
+                        if (!ghostStartTime) ghostStartTime = now;
+                        var t = (now - ghostStartTime) / 1000;
+                        var rect = textEl.getBoundingClientRect();
+                        var cx = rect.left + rect.width / 2;
+                        var cy = rect.top + rect.height / 2;
+                        var ax = rect.width * 0.3;
+                        var ay = rect.height * 0.4;
+                        var mx = cx + Math.sin(t * 0.45) * ax;
+                        var my = cy + Math.sin(t * 0.31) * ay;
+                        apply(mx, my);
+                        ghostRaf = requestAnimationFrame(ghostTick);
+                    }
+                    function ghostStart() {
+                        measure();
+                        if (!ghostRaf) ghostRaf = requestAnimationFrame(ghostTick);
+                    }
+                    function ghostStop() {
+                        if (ghostRaf) {
+                            cancelAnimationFrame(ghostRaf);
+                            ghostRaf = 0;
+                        }
+                        reset();
+                    }
+                    function syncGhost() {
+                        if (document.body.classList.contains('is-about-active') && !document.hidden) {
+                            ghostStartTime = 0;
+                            ghostStart();
+                        } else {
+                            ghostStop();
+                        }
+                    }
+                    /* about 진입/이탈 감지 — body 클래스 변화를 관찰 */
+                    var mo = new MutationObserver(syncGhost);
+                    mo.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+                    document.addEventListener('visibilitychange', syncGhost);
+                    window.addEventListener('resize', function () { if (ghostRaf) measure(); });
+                    syncGhost();
+                }
+            })();
+
+            (function setupLookLabelHover() {
+                /* PC 전용 — 모바일은 호버 자간 애니매이션 자체가 없음 */
+                var hoverNone = window.matchMedia && window.matchMedia('(hover: none)').matches;
+                var narrow = window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
+                var hasTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+                if (hoverNone || narrow || hasTouch) return;
+                var labelEl = document.querySelector('.look-label');
+                if (!labelEl) return;
+
+                /* 클릭은 가능하되 아무 일도 일어나지 않게 */
+                labelEl.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                });
+
+                /* 글자만 span으로 쪼갬 (공백 보존) */
+                var charEls = [];
+                var text = labelEl.textContent;
+                labelEl.textContent = '';
+                for (var i = 0; i < text.length; i++) {
+                    var ch = text.charAt(i);
+                    var span = document.createElement('span');
+                    span.className = 'look-label__char';
+                    span.textContent = ch;
+                    if (ch === ' ') span.style.whiteSpace = 'pre';
+                    labelEl.appendChild(span);
+                    if (ch !== ' ') charEls.push(span);
+                }
+                if (!charEls.length) return;
+
+                var centers = [];
+                var maxPush = 12;
+                var sigma = 30;
+                var rafId = null;
+                var pendingX = 0;
+                var pendingY = 0;
+                var hovering = false;
+
+                /* tick 사운드 — about/headline과 동일한 음원/방식 */
+                var llCtx = null;
+                var llTickBuffer = null;
+                (function preloadLlTick() {
+                    try {
+                        var AC = window.AudioContext || window.webkitAudioContext;
+                        if (!AC) return;
+                        llCtx = new AC();
+                        fetch('assets/sound-text-tick.mp3')
+                            .then(function (r) { return r.arrayBuffer(); })
+                            .then(function (buf) { return llCtx.decodeAudioData(buf); })
+                            .then(function (decoded) { llTickBuffer = decoded; })
+                            .catch(function () {});
+                    } catch (err) {}
+                })();
+                var llCurrentSrc = null;
+                var llCurrentGain = null;
+                function playLlTick() {
+                    if (window.__soundMuted) return;
+                    if (!llCtx || !llTickBuffer) return;
+                    try {
+                        if (llCtx.state === 'suspended') llCtx.resume();
+                        var now = llCtx.currentTime;
+                        if (llCurrentGain && llCurrentSrc) {
+                            try {
+                                llCurrentGain.gain.cancelScheduledValues(now);
+                                llCurrentGain.gain.setValueAtTime(llCurrentGain.gain.value, now);
+                                llCurrentGain.gain.linearRampToValueAtTime(0, now + 0.03);
+                                llCurrentSrc.stop(now + 0.04);
+                            } catch (e) {}
+                        }
+                        var src = llCtx.createBufferSource();
+                        var gain = llCtx.createGain();
+                        gain.gain.value = 0.33;
+                        src.buffer = llTickBuffer;
+                        src.connect(gain);
+                        gain.connect(llCtx.destination);
+                        src.start(0);
+                        llCurrentSrc = src;
+                        llCurrentGain = gain;
+                    } catch (err) {}
+                }
+                var MOVE_THRESHOLD = 5;
+                var charAnchor = [];
+
+                function measure() {
+                    centers = charEls.map(function (el) {
+                        var r = el.getBoundingClientRect();
+                        return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+                    });
+                }
+
+                function apply(mx, my) {
+                    if (!centers.length) return;
+                    for (var i = 0; i < charEls.length; i++) {
+                        var c = centers[i];
+                        var dx = mx - c.x;
+                        var dy = my - c.y;
+                        var dist = Math.sqrt(dx * dx + dy * dy);
+                        var falloff = Math.exp(-(dist * dist) / (2 * sigma * sigma));
+                        var dir = dx >= 0 ? -1 : 1;
+                        var push = dir * maxPush * falloff;
+                        charEls[i].style.transform = 'translateX(' + push.toFixed(2) + 'px)';
+                        if (charAnchor[i] === undefined) charAnchor[i] = push;
+                        if (Math.abs(push - charAnchor[i]) >= MOVE_THRESHOLD) {
+                            playLlTick();
+                            charAnchor[i] = push;
+                        }
+                    }
+                }
+
+                function reset() {
+                    for (var i = 0; i < charEls.length; i++) {
+                        charEls[i].style.transform = 'translateX(0)';
+                        charAnchor[i] = 0;
+                    }
+                }
+
+                function onMove(e) {
+                    pendingX = e.clientX;
+                    pendingY = e.clientY;
+                    if (rafId) return;
+                    rafId = requestAnimationFrame(function () {
+                        rafId = null;
+                        if (hovering) apply(pendingX, pendingY);
+                    });
+                }
+
+                labelEl.addEventListener('mouseenter', function () {
+                    hovering = true;
+                    measure();
+                });
+                labelEl.addEventListener('mousemove', onMove);
+                labelEl.addEventListener('mouseleave', function () {
+                    hovering = false;
+                    if (rafId) {
+                        cancelAnimationFrame(rafId);
+                        rafId = null;
+                    }
+                    reset();
+                });
+                window.addEventListener('resize', function () {
+                    if (hovering) measure();
+                });
+            })();
+
             (function setupCategoryHover() {
-                if (window.matchMedia && window.matchMedia('(hover: none)').matches) return;
+                var hoverNone = window.matchMedia && window.matchMedia('(hover: none)').matches;
+                var narrow = window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
+                var hasTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+                if (hoverNone || narrow || hasTouch) return;   /* 모바일/터치: 카테고리 호버 자간 애니매이션 비활성 */
                 var categoryEls = document.querySelectorAll('.category');
                 if (!categoryEls.length) return;
 
