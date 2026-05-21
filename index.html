@@ -2386,7 +2386,7 @@
                         return;
                     }
                     var now = Date.now();
-                    if (now - lastTouchEnd <= 320) {
+                    if (now - lastTouchEnd <= 250) {
                         e.preventDefault();
                     }
                     lastTouchEnd = now;
@@ -2499,8 +2499,19 @@
                 var currentIdx = -1;
 
                 function refreshOrdered() {
-                    var imgs = document.querySelectorAll('.marquee__img, .look-vertical__img');
-                    orderedSrcs = Array.prototype.slice.call(imgs).map(function (im) { return im.src; });
+                    /* 현재 화면에 실제로 보이는 컨테이너의 이미지만, src 기준 중복 제거.
+                       PC=marquee(2세트 중복), 모바일=look-vertical 중 보이는 쪽만 사용. */
+                    var isMobile = window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
+                    var selector = isMobile ? '.look-vertical__img' : '.marquee__img';
+                    var imgs = document.querySelectorAll(selector);
+                    var seen = {};
+                    orderedSrcs = [];
+                    Array.prototype.forEach.call(imgs, function (im) {
+                        if (!im.src) return;
+                        if (seen[im.src]) return;
+                        seen[im.src] = true;
+                        orderedSrcs.push(im.src);
+                    });
                 }
 
                 function openLightboxBySrc(src) {
