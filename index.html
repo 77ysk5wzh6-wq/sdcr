@@ -2464,7 +2464,19 @@
                         src.start(0);
                     } catch (err) {}
                 }
-                function playClickSound() { playBuffer(clickBuffer, 0.7); }
+                function isTouchLb() {
+                    var hoverNone = window.matchMedia && window.matchMedia('(hover: none)').matches;
+                    var narrow = window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
+                    var hasTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+                    return hoverNone || narrow || hasTouch;
+                }
+                function playClickSound() {
+                    /* 모바일(터치)에서는 열고/닫을 때 arrowhover, PC는 click */
+                    var touch = isTouchLb();
+                    console.log('[lb sound] touch:', touch, 'arrowBuffer:', !!arrowBuffer, 'clickBuffer:', !!clickBuffer);
+                    if (touch) playBuffer(arrowBuffer, 0.3);
+                    else playBuffer(clickBuffer, 0.7);
+                }
                 function playTickSound() { playBuffer(tickBuffer, 0.39); }
                 function playArrowHover() { playBuffer(arrowBuffer, 0.3); }
 
