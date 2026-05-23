@@ -97,7 +97,7 @@
     <div class="transition-overlay-text" aria-hidden="true"></div>
 
     <div class="shop-soon" aria-hidden="true">
-        <p class="shop-soon__text">2026.6 open</p>
+        <p class="shop-soon__text">2026.6<br>open</p>
     </div>
 
     <button type="button" class="mute-toggle" aria-label="sound on/off">
@@ -499,6 +499,9 @@
                 }
 
                 transitioning = true;
+                /* 다른 페이지로 전환 시작 시 shop 안내 문구 정리 */
+                var soonEl = document.querySelector('.shop-soon');
+                if (soonEl) soonEl.classList.remove('is-visible');
                 var oldPage = currentPage;
                 var btn, ovl;
                 if (target === 'look') { btn = look; ovl = overlay; }
@@ -628,9 +631,6 @@
                         applyTranslate();
                         startMarquee();
                     }
-                    if (isShop) {
-                        ovl.classList.add('is-sliding-out');
-                    }
                     var postRect = btn.getBoundingClientRect();
                     var postStyles = window.getComputedStyle(btn);
                     var postPadX = (parseFloat(postStyles.paddingLeft) || 0) + (parseFloat(postStyles.paddingRight) || 0);
@@ -662,20 +662,13 @@
                     /* shop 오픈 전: 전환 완료(빨간 페이지)된 위에 안내 문구 표시 */
                     if (isShop) {
                         var soon = document.querySelector('.shop-soon');
-                        if (soon) {
-                            soon.classList.add('is-visible');
-                            soon.addEventListener('click', function () {
-                                location.reload();   /* 클릭 시 메인으로 복귀 */
-                            }, { once: true });
-                        }
+                        if (soon) soon.classList.add('is-visible');
                     }
                 }, 2100);
 
-                if (!isShop) {
-                    navSchedule(function () {
-                        ovl.style.opacity = '0';
-                    }, 1330);
-                }
+                navSchedule(function () {
+                    ovl.style.opacity = '0';
+                }, 1330);
 
                 navSchedule(function () {
                     currentPage = target;
@@ -1328,6 +1321,153 @@
                 });
                 labelEl.addEventListener('mousemove', onMove);
                 labelEl.addEventListener('mouseleave', function () {
+                    hovering = false;
+                    if (rafId) {
+                        cancelAnimationFrame(rafId);
+                        rafId = null;
+                    }
+                    reset();
+                });
+                window.addEventListener('resize', function () {
+                    if (hovering) measure();
+                });
+            })();
+
+            (function setupShopSoonHover() {
+                /* PC 전용 — about 페이지 글자처럼 호버 자간 애니매이션 */
+                var hoverNone = window.matchMedia && window.matchMedia('(hover: none)').matches;
+                var narrow = window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
+                var hasTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+                if (hoverNone || narrow || hasTouch) return;
+                var textEl = document.querySelector('.shop-soon__text');
+                if (!textEl) return;
+
+                /* <br>은 보존하고 텍스트 노드의 글자만 span으로 쪼갬 (공백 보존) */
+                var charEls = [];
+                var nodes = Array.prototype.slice.call(textEl.childNodes);
+                textEl.textContent = '';
+                nodes.forEach(function (node) {
+                    if (node.nodeType === 3) {
+                        var t = node.textContent;
+                        for (var i = 0; i < t.length; i++) {
+                            var ch = t.charAt(i);
+                            var span = document.createElement('span');
+                            span.className = 'shop-soon__char';
+                            span.textContent = ch;
+                            if (ch === ' ') span.style.whiteSpace = 'pre';
+                            textEl.appendChild(span);
+                            if (ch !== ' ') charEls.push(span);
+                        }
+                    } else if (node.nodeName === 'BR') {
+                        textEl.appendChild(document.createElement('br'));
+                    } else {
+                        textEl.appendChild(node);
+                    }
+                });
+                if (!charEls.length) return;
+
+                var centers = [];
+                var maxPush = 12;
+                var sigma = 30;
+                var rafId = null;
+                var pendingX = 0;
+                var pendingY = 0;
+                var hovering = false;
+
+                /* tick 사운드 — about/headline과 동일한 음원/방식 */
+                var ssCtx = null;
+                var ssTickBuffer = null;
+                (function preloadSsTick() {
+                    try {
+                        var AC = window.AudioContext || window.webkitAudioContext;
+                        if (!AC) return;
+                        ssCtx = new AC();
+                        fetch('assets/sound-text-tick.mp3')
+                            .then(function (r) { return r.arrayBuffer(); })
+                            .then(function (buf) { return ssCtx.decodeAudioData(buf); })
+                            .then(function (decoded) { ssTickBuffer = decoded; })
+                            .catch(function () {});
+                    } catch (err) {}
+                })();
+                var ssCurrentSrc = null;
+                var ssCurrentGain = null;
+                function playSsTick() {
+                    if (window.__soundMuted || !window.__soundUnlocked) return;
+                    if (!ssCtx || !ssTickBuffer) return;
+                    try {
+                        if (ssCtx.state === 'suspended') ssCtx.resume();
+                        var now = ssCtx.currentTime;
+                        if (ssCurrentGain && ssCurrentSrc) {
+                            try {
+                                ssCurrentGain.gain.cancelScheduledValues(now);
+                                ssCurrentGain.gain.setValueAtTime(ssCurrentGain.gain.value, now);
+                                ssCurrentGain.gain.linearRampToValueAtTime(0, now + 0.03);
+                                ssCurrentSrc.stop(now + 0.04);
+                            } catch (e) {}
+                        }
+                        var src = ssCtx.createBufferSource();
+                        var gain = ssCtx.createGain();
+                        gain.gain.value = 0.33;
+                        src.buffer = ssTickBuffer;
+                        src.connect(gain);
+                        gain.connect(ssCtx.destination);
+                        src.start(0);
+                        ssCurrentSrc = src;
+                        ssCurrentGain = gain;
+                    } catch (err) {}
+                }
+                var MOVE_THRESHOLD = 5;
+                var charAnchor = [];
+
+                function measure() {
+                    centers = charEls.map(function (el) {
+                        var r = el.getBoundingClientRect();
+                        return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+                    });
+                }
+
+                function apply(mx, my) {
+                    if (!centers.length) return;
+                    for (var i = 0; i < charEls.length; i++) {
+                        var c = centers[i];
+                        var dx = mx - c.x;
+                        var dy = my - c.y;
+                        var dist = Math.sqrt(dx * dx + dy * dy);
+                        var falloff = Math.exp(-(dist * dist) / (2 * sigma * sigma));
+                        var dir = dx >= 0 ? -1 : 1;
+                        var push = dir * maxPush * falloff;
+                        charEls[i].style.transform = 'translateX(' + push.toFixed(2) + 'px)';
+                        if (charAnchor[i] === undefined) charAnchor[i] = push;
+                        if (Math.abs(push - charAnchor[i]) >= MOVE_THRESHOLD) {
+                            playSsTick();
+                            charAnchor[i] = push;
+                        }
+                    }
+                }
+
+                function reset() {
+                    for (var i = 0; i < charEls.length; i++) {
+                        charEls[i].style.transform = 'translateX(0)';
+                        charAnchor[i] = 0;
+                    }
+                }
+
+                function onMove(e) {
+                    pendingX = e.clientX;
+                    pendingY = e.clientY;
+                    if (rafId) return;
+                    rafId = requestAnimationFrame(function () {
+                        rafId = null;
+                        if (hovering) apply(pendingX, pendingY);
+                    });
+                }
+
+                textEl.addEventListener('mouseenter', function () {
+                    hovering = true;
+                    measure();
+                });
+                textEl.addEventListener('mousemove', onMove);
+                textEl.addEventListener('mouseleave', function () {
                     hovering = false;
                     if (rafId) {
                         cancelAnimationFrame(rafId);

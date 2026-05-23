@@ -190,6 +190,11 @@ body.is-loaded {
     pointer-events: none;
 }
 
+/* shop은 전용 페이지 div가 없으므로 body 배경을 빨강으로 (오픈 전 안내 모드의 배경) */
+body.is-shop-active {
+    background: rgb(232, 26, 41);
+}
+
 .categories {
     z-index: 45;
 }
@@ -275,7 +280,7 @@ body.is-categories-out .categories {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    color: #ffffff;
+    color: #000000;
     text-align: center;
     opacity: 0;
     pointer-events: none;
@@ -285,14 +290,21 @@ body.is-categories-out .categories {
 }
 .shop-soon.is-visible {
     opacity: 1;
-    pointer-events: auto;
-    cursor: pointer;
+}
+.shop-soon.is-visible .shop-soon__text {
+    pointer-events: auto;   /* 텍스트에만 호버 가능 — 컨테이너는 클릭 통과 */
 }
 .shop-soon__text {
     font-style: italic;
-    font-size: clamp(22px, 3.4vw, 48px);
-    line-height: 1;
+    font-size: clamp(16px, 2vw, 28px);
+    line-height: 1.25;
     letter-spacing: -0.01em;
+}
+.shop-soon__char {
+    display: inline-block;
+    transform: translateX(0);
+    transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
 }
 
 .transition-overlay.is-active {
