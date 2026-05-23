@@ -97,8 +97,7 @@
     <div class="transition-overlay-text" aria-hidden="true"></div>
 
     <div class="shop-soon" aria-hidden="true">
-        <p class="shop-soon__line1">shop opening</p>
-        <p class="shop-soon__line2">june 1</p>
+        <p class="shop-soon__text">2026.6 open</p>
     </div>
 
     <button type="button" class="mute-toggle" aria-label="sound on/off">
@@ -660,6 +659,16 @@
                     }
                     document.body.classList.remove('is-categories-out');
                     document.body.classList.remove('is-transitioning-cat');
+                    /* shop 오픈 전: 전환 완료(빨간 페이지)된 위에 안내 문구 표시 */
+                    if (isShop) {
+                        var soon = document.querySelector('.shop-soon');
+                        if (soon) {
+                            soon.classList.add('is-visible');
+                            soon.addEventListener('click', function () {
+                                location.reload();   /* 클릭 시 메인으로 복귀 */
+                            }, { once: true });
+                        }
+                    }
                 }, 2100);
 
                 if (!isShop) {
@@ -700,92 +709,75 @@
                 });
             }
 
+            var SHOP_OPEN = new Date('2026-06-01T00:00:00+09:00');
+            function shopIsOpen() { return new Date() >= SHOP_OPEN; }
+
             if (shop) {
                 shop.addEventListener('click', function (e) {
                     e.preventDefault();
                     if (transitioning) return;
                     playCategoryEnter();
-                    transitioning = true;
-                    var btn = shop;
-                    var ovl = shopOverlay;
-                    if (!btn || !ovl) {
-                        window.location.href = 'https://sidecar.co.kr';
-                        return;
-                    }
-                    var rect = btn.getBoundingClientRect();
-                    ovl.style.top = rect.top + 'px';
-                    ovl.style.left = rect.left + 'px';
-                    ovl.style.width = rect.width + 'px';
-                    ovl.style.height = rect.height + 'px';
-                    ovl.style.opacity = '1';
-                    ovl.offsetHeight;
-                    ovl.classList.add('is-active');
 
-                    /* 텍스트 확장 애니매이션 — 'shop' 글자가 버튼에서 시작해 가로로 펼쳐짐 */
-                    var overlayText = document.querySelector('.transition-overlay-text');
-                    var overlayTextAbsolute = false;
-                    if (overlayText) {
-                        overlayTextAbsolute = window.getComputedStyle(overlayText).position === 'absolute';
-                    }
-                    function topFor(viewportY) {
-                        return overlayTextAbsolute ? viewportY + window.scrollY : viewportY;
-                    }
-                    if (overlayText) {
-                        var target = 'shop';
-                        var labelHtml = '';
-                        for (var ch = 0; ch < target.length; ch++) {
-                            labelHtml += '<span class="transition-overlay__char">' + target.charAt(ch) + '</span>';
-                        }
-                        overlayText.innerHTML = labelHtml;
-                        overlayText.style.transition = 'none';
-                        overlayText.style.top = topFor(rect.top) + 'px';
-                        overlayText.style.left = rect.left + 'px';
-                        overlayText.style.width = rect.width + 'px';
-                        overlayText.style.height = rect.height + 'px';
-                        overlayText.style.opacity = '1';
-                        overlayText.offsetHeight;
-                    }
-
-                    requestAnimationFrame(function () {
-                        ovl.style.left = '0px';
-                        ovl.style.width = '100vw';
-                        if (overlayText) {
-                            overlayText.style.transition = 'left 0.56s ease-in-out, width 0.56s ease-in-out';
-                            overlayText.style.left = '0px';
-                            overlayText.style.width = '100vw';
-                        }
-                    });
-                    setTimeout(function () {
-                        ovl.style.top = '0px';
-                        ovl.style.height = '100vh';
-                    }, 630);
-                    setTimeout(function () {
-                        /* 6월 1일 오픈 전: 이동 대신 안내 문구 표시 */
-                        var SHOP_OPEN = new Date('2026-06-01T00:00:00+09:00');
-                        if (new Date() < SHOP_OPEN) {
-                            var soon = document.querySelector('.shop-soon');
-                            if (soon) {
-                                soon.classList.add('is-visible');
-                                var closeSoon = function () {
-                                    soon.classList.remove('is-visible');
-                                    soon.removeEventListener('click', closeSoon);
-                                    if (shopOverlay) {
-                                        shopOverlay.classList.remove('is-active');
-                                        shopOverlay.classList.remove('is-sliding-out');
-                                        shopOverlay.style.cssText = '';
-                                        shopOverlay.innerHTML = '';
-                                    }
-                                    var ot = document.querySelector('.transition-overlay-text');
-                                    if (ot) { ot.style.cssText = ''; ot.innerHTML = ''; }
-                                    transitioning = false;
-                                };
-                                /* 표시 직후의 같은 클릭이 바로 닫지 않도록 다음 틱에 리스너 등록 */
-                                setTimeout(function () { soon.addEventListener('click', closeSoon); }, 50);
-                            }
+                    if (shopIsOpen()) {
+                        /* 오픈 후: 빨간 오버레이 펼침 애니매이션 → imweb 쇼핑몰로 이동 */
+                        transitioning = true;
+                        var btn = shop;
+                        var ovl = shopOverlay;
+                        if (!btn || !ovl) {
+                            window.location.href = 'https://sidecar.co.kr';
                             return;
                         }
-                        window.location.href = 'https://sidecar.co.kr';
-                    }, 1300);
+                        var rect = btn.getBoundingClientRect();
+                        ovl.style.top = rect.top + 'px';
+                        ovl.style.left = rect.left + 'px';
+                        ovl.style.width = rect.width + 'px';
+                        ovl.style.height = rect.height + 'px';
+                        ovl.style.opacity = '1';
+                        ovl.offsetHeight;
+                        ovl.classList.add('is-active');
+                        var overlayText = document.querySelector('.transition-overlay-text');
+                        var overlayTextAbsolute = false;
+                        if (overlayText) {
+                            overlayTextAbsolute = window.getComputedStyle(overlayText).position === 'absolute';
+                        }
+                        function topFor(viewportY) {
+                            return overlayTextAbsolute ? viewportY + window.scrollY : viewportY;
+                        }
+                        if (overlayText) {
+                            var target = 'shop';
+                            var labelHtml = '';
+                            for (var ch = 0; ch < target.length; ch++) {
+                                labelHtml += '<span class="transition-overlay__char">' + target.charAt(ch) + '</span>';
+                            }
+                            overlayText.innerHTML = labelHtml;
+                            overlayText.style.transition = 'none';
+                            overlayText.style.top = topFor(rect.top) + 'px';
+                            overlayText.style.left = rect.left + 'px';
+                            overlayText.style.width = rect.width + 'px';
+                            overlayText.style.height = rect.height + 'px';
+                            overlayText.style.opacity = '1';
+                            overlayText.offsetHeight;
+                        }
+                        requestAnimationFrame(function () {
+                            ovl.style.left = '0px';
+                            ovl.style.width = '100vw';
+                            if (overlayText) {
+                                overlayText.style.transition = 'left 0.56s ease-in-out, width 0.56s ease-in-out';
+                                overlayText.style.left = '0px';
+                                overlayText.style.width = '100vw';
+                            }
+                        });
+                        setTimeout(function () {
+                            ovl.style.top = '0px';
+                            ovl.style.height = '100vh';
+                        }, 630);
+                        setTimeout(function () {
+                            window.location.href = 'https://sidecar.co.kr';
+                        }, 1300);
+                    } else {
+                        /* 오픈 전: look/about과 완전히 동일한 카테고리 전환 (shop 글자 오므림 + 카테고리 복귀) */
+                        navigateTo('shop');
+                    }
                 });
 
                 window.addEventListener('pageshow', function (e) {
@@ -801,6 +793,8 @@
                             ot.style.cssText = '';
                             ot.innerHTML = '';
                         }
+                        var soon = document.querySelector('.shop-soon');
+                        if (soon) soon.classList.remove('is-visible');
                         transitioning = false;
                         document.body.classList.remove('is-shop-active');
                         document.body.classList.remove('is-transitioning-cat');
