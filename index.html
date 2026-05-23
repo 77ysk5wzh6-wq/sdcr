@@ -96,6 +96,11 @@
     <div class="transition-overlay transition-overlay--shop" aria-hidden="true"></div>
     <div class="transition-overlay-text" aria-hidden="true"></div>
 
+    <div class="shop-soon" aria-hidden="true">
+        <p class="shop-soon__line1">shop opening</p>
+        <p class="shop-soon__line2">june 1</p>
+    </div>
+
     <button type="button" class="mute-toggle" aria-label="sound on/off">
         <svg class="mute-toggle__icon mute-toggle__icon--on" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M11 5 6 9H3v6h3l5 4V5z"></path>
@@ -755,6 +760,30 @@
                         ovl.style.height = '100vh';
                     }, 630);
                     setTimeout(function () {
+                        /* 6월 1일 오픈 전: 이동 대신 안내 문구 표시 */
+                        var SHOP_OPEN = new Date('2026-06-01T00:00:00+09:00');
+                        if (new Date() < SHOP_OPEN) {
+                            var soon = document.querySelector('.shop-soon');
+                            if (soon) {
+                                soon.classList.add('is-visible');
+                                var closeSoon = function () {
+                                    soon.classList.remove('is-visible');
+                                    soon.removeEventListener('click', closeSoon);
+                                    if (shopOverlay) {
+                                        shopOverlay.classList.remove('is-active');
+                                        shopOverlay.classList.remove('is-sliding-out');
+                                        shopOverlay.style.cssText = '';
+                                        shopOverlay.innerHTML = '';
+                                    }
+                                    var ot = document.querySelector('.transition-overlay-text');
+                                    if (ot) { ot.style.cssText = ''; ot.innerHTML = ''; }
+                                    transitioning = false;
+                                };
+                                /* 표시 직후의 같은 클릭이 바로 닫지 않도록 다음 틱에 리스너 등록 */
+                                setTimeout(function () { soon.addEventListener('click', closeSoon); }, 50);
+                            }
+                            return;
+                        }
                         window.location.href = 'https://sidecar.co.kr';
                     }, 1300);
                 });
