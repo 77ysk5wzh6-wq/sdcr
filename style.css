@@ -330,7 +330,7 @@ body.is-categories-out .categories {
 .is-look-active .marquee__img,
 .is-look-active .look-vertical__img {
     pointer-events: auto;
-    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'><circle cx='12' cy='12' r='8' fill='black' fill-opacity='0.4'/></svg>") 12 12, pointer;
+    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28' fill='none' stroke='white' stroke-width='1' stroke-linecap='round' stroke-linejoin='round' stroke-opacity='0.6'><polyline points='6,18 14,10 22,18'/></svg>") 14 10, pointer;
 }
 
 .about-page {
