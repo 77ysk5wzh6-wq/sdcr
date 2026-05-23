@@ -337,6 +337,20 @@ body.is-categories-out .categories {
     touch-action: manipulation;
 }
 
+/* look 사진 드래그 선택·이미지 드래그 방지 */
+.look-page,
+.marquee,
+.marquee__img,
+.look-vertical__img,
+.look-lightbox,
+.look-lightbox__image {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    -webkit-user-drag: none;
+    -webkit-touch-callout: none;
+}
+
 .look-page::-webkit-scrollbar {
     display: none;
 }

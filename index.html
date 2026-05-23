@@ -73,8 +73,8 @@
             </svg>
         </button>
         <div class="look-lightbox__stage">
-            <img src="" alt="" class="look-lightbox__image look-lightbox__image--a is-current">
-            <img src="" alt="" class="look-lightbox__image look-lightbox__image--b">
+            <img src="" alt="" draggable="false" class="look-lightbox__image look-lightbox__image--a is-current">
+            <img src="" alt="" draggable="false" class="look-lightbox__image look-lightbox__image--b">
         </div>
         <button type="button" class="look-lightbox__nav look-lightbox__nav--next" aria-label="next">
             <svg width="36" height="36" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -316,6 +316,7 @@
                         var img = document.createElement('img');
                         img.alt = '';
                         img.className = 'marquee__img';
+                        img.draggable = false;
                         img.style.height = heights[k] + 'vh';
                         img.setAttribute('aria-hidden', 'true');
                         img.onload = function () {
@@ -337,6 +338,7 @@
                         var vimg = document.createElement('img');
                         vimg.alt = '';
                         vimg.className = 'look-vertical__img';
+                        vimg.draggable = false;
                         vimg.style.width = (54 + Math.random() * 21.6) + 'vw';
                         vimg.setAttribute('aria-hidden', 'true');
                         vimg.src = encodeURI(vShuffled[v]);
