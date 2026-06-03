@@ -840,15 +840,25 @@ body.is-look-active .info-button {
 
 @media (max-width: 768px) {
     .info-button {
-        bottom: 18px;
-        right: 18px;
+        /* 모바일: 헤드라인 아래 여유 두고 하단 중앙 */
+        bottom: 22px;
+        right: auto;
+        left: 50%;
+        transform: translateX(-50%);
         font-size: 13px;
     }
     .info-modal__panel {
-        bottom: 50px;
-        right: 18px;
+        /* 버튼이 중앙으로 가니 패널도 중앙 하단에서 자라나게 */
+        bottom: 56px;
+        right: auto;
+        left: 50%;
         width: 300px;
         padding: 24px 22px 20px;
+        transform-origin: bottom center;
+        transform: translateX(-50%) scale(0.7);
+    }
+    .info-modal.is-open .info-modal__panel {
+        transform: translateX(-50%) scale(1);
     }
     .info-list__row {
         grid-template-columns: 90px 1fr;
