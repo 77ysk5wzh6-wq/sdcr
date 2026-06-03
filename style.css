@@ -600,7 +600,7 @@ body.is-categories-out .categories {
     .headline {
         position: static;
         margin-top: -40px;
-        padding: 0 16px 60px;
+        padding: 0 16px 96px;   /* 큰 글씨와 info 사이 여백 확보 */
         z-index: auto;
     }
 
@@ -839,74 +839,45 @@ body.is-look-active .info-button {
 }
 
 @media (max-width: 768px) {
-    /* 모바일: info 버튼/모달 숨기고 하단 푸터로 정보 노출 */
-    .info-button,
-    .info-modal {
-        display: none !important;
+    .info-button {
+        /* 모바일: viewport 고정이 아니라 body(메인) 안에 절대 위치 — 다른 페이지 진입 시 자동으로 가려짐 */
+        position: absolute;
+        bottom: 28px;
+        right: auto;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 13px;
     }
-    .info-footer {
-        display: block;
+    body {
+        position: relative;   /* info-button absolute 기준 */
     }
-    /* 모바일에선 메인이 footer까지 자연스럽게 흘러가도록 스크롤 허용 */
-    html, body {
-        height: auto;
-        min-height: 100vh;
-        overflow-x: hidden;
-        overflow-y: auto;
-    }
-    /* 다른 페이지(look/about/shop) 활성 시엔 메인 흐름·footer 가림 */
-    body.is-look-active,
-    body.is-about-active,
-    body.is-shop-active {
-        height: 100vh;
-        overflow: hidden;
-    }
-    body.is-look-active .info-footer,
-    body.is-about-active .info-footer,
-    body.is-shop-active .info-footer {
+    /* 다른 페이지(look/about/shop) 활성 시엔 info 자체를 숨김 (안전장치) */
+    body.is-look-active .info-button,
+    body.is-about-active .info-button,
+    body.is-shop-active .info-button {
         display: none;
     }
-}
-
-/* === INFO 푸터 (모바일 전용) =========== */
-.info-footer {
-    display: none;   /* PC에선 안 보임 */
-    padding: 40px 18px 28px;
-    background: #ffffff;
-    color: #000000;
-    font-family: 'Pretendard', sans-serif;
-}
-.info-footer__list {
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    text-align: left;
-}
-.info-footer__row {
-    display: grid;
-    grid-template-columns: 90px 1fr;
-    gap: 8px;
-    align-items: baseline;
-}
-.info-footer__row dt {
-    margin: 0;
-    font-family: 'Pretendard', sans-serif;
-    font-size: 10.5px;
-    font-weight: 400;
-    color: #888888;
-    line-height: 1.5;
-}
-.info-footer__row dd {
-    margin: 0;
-    font-family: 'Pretendard', sans-serif;
-    font-size: 10.5px;
-    font-weight: 400;
-    color: #000000;
-    line-height: 1.5;
-    word-break: keep-all;
-    letter-spacing: -0.005em;
+    .info-modal__panel {
+        /* 버튼이 중앙으로 가니 패널도 중앙 하단에서 자라나게 */
+        bottom: 56px;
+        right: auto;
+        left: 50%;
+        width: 300px;
+        padding: 24px 22px 20px;
+        transform-origin: bottom center;
+        transform: translateX(-50%) scale(0.7);
+    }
+    .info-modal.is-open .info-modal__panel {
+        transform: translateX(-50%) scale(1);
+    }
+    .info-list__row {
+        grid-template-columns: 90px 1fr;
+        gap: 8px;
+    }
+    .info-list__row dt,
+    .info-list__row dd {
+        font-size: 10.5px;
+    }
 }
 
 /* === LOOK PAGE LABEL — "2026.6 spring" =========== */
