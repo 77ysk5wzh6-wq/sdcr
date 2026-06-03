@@ -600,7 +600,7 @@ body.is-categories-out .categories {
     .headline {
         position: static;
         margin-top: -40px;
-        padding: 0 16px 96px;   /* 큰 글씨와 info 사이 여백 확보 */
+        padding: 0 16px 60px;
         z-index: auto;
     }
 
@@ -840,22 +840,10 @@ body.is-look-active .info-button {
 
 @media (max-width: 768px) {
     .info-button {
-        /* 모바일: viewport 고정이 아니라 body(메인) 안에 절대 위치 — 다른 페이지 진입 시 자동으로 가려짐 */
-        position: absolute;
-        bottom: 28px;
-        right: auto;
-        left: 50%;
-        transform: translateX(-50%);
+        /* 모바일: 우하단 고정 — 카테고리와 무관하게 항상 보임 */
+        bottom: 18px;
+        right: 18px;
         font-size: 13px;
-    }
-    body {
-        position: relative;   /* info-button absolute 기준 */
-    }
-    /* 다른 페이지(look/about/shop) 활성 시엔 info 자체를 숨김 (안전장치) */
-    body.is-look-active .info-button,
-    body.is-about-active .info-button,
-    body.is-shop-active .info-button {
-        display: none;
     }
     .info-modal__panel {
         /* 버튼이 중앙으로 가니 패널도 중앙 하단에서 자라나게 */
