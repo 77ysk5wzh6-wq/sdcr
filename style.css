@@ -712,6 +712,133 @@ body.is-look-active .mute-toggle {
     }
 }
 
+/* === INFO 버튼 + 사업자 정보 모달 =========== */
+.info-button {
+    position: fixed;
+    bottom: 28px;
+    right: 40px;
+    z-index: 120;
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: transparent;
+    color: #000000;
+    cursor: pointer;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 18px;
+    line-height: 1;
+    letter-spacing: -0.01em;
+    -webkit-tap-highlight-color: transparent;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+body.is-loaded .info-button {
+    opacity: 1;
+}
+body.is-look-active .info-button {
+    color: #ffffff;
+    mix-blend-mode: difference;
+}
+
+.info-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.32s ease;
+}
+.info-modal.is-open {
+    opacity: 1;
+    pointer-events: auto;
+}
+.info-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+}
+.info-modal__panel {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #ffffff;
+    color: #000000;
+    padding: 48px 56px 44px;
+    width: min(560px, 90vw);
+    max-height: 86vh;
+    overflow-y: auto;
+    box-sizing: border-box;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.25);
+}
+.info-modal__close {
+    position: absolute;
+    top: 14px;
+    right: 18px;
+    background: transparent;
+    border: none;
+    color: #000000;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 4px 8px;
+}
+
+.info-list {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.info-list__row {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 16px;
+    align-items: baseline;
+}
+.info-list__row dt {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: #888888;
+    line-height: 1.4;
+    margin: 0;
+}
+.info-list__row dd {
+    margin: 0;
+    font-family: 'Pretendard', sans-serif;
+    font-size: 13px;
+    color: #000000;
+    line-height: 1.5;
+    letter-spacing: -0.005em;
+    word-break: keep-all;
+}
+
+@media (max-width: 768px) {
+    .info-button {
+        bottom: 18px;
+        right: 18px;
+        font-size: 16px;
+    }
+    .info-modal__panel {
+        padding: 38px 24px 32px;
+        width: 92vw;
+    }
+    .info-list__row {
+        grid-template-columns: 110px 1fr;
+        gap: 10px;
+    }
+    .info-list__row dt {
+        font-size: 13px;
+    }
+    .info-list__row dd {
+        font-size: 12px;
+    }
+}
+
 /* === LOOK PAGE LABEL — "2026.6 spring" =========== */
 .look-label {
     position: fixed;

@@ -116,6 +116,41 @@
         </svg>
     </button>
 
+    <button type="button" class="info-button" aria-label="info">info</button>
+
+    <div class="info-modal" aria-hidden="true">
+        <div class="info-modal__backdrop"></div>
+        <div class="info-modal__panel" role="dialog" aria-modal="true" aria-label="business info">
+            <button type="button" class="info-modal__close" aria-label="close">×</button>
+            <dl class="info-list">
+                <div class="info-list__row">
+                    <dt>상호명</dt><dd>사이드카</dd>
+                </div>
+                <div class="info-list__row">
+                    <dt>대표자</dt><dd>황재성</dd>
+                </div>
+                <div class="info-list__row">
+                    <dt>사업자등록번호</dt><dd>307-25-12400</dd>
+                </div>
+                <div class="info-list__row">
+                    <dt>주소</dt><dd>인천광역시 남동구 남동서로236번길 30, 222-H01호<br>(논현동, 논현2차 푸르지오시티)</dd>
+                </div>
+                <div class="info-list__row">
+                    <dt>전화</dt><dd>010-8417-3753</dd>
+                </div>
+                <div class="info-list__row">
+                    <dt>이메일</dt><dd>hjs282500@naver.com</dd>
+                </div>
+                <div class="info-list__row">
+                    <dt>통신판매업신고번호</dt><dd>등록예정</dd>
+                </div>
+                <div class="info-list__row">
+                    <dt>개인정보관리책임자</dt><dd>황재성</dd>
+                </div>
+            </dl>
+        </div>
+    </div>
+
     <script>
         /* === AudioContext 레지스트리 — 생성되는 모든 컨텍스트를 추적해 첫 제스처에 일괄 resume === */
         (function () {
@@ -216,6 +251,32 @@
                         playCategoryEnter();
                     });
                 }
+            })();
+
+            /* === Info 모달 (사업자 정보) === */
+            (function setupInfoModal() {
+                var btn = document.querySelector('.info-button');
+                var modal = document.querySelector('.info-modal');
+                if (!btn || !modal) return;
+                var closeBtn = modal.querySelector('.info-modal__close');
+                var backdrop = modal.querySelector('.info-modal__backdrop');
+                function open() {
+                    modal.classList.add('is-open');
+                    modal.setAttribute('aria-hidden', 'false');
+                }
+                function close() {
+                    modal.classList.remove('is-open');
+                    modal.setAttribute('aria-hidden', 'true');
+                }
+                btn.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    open();
+                });
+                if (closeBtn) closeBtn.addEventListener('click', close);
+                if (backdrop) backdrop.addEventListener('click', close);
+                document.addEventListener('keydown', function (e) {
+                    if (e.key === 'Escape' && modal.classList.contains('is-open')) close();
+                });
             })();
 
             /* 카테고리 클릭 진입 사운드 (라이트박스 진입과 동일) */
