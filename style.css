@@ -843,7 +843,7 @@ body.is-look-active .info-button {
         /* 모바일: 우하단 고정 — 카테고리와 무관하게 항상 보임 */
         bottom: 18px;
         right: 18px;
-        font-size: 13px;
+        font-size: 15px;
     }
     .info-modal__panel {
         /* 버튼이 중앙으로 가니 패널도 중앙 하단에서 자라나게 */
