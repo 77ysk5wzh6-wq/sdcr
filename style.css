@@ -724,9 +724,10 @@ body.is-look-active .mute-toggle {
     background: transparent;
     color: #000000;
     cursor: pointer;
-    font-family: 'Pretendard', sans-serif;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
     font-weight: 400;
-    font-size: 13px;
+    font-size: 15px;
     line-height: 1;
     letter-spacing: -0.005em;
     -webkit-tap-highlight-color: transparent;
@@ -841,7 +842,7 @@ body.is-look-active .info-button {
     .info-button {
         bottom: 18px;
         right: 18px;
-        font-size: 14px;
+        font-size: 13px;
     }
     .info-modal__panel {
         bottom: 50px;
